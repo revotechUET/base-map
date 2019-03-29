@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Wi Map</title>
+    <title>Base Map</title>
 
     <link rel='stylesheet' href='./vendors/mapbox/mapbox-gl.css' />
     <link rel='stylesheet' href='./vendors/mapbox/mapbox-gl-directions.css' />
@@ -42,11 +42,11 @@
                 <span>Refesh</span>
             </span>
             <span class="menu-item fas fa-compass">
-                <select class="select-proj4 form-control" id="sel1" style="width: 200px;">
-                    <option selected>Select coordinate</option>
-                  </select>
+                <select class="select-proj4 form-control" id="sel1" style="width: 250px;"
+                    ng-options="item.title for item in zoneFieldTable" ng-model="zoneSelected" 
+                    ng-change="hasChanged()">
+                </select>
             </span>
-            
         </div>
         <div class="container">
             <wi-login whoami="main-service"></wi-login>
@@ -68,6 +68,10 @@
                         <div class="menu-left-bottom">
                             <div class="label-list-view">
                                 <span>WELL LIST</span>
+                                <span class="label-buttom fa fa-forward" aria-hidden="true"
+                                    ng-click="self.moveAllWell()"></span>
+                                <span class="label-buttom fa fa-minus-circle" aria-hidden="true"
+                                    ng-click="self.refesh()"></span>
                             </div>
                             <div class="search-list-view">
                                 <input class="input-search-list-view" type="text" placeholder="Search your well"
@@ -82,6 +86,8 @@
                     <div style="overflow:hidden; height: 100vh; ">
                         <div class="label-list-view">
                             <span>SHOW TO MAP</span>
+                            <span class="label-buttom fa fa-minus-circle" aria-hidden="true"
+                                ng-click="self.cleanMap()"></span>
                         </div>
                         <div class="search-list-view">
                             <input class="input-search-list-view" type="text" placeholder="Search well displayed"
@@ -96,7 +102,7 @@
             </div>
             <map-view class="mapView"
                 mapbox-token='pk.eyJ1IjoiazU0aHVuZ3liIiwiYSI6ImNqdGZtNDE4ODF1OXEzeW85djJ5c29nYnoifQ.-VfHeKXV9avmbia1E7BFcQ'
-                wells='wellSelect'>
+                wells='wellSelect' zoneMap="zoneSelected">
             </map-view>
         </div>
     </div>

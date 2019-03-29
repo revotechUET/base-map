@@ -1,5 +1,31 @@
 var app = angular.module('myApp', ['mapView', 'sideBar', 'wi-base-treeview', 'wiLogin', 'ngDialog', 'wiToken']);
 app.controller('myCtrl', function ($scope, $http, wiToken) {
+    $scope.zoneFieldTable = [{
+        field: "+proj=utm +zone=9 +ellps=WGS84 +datum=WGS84 +units=m +no_defs",
+        title: "Choose Zone"
+    }, {
+        field: "+proj=utm +zone=8 +ellps=WGS84 +datum=WGS84 +units=m +no_defs",
+        title: "WGS_1984_UTM_Zone_8N"
+    }, {
+        field: "+proj=utm +zone=9 +south +ellps=WGS84 +datum=WGS84 +units=m +no_defs",
+        title: "WGS_1984_UTM_Zone_9S"
+    }, {
+        field: "+proj=utm +zone=9 +ellps=WGS84 +datum=WGS84 +units=m +no_defs",
+        title: "WGS_1984_UTM_Zone_9N"
+    }, {
+        field: "+proj=utm +zone=8 +south +ellps=WGS84 +datum=WGS84 +units=m +no_defs",
+        title: "WGS_1984_UTM_Zone_8S"
+    }, {
+        field: "+proj=longlat +ellps=WGS84 +datum=WGS84 +units=degrees",
+        title: "Test"
+    }];
+
+    $scope.zoneSelected = $scope.zoneFieldTable[0];
+
+    $scope.hasChanged = function () {
+        console.log($scope.zoneSelected.field);
+    }
+
     $scope.wellList = [];
     $scope.wellSelect = [];
     if ((localStorage.getItem("token")) !== null) {
@@ -17,6 +43,22 @@ app.controller('myCtrl', function ($scope, $http, wiToken) {
     this.refesh = function () {
         getProjectList();
         $scope.wellList = [];
+        $scope.wellSelect = [];
+    }
+
+    this.moveAllWell = function () {
+        for (let index = 0; index < $scope.wellList.length; index++) {
+            let wellId = $scope.wellList[index].properties.idWell;
+            let foundWell = $scope.wellSelect.find(function (item) {
+                return item.properties.idWell === wellId;
+            });
+            if (!foundWell) {
+                $scope.wellSelect.push($scope.wellList[index]);
+            }
+        }
+    }
+
+    this.cleanMap = function () {
         $scope.wellSelect = [];
     }
 
@@ -91,6 +133,7 @@ app.controller('myCtrl', function ($scope, $http, wiToken) {
             $scope.wellSelect.push($scope.wellList[wellIdx]);
         }
     }
+
     $scope.onClickWellonMap = function (wellSelectIdx) {
         $scope.wellSelect.splice((wellSelectIdx), 1);
     }

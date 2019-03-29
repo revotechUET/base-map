@@ -3,8 +3,6 @@ module.exports.name = componentName;
 require('./map-view.css');
 
 var app = angular.module(componentName, []);
-var firstProjection = "+proj=utm +zone=49 +ellps=WGS84 +datum=WGS84 +units=m +no_defs";
-var secondProjection = "+proj=longlat +ellps=WGS84 +datum=WGS84 +units=degrees";
 
 app.component(componentName, {
   template: require('./map-view.html'),
@@ -12,12 +10,16 @@ app.component(componentName, {
   controllerAs: 'self',
   bindings: {
     wells: "<",
-    mapboxToken: "@"
+    mapboxToken: "@",
+    zoneMap: "@"
   },
   transclude: true
 });
 
 function mapViewController($scope) {
+  var firstProjection = "+proj=utm +zone=49 +ellps=WGS84 +datum=WGS84 +units=m +no_defs";
+  var secondProjection = "+proj=longlat +ellps=WGS84 +datum=WGS84 +units=degrees";
+  
   let self = this;
   let map;
   let markers = [];
