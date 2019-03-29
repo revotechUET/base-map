@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Wi Map</title>
+
+    <link rel='stylesheet' href='./vendors/mapbox/mapbox-gl.css' />
+    <link rel='stylesheet' href='./vendors/mapbox/mapbox-gl-directions.css' />
+    <link rel="stylesheet" href="./bower_components/jquery-ui/themes/base/jquery-ui.min.css">
+    <link rel="stylesheet" href="./bower_components/fontawesome/css/all.min.css">
+    <link rel="stylesheet" href="./bower_components/ng-dialog/css/ngDialog.min.css">
+    <link rel="stylesheet" href="./bower_components/ng-dialog/css/ngDialog-theme-default.min.css">
+    <link rel="stylesheet" href="./bower_components/bootstrap-css/css/bootstrap.min.css">
+    <link rel="stylesheet" href="./bower_components/fontawesome/css/fontawesome.min.css">
+    <link rel="stylesheet" href="style.css">
+
+    <script src="./bower_components/jquery/dist/jquery.min.js"></script>
+    <script src="./bower_components/jquery-ui/jquery-ui.min.js"></script>
+    <script src='./vendors/mapbox/mapbox-gl.js'></script>
+    <script src='./vendors/mapbox/mapbox-gl-geocoder.min.js'></script>
+    <script src='./vendors/mapbox/mapbox-gl-directions.js'></script>
+    <script src="./bower_components/angular/angular.min.js"></script>
+    <script src="./bower_components/ng-dialog/js/ngDialog.min.js"></script>
+    <script src="./bower_components/lodash/dist/lodash.min.js"></script>
+    <script src="./bower_components/proj4/dist/proj4.js"></script>
+    <script src="./bower_components/bootstrap-css/js/bootstrap.min.js"></script>
+    <script src="./bower_components/misc-components/dist/misc-components.js"></script>
+    <script src="./dist/map-view.bundle.js"></script>
+
+</head>
+<style>
+</style>
+
+<body ng-app="myApp" ng-controller="myCtrl as self">
+    <div class="main">
+        <div class="toolbar">
+            <span class="menu-item fa fa-globe">
+                <span>Base Map</span>
+            </span>
+            <span class="menu-item fas fa-redo-alt" ng-click="self.refesh()">
+                <span>Refesh</span>
+            </span>
+            <span class="menu-item fas fa-compass">
+                <select class="select-proj4 form-control" id="sel1" style="width: 200px;">
+                    <option selected>Select coordinate</option>
+                  </select>
+            </span>
+            
+        </div>
+        <div class="container">
+            <wi-login whoami="main-service"></wi-login>
+            <div class="holder">
+                <side-bar my-default-width="200" button-v-offset="0"
+                    style="z-index: 401; border-right: 1px solid #dedede;">
+                    <div style="overflow:hidden; height: 100vh;display: flex;flex-direction: column;">
+                        <div class="menu-left-top">
+                            <div class="label-list-view">
+                                <span>PROJECT LIST</span>
+                            </div>
+                            <div class="search-list-view">
+                                <input class="input-search-list-view" type="text" placeholder="Search your project"
+                                    onfocus="this.placeholder = ''" onblur="this.placeholder = 'Search your project'">
+                            </div>
+                            <wi-base-treeview name="abc" config="projectList" on-click-function="onClickPrj">
+                            </wi-base-treeview>
+                        </div>
+                        <div class="menu-left-bottom">
+                            <div class="label-list-view">
+                                <span>WELL LIST</span>
+                            </div>
+                            <div class="search-list-view">
+                                <input class="input-search-list-view" type="text" placeholder="Search your well"
+                                    onfocus="this.placeholder = ''" onblur="this.placeholder = 'Search your well'">
+                            </div>
+                            <wi-base-treeview name="abc" config="wellList" on-click-function="onClickWell">
+                            </wi-base-treeview>
+                        </div>
+                    </div>
+                </side-bar>
+                <side-bar my-default-width="200" style="border-right: 1px solid #dedede;">
+                    <div style="overflow:hidden; height: 100vh; ">
+                        <div class="label-list-view">
+                            <span>SHOW TO MAP</span>
+                        </div>
+                        <div class="search-list-view">
+                            <input class="input-search-list-view" type="text" placeholder="Search well displayed"
+                                onfocus="this.placeholder = ''" onblur="this.placeholder = 'Search your well'">
+                        </div>
+                        <div style="overflow: scroll;height: 100vh;">
+                            <wi-base-treeview name="abc" config="wellSelect" on-click-function="onClickWellonMap">
+                            </wi-base-treeview>
+                        </div>
+                    </div>
+                </side-bar>
+            </div>
+            <map-view class="mapView"
+                mapbox-token='pk.eyJ1IjoiazU0aHVuZ3liIiwiYSI6ImNqdGZtNDE4ODF1OXEzeW85djJ5c29nYnoifQ.-VfHeKXV9avmbia1E7BFcQ'
+                wells='wellSelect'>
+            </map-view>
+        </div>
+    </div>
+
+    <script src="./main.js"></script>
+</body>
+
+</html>
