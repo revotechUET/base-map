@@ -21,13 +21,14 @@ app.controller('myCtrl', function ($scope, $http, wiToken) {
     }];
 
     $scope.zoneSelected = $scope.zoneFieldTable[0];
-
     $scope.hasChanged = function () {
         console.log($scope.zoneSelected.field);
     }
 
     $scope.wellList = [];
     $scope.wellSelect = [];
+    $scope.focusWell = [];
+
     if ((localStorage.getItem("token")) !== null) {
         getProjectList();
     }
@@ -98,6 +99,7 @@ app.controller('myCtrl', function ($scope, $http, wiToken) {
             properties: wellToPush
         });
     }
+
     $scope.onClickPrj = function (prjIdx) {
         let clickedPrj = $scope.projectList[prjIdx];
         let idPrj = clickedPrj.properties.idProject;
@@ -124,6 +126,7 @@ app.controller('myCtrl', function ($scope, $http, wiToken) {
             console.error(errorResponse);
         });
     }
+
     $scope.onClickWell = function (wellIdx) {
         let wellId = $scope.wellList[wellIdx].properties.idWell;
         let foundWell = $scope.wellSelect.find(function (item) {
@@ -134,7 +137,11 @@ app.controller('myCtrl', function ($scope, $http, wiToken) {
         }
     }
 
-    $scope.onClickWellonMap = function (wellSelectIdx) {
-        $scope.wellSelect.splice((wellSelectIdx), 1);
+    // $scope.removeWellonMap = function (wellSelectIdx) {
+    //     $scope.wellSelect.splice((wellSelectIdx), 1);
+    // }
+    $scope.focusWellonMap = function (wellSelectIdx) {
+        $scope.focusWell = $scope.wellSelect[wellSelectIdx].properties.well_headers;
+        console.log($scope.focusWell);
     }
 });

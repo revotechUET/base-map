@@ -11,6 +11,7 @@ app.component(componentName, {
   bindings: {
     wells: "<",
     mapboxToken: "@",
+    focusWell: '<',
     zoneMap: "@"
   },
   transclude: true
@@ -19,7 +20,7 @@ app.component(componentName, {
 function mapViewController($scope) {
   var firstProjection = "+proj=utm +zone=49 +ellps=WGS84 +datum=WGS84 +units=m +no_defs";
   var secondProjection = "+proj=longlat +ellps=WGS84 +datum=WGS84 +units=degrees";
-  
+
   let self = this;
   let map;
   let markers = [];
@@ -28,7 +29,13 @@ function mapViewController($scope) {
     $scope.$watch(function () {
       return [self.wells, self.mapboxToken];
     }, function () {
+      focusWell();
       drawMarkersDebounced();
+    }, true);
+    $scope.$watch(function () {
+      return [self.focusWell];
+    }, function () {
+      focusWell();
     }, true);
   }
   var drawMarkersDebounced = _.debounce(drawMarkers, 100);
@@ -37,7 +44,7 @@ function mapViewController($scope) {
     mapboxgl.accessToken = self.mapboxToken;
     map = new mapboxgl.Map({
       container: 'map',
-      style: 'mapbox://styles/mapbox/outdoors-v11',
+      style: 'mapbox://styles/mapbox/streets-v11',
       center: [107, 11],
       zoom: 5,
     });
@@ -48,6 +55,7 @@ function mapViewController($scope) {
       },
       trackUserLocation: true
     }));
+
     map.on('load', function () {
       map.addSource('10m-bathymetry-81bsvj', {
         type: 'vector',
@@ -77,6 +85,7 @@ function mapViewController($scope) {
       }, 'land-structure-polygon');
     });
 
+
   }
   this.switchStyle = function () {
     let styleMap = "light-v10";
@@ -89,11 +98,50 @@ function mapViewController($scope) {
     drawMarkers();
   }
 
+  function focusWell() {
+
+    console.log(self.focusWell);
+
+    let lat = getLat(self.focusWell);
+    let long = getLong(self.focusWell);
+    let x = getX(self.focusWell);
+    let y = getY(self.focusWell);
+    let latX = proj4(firstProjection, secondProjection, [x, y])[1];
+    let lngY = proj4(firstProjection, secondProjection, [x, y])[0];
+    console.log(lat, long, x, y, latX, lngY);
+    //CHECK COORDINATE
+    if (checkCoordinate(lat, long, x, y) === true) {
+      map.flyTo({
+        center: [long, lat],
+        zoom: 12,
+        bearing: 0,
+        pitch: 60,
+        speed: 5,
+        curve: 1,
+        easing: function (t) {
+          return t;
+        }
+      });
+    } else if (checkCoordinate(lat, long, x, y) === false) {
+      map.flyTo({
+        center: [lngY, latX],
+        zoom: 9,
+        bearing: 0,
+        pitch: 60,
+        speed: 5,
+        curve: 1,
+        easing: function (t) {
+          return t;
+        }
+      });
+    }
+
+  }
+
   function drawMarkers() {
     for (let index = 0; index < markers.length; index++) {
       markers[index].remove();
     }
-
     markers.length = 0;
     if (!(self.wells || []).length) return 0;
     for (let index = 0; index < self.wells.length; index++) {
@@ -103,10 +151,16 @@ function mapViewController($scope) {
       let y = getY(self.wells[index].properties.well_headers);
       let latX = proj4(firstProjection, secondProjection, [x, y])[1];
       let lngY = proj4(firstProjection, secondProjection, [x, y])[0];
-
+      //CREATE PUPUP
+      let popup = new mapboxgl.Popup({
+        offset: 25,
+        closeButton: false,
+      }).setText(String(lat + " " + x));
+      //CHECK COORDINATE
       if (checkCoordinate(lat, long, x, y) === true) {
         markers.push(new mapboxgl.Marker()
           .setLngLat([long, lat])
+          .setPopup(popup)
           .addTo(map));
         map.flyTo({
           center: [long, lat],
@@ -122,6 +176,7 @@ function mapViewController($scope) {
       } else if (checkCoordinate(lat, long, x, y) === false) {
         markers.push(new mapboxgl.Marker()
           .setLngLat([lngY, latX])
+          .setPopup(popup)
           .addTo(map));
         map.flyTo({
           center: [lngY, latX],

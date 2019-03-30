@@ -41,10 +41,12 @@
             <span class="menu-item fas fa-redo-alt" ng-click="self.refesh()">
                 <span>Refesh</span>
             </span>
+            <span class="menu-item fas fa-redo-alt" ng-click="self.refesh()">
+                <span>right click -> delete'</span>
+            </span>
             <span class="menu-item fas fa-compass">
                 <select class="select-proj4 form-control" id="sel1" style="width: 250px;"
-                    ng-options="item.title for item in zoneFieldTable" ng-model="zoneSelected" 
-                    ng-change="hasChanged()">
+                    ng-options="item.title for item in zoneFieldTable" ng-model="zoneSelected" ng-change="hasChanged()">
                 </select>
             </span>
         </div>
@@ -94,7 +96,7 @@
                                 onfocus="this.placeholder = ''" onblur="this.placeholder = 'Search your well'">
                         </div>
                         <div style="overflow: scroll;height: 100vh;">
-                            <wi-base-treeview name="abc" config="wellSelect" on-click-function="onClickWellonMap">
+                            <wi-base-treeview name="abc" config="wellSelect" on-click-function="focusWellonMap">
                             </wi-base-treeview>
                         </div>
                     </div>
@@ -102,7 +104,7 @@
             </div>
             <map-view class="mapView"
                 mapbox-token='pk.eyJ1IjoiazU0aHVuZ3liIiwiYSI6ImNqdGZtNDE4ODF1OXEzeW85djJ5c29nYnoifQ.-VfHeKXV9avmbia1E7BFcQ'
-                wells='wellSelect' zoneMap="zoneSelected">
+                wells='wellSelect' zone-map="zoneSelected" focus-well='focusWell'>
             </map-view>
         </div>
     </div>
