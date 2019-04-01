@@ -2,7 +2,7 @@ var app = angular.module('myApp', ['mapView', 'sideBar', 'wi-base-treeview', 'wi
 app.controller('myCtrl', function ($scope, $http, wiToken) {
     $scope.zoneFieldTable = [{
         field: "+proj=utm +zone=9 +ellps=WGS84 +datum=WGS84 +units=m +no_defs",
-        title: "Choose Zone"
+        title: "WGS_1984_UTM_Zone_9N"
     }, {
         field: "+proj=utm +zone=8 +ellps=WGS84 +datum=WGS84 +units=m +no_defs",
         title: "WGS_1984_UTM_Zone_8N"
@@ -16,11 +16,17 @@ app.controller('myCtrl', function ($scope, $http, wiToken) {
         field: "+proj=utm +zone=8 +south +ellps=WGS84 +datum=WGS84 +units=m +no_defs",
         title: "WGS_1984_UTM_Zone_8S"
     }, {
-        field: "+proj=longlat +ellps=WGS84 +datum=WGS84 +units=degrees",
-        title: "Test"
+        field: "+proj=utm +zone=7 +south +ellps=WGS84 +datum=WGS84 +units=m +no_defs",
+        title: "WGS_1984_UTM_Zone_7S"
+    }, {
+        field: "+proj=utm +zone=49 +ellps=WGS84 +datum=WGS84 +units=m +no_defs",
+        title: "WGS_1984_UTM_Zone_49N"
     }];
-
+    // Show display value
     $scope.zoneSelected = $scope.zoneFieldTable[0];
+    // Get value default
+    $scope.zoneMap = $scope.zoneSelected.field;
+    // Change value
     $scope.hasChanged = function () {
         $scope.zoneMap = $scope.zoneSelected.field;
     }
@@ -61,6 +67,10 @@ app.controller('myCtrl', function ($scope, $http, wiToken) {
 
     this.cleanMap = function () {
         $scope.wellSelect = [];
+    }
+
+    this.deleteWell = function (wellIdx){
+        console.log(wellIdx);
     }
 
     function getProjectList(projectList) {

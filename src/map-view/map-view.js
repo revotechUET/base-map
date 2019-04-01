@@ -18,12 +18,11 @@ app.component(componentName, {
 });
 
 function mapViewController($scope) {
-  var firstProjection = "+proj=utm +zone=49 +ellps=WGS84 +datum=WGS84 +units=m +no_defs";
-  var secondProjection = "+proj=longlat +ellps=WGS84 +datum=WGS84 +units=degrees";
 
   let self = this;
   let map;
   let markers = [];
+
   this.$onInit = function () {
     drawMap();
     $scope.$watch(function () {
@@ -37,13 +36,14 @@ function mapViewController($scope) {
       focusWell();
     }, true);
   }
+
   var drawMarkersDebounced = _.debounce(drawMarkers, 100);
 
   function drawMap() {
     mapboxgl.accessToken = self.mapboxToken;
     map = new mapboxgl.Map({
       container: 'map',
-      style: 'mapbox://styles/mapbox/streets-v11',
+      style: 'mapbox://styles/mapbox/light-v10',
       center: [107, 11],
       zoom: 5,
     });
@@ -84,6 +84,18 @@ function mapViewController($scope) {
       }, 'land-structure-polygon');
     });
 
+    // var markerDrag = new mapboxgl.Marker({
+    //     draggable: true
+    //   })
+    //   .setLngLat([107, 11])
+    //   .addTo(map);
+
+    // function onDragEnd() {
+    //   var lngLat = markerDrag.getLngLat();
+    //   console.log('Longitude: ' + lngLat.lng + 'Latitude: ' + lngLat.lat);
+    // }
+
+    // markerDrag.on('dragend', onDragEnd);
 
   }
   this.switchStyle = function () {
@@ -98,6 +110,8 @@ function mapViewController($scope) {
   }
 
   function focusWell() {
+    let firstProjection = self.zoneMap;
+    let secondProjection = "+proj=longlat +ellps=WGS84 +datum=WGS84 +units=degrees";
     let lat = getLat(self.focusWell);
     let long = getLong(self.focusWell);
     let x = getX(self.focusWell);
@@ -134,12 +148,13 @@ function mapViewController($scope) {
   }
 
   function drawMarkers() {
+    let firstProjection = self.zoneMap;
+    let secondProjection = "+proj=longlat +ellps=WGS84 +datum=WGS84 +units=degrees";
     for (let index = 0; index < markers.length; index++) {
       markers[index].remove();
     }
-    if (self.zoneMap) {
-      console.log(self.zoneMap);
 
+    if (self.zoneMap) {
       markers.length = 0;
       if (!(self.wells || []).length) return 0;
       for (let index = 0; index < self.wells.length; index++) {
@@ -153,7 +168,7 @@ function mapViewController($scope) {
         let popup = new mapboxgl.Popup({
           offset: 25,
           closeButton: false,
-        }).setText(String(lat + " " + x));
+        }).setText(String(self.wells[index].properties.name));
         //CHECK COORDINATE
         if (checkCoordinate(lat, long, x, y) === true) {
           markers.push(new mapboxgl.Marker()
