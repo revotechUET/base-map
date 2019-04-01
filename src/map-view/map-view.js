@@ -12,7 +12,7 @@ app.component(componentName, {
     wells: "<",
     mapboxToken: "@",
     focusWell: '<',
-    zoneMap: "@"
+    zoneMap: "<"
   },
   transclude: true
 });
@@ -27,9 +27,8 @@ function mapViewController($scope) {
   this.$onInit = function () {
     drawMap();
     $scope.$watch(function () {
-      return [self.wells, self.mapboxToken];
+      return [self.wells, self.mapboxToken, self.zoneMap];
     }, function () {
-      focusWell();
       drawMarkersDebounced();
     }, true);
     $scope.$watch(function () {
@@ -99,16 +98,12 @@ function mapViewController($scope) {
   }
 
   function focusWell() {
-
-    console.log(self.focusWell);
-
     let lat = getLat(self.focusWell);
     let long = getLong(self.focusWell);
     let x = getX(self.focusWell);
     let y = getY(self.focusWell);
     let latX = proj4(firstProjection, secondProjection, [x, y])[1];
     let lngY = proj4(firstProjection, secondProjection, [x, y])[0];
-    console.log(lat, long, x, y, latX, lngY);
     //CHECK COORDINATE
     if (checkCoordinate(lat, long, x, y) === true) {
       map.flyTo({
@@ -142,54 +137,61 @@ function mapViewController($scope) {
     for (let index = 0; index < markers.length; index++) {
       markers[index].remove();
     }
-    markers.length = 0;
-    if (!(self.wells || []).length) return 0;
-    for (let index = 0; index < self.wells.length; index++) {
-      let lat = getLat(self.wells[index].properties.well_headers);
-      let long = getLong(self.wells[index].properties.well_headers);
-      let x = getX(self.wells[index].properties.well_headers);
-      let y = getY(self.wells[index].properties.well_headers);
-      let latX = proj4(firstProjection, secondProjection, [x, y])[1];
-      let lngY = proj4(firstProjection, secondProjection, [x, y])[0];
-      //CREATE PUPUP
-      let popup = new mapboxgl.Popup({
-        offset: 25,
-        closeButton: false,
-      }).setText(String(lat + " " + x));
-      //CHECK COORDINATE
-      if (checkCoordinate(lat, long, x, y) === true) {
-        markers.push(new mapboxgl.Marker()
-          .setLngLat([long, lat])
-          .setPopup(popup)
-          .addTo(map));
-        map.flyTo({
-          center: [long, lat],
-          zoom: 12,
-          bearing: 0,
-          pitch: 60,
-          speed: 5,
-          curve: 1,
-          easing: function (t) {
-            return t;
-          }
-        });
-      } else if (checkCoordinate(lat, long, x, y) === false) {
-        markers.push(new mapboxgl.Marker()
-          .setLngLat([lngY, latX])
-          .setPopup(popup)
-          .addTo(map));
-        map.flyTo({
-          center: [lngY, latX],
-          zoom: 9,
-          bearing: 0,
-          pitch: 60,
-          speed: 5,
-          curve: 1,
-          easing: function (t) {
-            return t;
-          }
-        });
+    if (self.zoneMap) {
+      console.log(self.zoneMap);
+
+      markers.length = 0;
+      if (!(self.wells || []).length) return 0;
+      for (let index = 0; index < self.wells.length; index++) {
+        let lat = getLat(self.wells[index].properties.well_headers);
+        let long = getLong(self.wells[index].properties.well_headers);
+        let x = getX(self.wells[index].properties.well_headers);
+        let y = getY(self.wells[index].properties.well_headers);
+        let latX = proj4(firstProjection, secondProjection, [x, y])[1];
+        let lngY = proj4(firstProjection, secondProjection, [x, y])[0];
+        //CREATE PUPUP
+        let popup = new mapboxgl.Popup({
+          offset: 25,
+          closeButton: false,
+        }).setText(String(lat + " " + x));
+        //CHECK COORDINATE
+        if (checkCoordinate(lat, long, x, y) === true) {
+          markers.push(new mapboxgl.Marker()
+            .setLngLat([long, lat])
+            .setPopup(popup)
+            .addTo(map));
+          map.flyTo({
+            center: [long, lat],
+            zoom: 12,
+            bearing: 0,
+            pitch: 60,
+            speed: 5,
+            curve: 1,
+            easing: function (t) {
+              return t;
+            }
+          });
+        } else if (checkCoordinate(lat, long, x, y) === false) {
+          markers.push(new mapboxgl.Marker()
+            .setLngLat([lngY, latX])
+            .setPopup(popup)
+            .addTo(map));
+          map.flyTo({
+            center: [lngY, latX],
+            zoom: 9,
+            bearing: 0,
+            pitch: 60,
+            speed: 5,
+            curve: 1,
+            easing: function (t) {
+              return t;
+            }
+          });
+        }
       }
+    } else {
+      console.log(self.zoneMap);
+      window.alert("Please select zone!");
     }
   }
 }

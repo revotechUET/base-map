@@ -22,7 +22,7 @@ app.controller('myCtrl', function ($scope, $http, wiToken) {
 
     $scope.zoneSelected = $scope.zoneFieldTable[0];
     $scope.hasChanged = function () {
-        console.log($scope.zoneSelected.field);
+        $scope.zoneMap = $scope.zoneSelected.field;
     }
 
     $scope.wellList = [];
@@ -142,6 +142,5 @@ app.controller('myCtrl', function ($scope, $http, wiToken) {
     // }
     $scope.focusWellonMap = function (wellSelectIdx) {
         $scope.focusWell = $scope.wellSelect[wellSelectIdx].properties.well_headers;
-        console.log($scope.focusWell);
     }
 });
