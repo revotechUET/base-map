@@ -22,6 +22,7 @@ function mapViewController($scope) {
   let self = this;
   let map;
   let markers = [];
+  let styleNumber = 1;
 
   this.$onInit = function () {
     drawMap();
@@ -55,40 +56,43 @@ function mapViewController($scope) {
       trackUserLocation: true
     }));
 
-    map.on('load', function () {
-      map.addSource('10m-bathymetry-81bsvj', {
-        type: 'vector',
-        url: 'mapbox://mapbox.9tm8dx88'
-      });
-
-      map.addLayer({
-        "id": "10m-bathymetry-81bsvj",
-        "type": "fill",
-        "source": "10m-bathymetry-81bsvj",
-        "source-layer": "10m-bathymetry-81bsvj",
-        "layout": {},
-        "paint": {
-          "fill-outline-color": "hsla(337, 82%, 62%, 0)",
-          // cubic bezier is a four point curve for smooth and precise styling
-          // adjust the points to change the rate and intensity of interpolation
-          "fill-color": ["interpolate",
-            ["cubic-bezier",
-              0, 0.5,
-              1, 0.5
-            ],
-            ["get", "DEPTH"],
-            200, "#78bced",
-            9000, "#15659f"
-          ]
-        }
-      }, 'land-structure-polygon');
-    });
+    // map.on('load', function () {
+    //   map.addSource('10m-bathymetry-81bsvj', {
+    //     type: 'vector',
+    //     url: 'mapbox://mapbox.9tm8dx88'
+    //   });
+    //   map.addLayer({
+    //     "id": "10m-bathymetry-81bsvj",
+    //     "type": "fill",
+    //     "source": "10m-bathymetry-81bsvj",
+    //     "source-layer": "10m-bathymetry-81bsvj",
+    //     "layout": {},
+    //     "paint": {
+    //       "fill-outline-color": "hsla(337, 82%, 62%, 0)",
+    //       "fill-color": ["interpolate",
+    //         ["cubic-bezier",
+    //           0, 0,
+    //           0, 0
+    //         ],
+    //         ["get", "DEPTH"],
+    //         200, "#78bced",
+    //         9000, "#15659f"
+    //       ]
+    //     }
+    //   }, 'land-structure-polygon');
+    // });
 
     // var markerDrag = new mapboxgl.Marker({
-    //     draggable: true
+    //     draggable: true,
+    //     properties: {
+    //       'marker-color': '#3bb2d0',
+    //       'marker-size': 'large',
+    //       'marker-symbol': 'rocket'
+    //     }
     //   })
     //   .setLngLat([107, 11])
     //   .addTo(map);
+      
 
     // function onDragEnd() {
     //   var lngLat = markerDrag.getLngLat();
@@ -98,10 +102,25 @@ function mapViewController($scope) {
     // markerDrag.on('dragend', onDragEnd);
 
   }
-  this.switchStyle = function () {
-    let styleMap = "light-v10";
-    map.setStyle('mapbox://styles/mapbox/' + styleMap);
-    console.log("Change style map");
+  this.showDeepOcean = function () {
+    if (styleNumber === 1) {
+      map.setStyle('mapbox://styles/mapbox/dark-v10');
+      console.log("Change style dark map");
+      styleNumber = styleNumber + 1;
+    } else if(styleNumber === 2) {
+      map.setStyle('mapbox://styles/mapbox/streets-v11');
+      console.log("Change style streets map");
+      styleNumber = styleNumber + 1;
+    }else if(styleNumber === 3) {
+      map.setStyle('mapbox://styles/mapbox/satellite-v9');
+      console.log("Change style satellite map");
+      styleNumber = styleNumber + 1;
+    }else if(styleNumber === 4) {
+      map.setStyle('mapbox://styles/mapbox/light-v10');
+      console.log("Change style light map");
+      styleNumber = 1;
+    }
+    console.log(styleNumber);
   }
 
   function draw() {

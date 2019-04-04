@@ -33,6 +33,7 @@
 
 <body ng-app="myApp" ng-controller="myCtrl as self">
     <div class="main">
+        <wi-login whoami="main-service" register-url='https://www.i2g.cloud/register-information/'></wi-login>
         <div class="toolbar">
             <span class="menu-item fa fa-globe">
                 <span>Base Map</span>
@@ -47,7 +48,7 @@
             </span>
         </div>
         <div class="container">
-            <wi-login whoami="main-service" register-url='https://www.i2g.cloud/register-information/'></wi-login>
+
             <div class="holder">
                 <side-bar my-default-width="200" button-v-offset="0"
                     style="z-index: 401; border-right: 1px solid #dedede;">

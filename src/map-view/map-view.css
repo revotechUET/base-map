@@ -24,10 +24,10 @@
 .switchStyle{
 	right: 10px;
     z-index: 1;
-    padding: 6px;
+    padding: 8px;
     cursor: pointer;
-    border: 1px solid #000;
-    border-radius: 3px;
+    border: 2px solid #a3afb0;
+    border-radius: 4px;
     background: #fff;
     position: absolute;
     top: 148px;
