@@ -23,6 +23,7 @@ function mapViewController($scope) {
   let map;
   let markers = [];
   let styleNumber = 1;
+  let popups = [];
 
   this.$onInit = function () {
     drawMap();
@@ -55,33 +56,6 @@ function mapViewController($scope) {
       },
       trackUserLocation: true
     }));
-
-    // map.on('load', function () {
-    //   map.addSource('10m-bathymetry-81bsvj', {
-    //     type: 'vector',
-    //     url: 'mapbox://mapbox.9tm8dx88'
-    //   });
-    //   map.addLayer({
-    //     "id": "10m-bathymetry-81bsvj",
-    //     "type": "fill",
-    //     "source": "10m-bathymetry-81bsvj",
-    //     "source-layer": "10m-bathymetry-81bsvj",
-    //     "layout": {},
-    //     "paint": {
-    //       "fill-outline-color": "hsla(337, 82%, 62%, 0)",
-    //       "fill-color": ["interpolate",
-    //         ["cubic-bezier",
-    //           0, 0,
-    //           0, 0
-    //         ],
-    //         ["get", "DEPTH"],
-    //         200, "#78bced",
-    //         9000, "#15659f"
-    //       ]
-    //     }
-    //   }, 'land-structure-polygon');
-    // });
-
     // var markerDrag = new mapboxgl.Marker({
     //     draggable: true,
     //     properties: {
@@ -92,7 +66,7 @@ function mapViewController($scope) {
     //   })
     //   .setLngLat([107, 11])
     //   .addTo(map);
-      
+
 
     // function onDragEnd() {
     //   var lngLat = markerDrag.getLngLat();
@@ -102,30 +76,25 @@ function mapViewController($scope) {
     // markerDrag.on('dragend', onDragEnd);
 
   }
-  this.showDeepOcean = function () {
+  this.changeStyleMap = function () {
     if (styleNumber === 1) {
       map.setStyle('mapbox://styles/mapbox/dark-v10');
       console.log("Change style dark map");
       styleNumber = styleNumber + 1;
-    } else if(styleNumber === 2) {
+    } else if (styleNumber === 2) {
       map.setStyle('mapbox://styles/mapbox/streets-v11');
       console.log("Change style streets map");
       styleNumber = styleNumber + 1;
-    }else if(styleNumber === 3) {
+    } else if (styleNumber === 3) {
       map.setStyle('mapbox://styles/mapbox/satellite-v9');
       console.log("Change style satellite map");
       styleNumber = styleNumber + 1;
-    }else if(styleNumber === 4) {
+    } else if (styleNumber === 4) {
       map.setStyle('mapbox://styles/mapbox/light-v10');
       console.log("Change style light map");
       styleNumber = 1;
     }
     console.log(styleNumber);
-  }
-
-  function draw() {
-    drawMap();
-    drawMarkers();
   }
 
   function focusWell() {
@@ -172,9 +141,13 @@ function mapViewController($scope) {
     for (let index = 0; index < markers.length; index++) {
       markers[index].remove();
     }
+    for (let index = 0; index < popups.length; index++) {
+      popups[index].remove();
+    }
 
     if (self.zoneMap) {
       markers.length = 0;
+      popups.length = 0;
       if (!(self.wells || []).length) return 0;
       for (let index = 0; index < self.wells.length; index++) {
         let lat = getLat(self.wells[index].properties.well_headers);
@@ -184,43 +157,65 @@ function mapViewController($scope) {
         let latX = proj4(firstProjection, secondProjection, [x, y])[1];
         let lngY = proj4(firstProjection, secondProjection, [x, y])[0];
         //CREATE PUPUP
-        let popup = new mapboxgl.Popup({
-          offset: 25,
-          closeButton: false,
-        }).setText(String(self.wells[index].properties.name));
+        // let popup = new mapboxgl.Popup({
+        //   offset: 25,
+        //   closeButton: false,
+        // }).setText(String(self.wells[index].properties.name));
+
         //CHECK COORDINATE
         if (checkCoordinate(lat, long, x, y) === true) {
           markers.push(new mapboxgl.Marker()
             .setLngLat([long, lat])
-            .setPopup(popup)
+            // .setPopup(popup)
             .addTo(map));
-          map.flyTo({
-            center: [long, lat],
-            zoom: 12,
-            bearing: 0,
-            pitch: 60,
-            speed: 5,
-            curve: 1,
-            easing: function (t) {
-              return t;
-            }
-          });
+
+          popups.push(new mapboxgl.Popup({
+              closeOnClick: false,
+              offset: 25,
+              closeButton: false,
+            })
+            .setLngLat([long, lat])
+            .setText(String(self.wells[index].properties.name))
+            .addTo(map));
+
+          // map.flyTo({
+          //   center: [long, lat],
+          //   zoom: 12,
+          //   bearing: 0,
+          //   pitch: 60,
+          //   speed: 5,
+          //   curve: 1,
+          //   easing: function (t) {
+          //     return t;
+          //   }
+          // });
         } else if (checkCoordinate(lat, long, x, y) === false) {
+
           markers.push(new mapboxgl.Marker()
             .setLngLat([lngY, latX])
-            .setPopup(popup)
+            // .setPopup(popup)
             .addTo(map));
-          map.flyTo({
-            center: [lngY, latX],
-            zoom: 9,
-            bearing: 0,
-            pitch: 60,
-            speed: 5,
-            curve: 1,
-            easing: function (t) {
-              return t;
-            }
-          });
+
+          popups.push(new mapboxgl.Popup({
+              closeOnClick: false,
+              offset: 25,
+              closeButton: false,
+            })
+            .setLngLat([lngY, latX])
+            .setText(String(self.wells[index].properties.name))
+            .addTo(map));
+
+          // map.flyTo({
+          //   center: [lngY, latX],
+          //   zoom: 9,
+          //   bearing: 0,
+          //   pitch: 60,
+          //   speed: 5,
+          //   curve: 1,
+          //   easing: function (t) {
+          //     return t;
+          //   }
+          // });
         }
       }
     } else {

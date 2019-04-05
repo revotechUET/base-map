@@ -23,7 +23,7 @@ app.controller('myCtrl', function ($scope, $http, wiToken) {
         title: "WGS_1984_UTM_Zone_49N"
     }];
     // Show display value
-    $scope.zoneSelected = $scope.zoneFieldTable[0];
+    $scope.zoneSelected = $scope.zoneFieldTable[6];
     // Get value default
     $scope.zoneMap = $scope.zoneSelected.field;
     // Change value
@@ -34,6 +34,7 @@ app.controller('myCtrl', function ($scope, $http, wiToken) {
     $scope.wellList = [];
     $scope.wellSelect = [];
     $scope.focusWell = [];
+    $scope.deleteWellId = 0;
 
     if ((localStorage.getItem("token")) !== null) {
         getProjectList();
@@ -67,10 +68,6 @@ app.controller('myCtrl', function ($scope, $http, wiToken) {
 
     this.cleanMap = function () {
         $scope.wellSelect = [];
-    }
-
-    this.deleteWell = function (wellIdx){
-        console.log(wellIdx);
     }
 
     function getProjectList(projectList) {
@@ -146,10 +143,19 @@ app.controller('myCtrl', function ($scope, $http, wiToken) {
             $scope.wellSelect.push($scope.wellList[wellIdx]);
         }
     }
-
     // $scope.removeWellonMap = function (wellSelectIdx) {
     //     $scope.wellSelect.splice((wellSelectIdx), 1);
     // }
+    this.deleteWell = function () {
+        for (let index = 0; index < $scope.wellSelect.length; index++) {
+            if ($scope.wellSelect[index].properties.idWell === $scope.deleteWellId) {
+                $scope.wellSelect.splice((index), 1);
+            }
+        }
+    }
+    $scope.getIdWell = function (wellSelectIdx) {
+        $scope.deleteWellId = $scope.wellSelect[wellSelectIdx].properties.idWell;
+    }
     $scope.focusWellonMap = function (wellSelectIdx) {
         $scope.focusWell = $scope.wellSelect[wellSelectIdx].properties.well_headers;
     }

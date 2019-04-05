@@ -57,10 +57,10 @@
                             <div class="label-list-view">
                                 <span>PROJECT LIST</span>
                             </div>
-                            <div class="search-list-view">
+                            <!-- <div class="search-list-view">
                                 <input class="input-search-list-view" type="text" placeholder="Search your project"
                                     onfocus="this.placeholder = ''" onblur="this.placeholder = 'Search your project'">
-                            </div>
+                            </div> -->
                             <wi-base-treeview name="abc" config="projectList" on-click-function="onClickPrj">
                             </wi-base-treeview>
                         </div>
@@ -72,10 +72,10 @@
                                 <span class="label-buttom fa fa-minus-circle" aria-hidden="true"
                                     ng-click="self.refesh()"></span>
                             </div>
-                            <div class="search-list-view">
+                            <!-- <div class="search-list-view">
                                 <input class="input-search-list-view" type="text" placeholder="Search your well"
                                     onfocus="this.placeholder = ''" onblur="this.placeholder = 'Search your well'">
-                            </div>
+                            </div> -->
                             <wi-base-treeview name="abc" config="wellList" on-click-function="onClickWell">
                             </wi-base-treeview>
                         </div>
@@ -85,17 +85,22 @@
                     <div style="overflow:hidden; height: 100vh; ">
                         <div class="label-list-view">
                             <span>SHOW TO MAP</span>
-                            <span class="label-buttom fa fa-minus-circle" aria-hidden="true"
-                                ng-click="self.deleteWell()"></span>
+
                             <span class="label-buttom fa fa-minus-circle" aria-hidden="true"
                                 ng-click="self.cleanMap()"></span>
+                            <span class="label-buttom fa fa-caret-left" aria-hidden="true"
+                                ng-click="self.deleteWell()"></span>
                         </div>
-                        <div class="search-list-view">
+                        <!-- <div class="search-list-view">
                             <input class="input-search-list-view" type="text" placeholder="Search well displayed"
                                 onfocus="this.placeholder = ''" onblur="this.placeholder = 'Search your well'">
-                        </div>
+                        </div> -->
                         <div style="overflow: scroll;height: 100vh;">
-                            <wi-base-treeview name="abc" config="wellSelect" on-click-function="focusWellonMap">
+                            <!-- <wi-base-treeview name="abc" config="wellSelect" on-click-function="focusWellonMap">
+                            </wi-base-treeview> -->
+                            <!-- <wi-base-treeview name="abc" config="wellSelect" on-click-function="removeWellonMap">
+                            </wi-base-treeview> -->
+                             <wi-base-treeview name="abc" config="wellSelect" on-click-function="getIdWell">
                             </wi-base-treeview>
                         </div>
                     </div>

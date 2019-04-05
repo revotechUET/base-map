@@ -36,11 +36,10 @@ body {
 }
 
 .label-buttom {
-    margin-top: 2px;
     float: right;
     cursor: pointer;
     color: #bbbbbb;
-    margin-left: 18px;
+    margin: 2px 5px 0 25px;
 }
 
 .search-list-view {
