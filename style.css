@@ -199,3 +199,22 @@ div.holder {
     display: none;
     /* background: #f4f4f4; */
 }
+/* fix style */
+wi-base-treeview .wi-treeview-container .wi-parent-content > div.item-content {
+    align-items: center;
+
+}
+wi-base-treeview .wi-treeview-container:focus {
+    color: #000;
+    font-weight: bold;
+    background: #eeeeee;
+    border-left: 4px solid #0074c5;
+    margin: 0;
+    padding: 0 6px;
+    display: flex;
+    align-items: center;
+    transition: none;
+}
+wi-base-treeview .wi-treeview-container .wi-parent-content {
+    align-items: center;
+}

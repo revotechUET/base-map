@@ -81,7 +81,7 @@
                         </div>
                     </div>
                 </side-bar>
-                <side-bar my-default-width="200" style="border-right: 1px solid #dedede;">
+                <side-bar my-default-width="240" style="border-right: 1px solid #dedede;">
                     <div style="overflow:hidden; height: 100vh; ">
                         <div class="label-list-view">
                             <span>SHOW TO MAP</span>
@@ -90,6 +90,8 @@
                                 ng-click="self.cleanMap()"></span>
                             <span class="label-buttom fa fa-caret-left" aria-hidden="true"
                                 ng-click="self.deleteWell()"></span>
+                            <span class="label-buttom fa fa-eye-slash" aria-hidden="true"
+                                ng-click="self.showAllPopup()"></span>
                         </div>
                         <!-- <div class="search-list-view">
                             <input class="input-search-list-view" type="text" placeholder="Search well displayed"
@@ -100,7 +102,7 @@
                             </wi-base-treeview> -->
                             <!-- <wi-base-treeview name="abc" config="wellSelect" on-click-function="removeWellonMap">
                             </wi-base-treeview> -->
-                             <wi-base-treeview name="abc" config="wellSelect" on-click-function="getIdWell">
+                            <wi-base-treeview name="abc" config="wellSelect" on-click-function="getIdWell">
                             </wi-base-treeview>
                         </div>
                     </div>

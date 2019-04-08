@@ -40,7 +40,7 @@ function mapViewController($scope) {
   }
 
   var drawMarkersDebounced = _.debounce(drawMarkers, 100);
-
+  // SHOW MAP
   function drawMap() {
     mapboxgl.accessToken = self.mapboxToken;
     map = new mapboxgl.Map({
@@ -56,8 +56,8 @@ function mapViewController($scope) {
       },
       trackUserLocation: true
     }));
-
   }
+  // CHANGE STYLE
   this.changeStyleMap = function () {
     if (styleNumber === 1) {
       map.setStyle('mapbox://styles/mapbox/dark-v10');
@@ -78,7 +78,7 @@ function mapViewController($scope) {
     }
     console.log(styleNumber);
   }
-
+  // SHOW POPUP
   function focusWell() {
     for (let index = 0; index < popups.length; index++) {
       popups[index].remove();
@@ -112,15 +112,12 @@ function mapViewController($scope) {
         .addTo(map));
     }
   }
-
+  // SHOW MARKER
   function drawMarkers() {
     let firstProjection = self.zoneMap;
     let secondProjection = "+proj=longlat +ellps=WGS84 +datum=WGS84 +units=degrees";
     for (let index = 0; index < markers.length; index++) {
       markers[index].remove();
-    }
-    for (let index = 0; index < popups.length; index++) {
-      popups[index].remove();
     }
 
     if (self.zoneMap) {
@@ -134,14 +131,21 @@ function mapViewController($scope) {
         let y = getY(self.wells[index].properties.well_headers);
         let latX = proj4(firstProjection, secondProjection, [x, y])[1];
         let lngY = proj4(firstProjection, secondProjection, [x, y])[0];
+        let popup = new mapboxgl.Popup({
+          closeOnClick: true,
+          offset: 25,
+          closeButton: false
+          })
+          .setText(self.wells[index].properties.name);
         if (checkCoordinate(lat, long, x, y) === true) {
           markers.push(new mapboxgl.Marker()
             .setLngLat([long, lat])
+            .setPopup(popup)
             .addTo(map));
         } else if (checkCoordinate(lat, long, x, y) === false) {
-
           markers.push(new mapboxgl.Marker()
             .setLngLat([lngY, latX])
+            .setPopup(popup)
             .addTo(map));
         }
       }

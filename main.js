@@ -2,20 +2,6 @@ var app = angular.module('myApp', ['mapView', 'sideBar', 'wi-base-treeview', 'wi
 app.controller('myCtrl', function ($scope, $http, wiToken) {
 
     function getZoneList() {
-        // var zoneList = [];
-        // $http({
-        //     method: 'POST',
-        //     url: '',
-        //     data: {},
-        //     headers: {
-        //         "Authorization": "",
-        //     }
-        // }).then(function (response) {
-            
-        // }, function (errorResponse) {
-        //     console.error(errorResponse);
-        // });
-        // $scope.zoneFieldTable = zoneList;
         $scope.zoneFieldTable = [{
             field: "+proj=utm +zone=9 +ellps=WGS84 +datum=WGS84 +units=m +no_defs",
             title: "WGS_1984_UTM_Zone_9N"
@@ -174,6 +160,9 @@ app.controller('myCtrl', function ($scope, $http, wiToken) {
                 $scope.wellSelect.splice((index), 1);
             }
         }
+    }
+    this.showAllPopup = function () {
+        
     }
     $scope.getIdWell = function (wellSelectIdx) {
         // this.baseClick.apply(this, arguments);
