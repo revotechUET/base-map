@@ -1,34 +1,51 @@
 var app = angular.module('myApp', ['mapView', 'sideBar', 'wi-base-treeview', 'wiLogin', 'ngDialog', 'wiToken']);
 app.controller('myCtrl', function ($scope, $http, wiToken) {
-    $scope.zoneFieldTable = [{
-        field: "+proj=utm +zone=9 +ellps=WGS84 +datum=WGS84 +units=m +no_defs",
-        title: "WGS_1984_UTM_Zone_9N"
-    }, {
-        field: "+proj=utm +zone=8 +ellps=WGS84 +datum=WGS84 +units=m +no_defs",
-        title: "WGS_1984_UTM_Zone_8N"
-    }, {
-        field: "+proj=utm +zone=9 +south +ellps=WGS84 +datum=WGS84 +units=m +no_defs",
-        title: "WGS_1984_UTM_Zone_9S"
-    }, {
-        field: "+proj=utm +zone=9 +ellps=WGS84 +datum=WGS84 +units=m +no_defs",
-        title: "WGS_1984_UTM_Zone_9N"
-    }, {
-        field: "+proj=utm +zone=8 +south +ellps=WGS84 +datum=WGS84 +units=m +no_defs",
-        title: "WGS_1984_UTM_Zone_8S"
-    }, {
-        field: "+proj=utm +zone=7 +south +ellps=WGS84 +datum=WGS84 +units=m +no_defs",
-        title: "WGS_1984_UTM_Zone_7S"
-    }, {
-        field: "+proj=utm +zone=49 +ellps=WGS84 +datum=WGS84 +units=m +no_defs",
-        title: "WGS_1984_UTM_Zone_49N"
-    }];
-    // Show display value
-    $scope.zoneSelected = $scope.zoneFieldTable[6];
-    // Get value default
-    $scope.zoneMap = $scope.zoneSelected.field;
-    // Change value
-    $scope.hasChanged = function () {
+
+    function getZoneList() {
+        // var zoneList = [];
+        // $http({
+        //     method: 'POST',
+        //     url: '',
+        //     data: {},
+        //     headers: {
+        //         "Authorization": "",
+        //     }
+        // }).then(function (response) {
+            
+        // }, function (errorResponse) {
+        //     console.error(errorResponse);
+        // });
+        // $scope.zoneFieldTable = zoneList;
+        $scope.zoneFieldTable = [{
+            field: "+proj=utm +zone=9 +ellps=WGS84 +datum=WGS84 +units=m +no_defs",
+            title: "WGS_1984_UTM_Zone_9N"
+        }, {
+            field: "+proj=utm +zone=8 +ellps=WGS84 +datum=WGS84 +units=m +no_defs",
+            title: "WGS_1984_UTM_Zone_8N"
+        }, {
+            field: "+proj=utm +zone=9 +south +ellps=WGS84 +datum=WGS84 +units=m +no_defs",
+            title: "WGS_1984_UTM_Zone_9S"
+        }, {
+            field: "+proj=utm +zone=9 +ellps=WGS84 +datum=WGS84 +units=m +no_defs",
+            title: "WGS_1984_UTM_Zone_9N"
+        }, {
+            field: "+proj=utm +zone=8 +south +ellps=WGS84 +datum=WGS84 +units=m +no_defs",
+            title: "WGS_1984_UTM_Zone_8S"
+        }, {
+            field: "+proj=utm +zone=7 +south +ellps=WGS84 +datum=WGS84 +units=m +no_defs",
+            title: "WGS_1984_UTM_Zone_7S"
+        }, {
+            field: "+proj=utm +zone=49 +ellps=WGS84 +datum=WGS84 +units=m +no_defs",
+            title: "WGS_1984_UTM_Zone_49N"
+        }];
+        // Show display value
+        $scope.zoneSelected = $scope.zoneFieldTable[6];
+        // Get value default
         $scope.zoneMap = $scope.zoneSelected.field;
+        // Change value
+        $scope.hasChanged = function () {
+            $scope.zoneMap = $scope.zoneSelected.field;
+        }
     }
 
     $scope.wellList = [];
@@ -38,6 +55,7 @@ app.controller('myCtrl', function ($scope, $http, wiToken) {
 
     if ((localStorage.getItem("token")) !== null) {
         getProjectList();
+        getZoneList();
     }
     $scope.$watch(function () {
         return localStorage.getItem('token');
@@ -45,11 +63,13 @@ app.controller('myCtrl', function ($scope, $http, wiToken) {
         console.log(newValue, oldValue);
         if ((localStorage.getItem("token")) !== null) {
             getProjectList();
+            getZoneList();
         }
     });
 
     this.refesh = function () {
         getProjectList();
+        getZoneList();
         $scope.wellList = [];
         $scope.wellSelect = [];
     }
@@ -108,6 +128,7 @@ app.controller('myCtrl', function ($scope, $http, wiToken) {
     }
 
     $scope.onClickPrj = function (prjIdx) {
+        // this.baseClick.apply(this, arguments);
         let clickedPrj = $scope.projectList[prjIdx];
         let idPrj = clickedPrj.properties.idProject;
         var wellList = [];
@@ -135,6 +156,7 @@ app.controller('myCtrl', function ($scope, $http, wiToken) {
     }
 
     $scope.onClickWell = function (wellIdx) {
+        // this.baseClick.apply(this, arguments);
         let wellId = $scope.wellList[wellIdx].properties.idWell;
         let foundWell = $scope.wellSelect.find(function (item) {
             return item.properties.idWell === wellId;
@@ -154,9 +176,11 @@ app.controller('myCtrl', function ($scope, $http, wiToken) {
         }
     }
     $scope.getIdWell = function (wellSelectIdx) {
+        // this.baseClick.apply(this, arguments);
         $scope.deleteWellId = $scope.wellSelect[wellSelectIdx].properties.idWell;
+        $scope.focusWell = $scope.wellSelect[wellSelectIdx].properties;
     }
     $scope.focusWellonMap = function (wellSelectIdx) {
-        $scope.focusWell = $scope.wellSelect[wellSelectIdx].properties.well_headers;
+        $scope.focusWell = $scope.wellSelect[wellSelectIdx].properties;
     }
 });
