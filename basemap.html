@@ -76,8 +76,10 @@
                                 <input class="input-search-list-view" type="text" placeholder="Search your well"
                                     onfocus="this.placeholder = ''" onblur="this.placeholder = 'Search your well'">
                             </div> -->
-                            <wi-base-treeview name="abc" config="wellList" on-click-function="onClickWell">
-                            </wi-base-treeview>
+                            <div style="overflow: scroll;height: 100vh; height: calc(100% - 95px);">
+                                <wi-base-treeview name="abc" config="wellList" on-click-function="onClickWell">
+                                </wi-base-treeview>
+                            </div>
                         </div>
                     </div>
                 </side-bar>
@@ -97,7 +99,7 @@
                             <input class="input-search-list-view" type="text" placeholder="Search well displayed"
                                 onfocus="this.placeholder = ''" onblur="this.placeholder = 'Search your well'">
                         </div> -->
-                        <div style="overflow: scroll;height: 100vh;">
+                        <div style="overflow: scroll;height: 100vh; height: calc(100% - 95px);">
                             <!-- <wi-base-treeview name="abc" config="wellSelect" on-click-function="focusWellonMap">
                             </wi-base-treeview> -->
                             <!-- <wi-base-treeview name="abc" config="wellSelect" on-click-function="removeWellonMap">

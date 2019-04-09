@@ -218,3 +218,9 @@ wi-base-treeview .wi-treeview-container:focus {
 wi-base-treeview .wi-treeview-container .wi-parent-content {
     align-items: center;
 }
+wi-base-treeview .wi-treeview-container .wi-parent-content .icon-expanded {
+    display: none;
+}
+wi-base-treeview .wi-treeview-container .wi-parent-content > div.item-content {
+    margin-left: 6px;
+}
