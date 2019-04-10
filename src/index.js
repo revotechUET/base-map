@@ -1,1 +1,4 @@
-module.exports = require('./map-view/map-view.js');
+module.exports = {
+    mapView: require('./map-view/map-view.js'),
+    baseMap: require('./base-map')
+}

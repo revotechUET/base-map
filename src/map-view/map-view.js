@@ -61,22 +61,22 @@ function mapViewController($scope) {
   this.changeStyleMap = function () {
     if (styleNumber === 1) {
       map.setStyle('mapbox://styles/mapbox/dark-v10');
-      console.log("Change style dark map");
+      // console.log("Change style dark map");
       styleNumber = styleNumber + 1;
     } else if (styleNumber === 2) {
       map.setStyle('mapbox://styles/mapbox/streets-v11');
-      console.log("Change style streets map");
+      // console.log("Change style streets map");
       styleNumber = styleNumber + 1;
     } else if (styleNumber === 3) {
       map.setStyle('mapbox://styles/mapbox/satellite-v9');
-      console.log("Change style satellite map");
+      // console.log("Change style satellite map");
       styleNumber = styleNumber + 1;
     } else if (styleNumber === 4) {
       map.setStyle('mapbox://styles/mapbox/light-v10');
-      console.log("Change style light map");
+      // console.log("Change style light map");
       styleNumber = 1;
     }
-    console.log(styleNumber);
+    // console.log(styleNumber);
   }
   // SHOW POPUP
   function focusWell() {
@@ -85,37 +85,45 @@ function mapViewController($scope) {
     }
     let firstProjection = self.zoneMap;
     let secondProjection = "+proj=longlat +ellps=WGS84 +datum=WGS84 +units=degrees";
-    let lat = getLat(self.focusWell.well_headers);
-    let long = getLong(self.focusWell.well_headers);
-    let x = getX(self.focusWell.well_headers);
-    let y = getY(self.focusWell.well_headers);
-    let latX = proj4(firstProjection, secondProjection, [x, y])[1];
-    let lngY = proj4(firstProjection, secondProjection, [x, y])[0];
+    if (self.zoneMap) {
+      let lat = getLat(self.focusWell.well_headers);
+      let long = getLong(self.focusWell.well_headers);
+      let x = getX(self.focusWell.well_headers);
+      let y = getY(self.focusWell.well_headers);
+      let latX = proj4(firstProjection, secondProjection, [x, y])[1];
+      let lngY = proj4(firstProjection, secondProjection, [x, y])[0];
 
-    if (checkCoordinate(lat, long, x, y) === true) {
-      popups.push(new mapboxgl.Popup({
-          closeOnClick: true,
-          offset: 25,
-          closeButton: false,
-        })
-        .setLngLat([long, lat])
-        .setText(String(self.focusWell.name))
-        .addTo(map));
-    } else if (checkCoordinate(lat, long, x, y) === false) {
-      popups.push(new mapboxgl.Popup({
-          closeOnClick: true,
-          offset: 25,
-          closeButton: false,
-        })
-        .setLngLat([lngY, latX])
-        .setText(String(self.focusWell.name))
-        .addTo(map));
+      if (checkCoordinate(lat, long, x, y) === true) {
+        popups.push(new mapboxgl.Popup({
+            closeOnClick: true,
+            offset: 25,
+            closeButton: false,
+          })
+          .setLngLat([long, lat])
+          .setText(String(self.focusWell.name))
+          .addTo(map));
+      } else if (checkCoordinate(lat, long, x, y) === false) {
+        popups.push(new mapboxgl.Popup({
+            closeOnClick: true,
+            offset: 25,
+            closeButton: false,
+          })
+          .setLngLat([lngY, latX])
+          .setText(String(self.focusWell.name))
+          .addTo(map));
+      }
+    } else {
+      // console.log(self.zoneMap);
     }
+
   }
   // SHOW MARKER
   function drawMarkers() {
     let firstProjection = self.zoneMap;
     let secondProjection = "+proj=longlat +ellps=WGS84 +datum=WGS84 +units=degrees";
+    for (let index = 0; index < popups.length; index++) {
+      popups[index].remove();
+    }
     for (let index = 0; index < markers.length; index++) {
       markers[index].remove();
     }
@@ -132,9 +140,9 @@ function mapViewController($scope) {
         let latX = proj4(firstProjection, secondProjection, [x, y])[1];
         let lngY = proj4(firstProjection, secondProjection, [x, y])[0];
         let popup = new mapboxgl.Popup({
-          closeOnClick: true,
-          offset: 25,
-          closeButton: false
+            closeOnClick: true,
+            offset: 25,
+            closeButton: false
           })
           .setText(self.wells[index].properties.name);
         if (checkCoordinate(lat, long, x, y) === true) {
@@ -150,8 +158,9 @@ function mapViewController($scope) {
         }
       }
     } else {
-      console.log(self.zoneMap);
-      window.alert("Please select zone!");
+      // console.log(self.zoneMap);
+      // window.alert("Please select zone!");
+
     }
   }
 }

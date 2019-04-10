@@ -1,0 +1,82 @@
+<div class="main">
+    <div class="main-toolbar">
+        <span class="menu-item">
+            <span class="fa fa-globe"></span>&nbsp;&nbsp;&nbsp;Base Map
+        </span>
+        <span class="menu-item" ng-click="self.refesh()">
+            <span class="fa fa-refresh"></span>&nbsp;&nbsp;&nbsp;Refesh
+        </span>
+        <span class="menu-item">
+            <span class="fa fa-bandcamp"></span>
+            <select class="select-proj4 form-control" id="sel1" style="width: 190px;"
+                ng-options="item.Name for item in zoneFieldTable" ng-model="zoneSelected" ng-change="hasChanged()">
+            </select>
+        </span>
+        <wi-login ng-if="self.hasWiLogin" whoami="main-service" register-url='https://www.i2g.cloud/register-information/'>
+        </wi-login>
+    </div>
+    <div class="main-body">
+        <div class="main-body-left">
+            <side-bar my-default-width="177" style="border-right: 1px solid #dedede;">
+                <div class="height-40">
+                    <div style="position: sticky; position: -webkit-sticky; z-index: 1; top: 0;">
+                        <div class="label-list-view">
+                            <span>PROJECT LIST</span>
+                        </div>
+                        <input class="input-search-list-view" type="text" placeholder="Search your project"
+                            ng-model="prjSearch">
+                    </div>
+                    <wi-base-treeview name="abc" config="projectList" on-click-function="onClickPrj"
+                        filter="{{prjSearch}}">
+                    </wi-base-treeview>
+                </div>
+                <div class="height-60">
+                    <div style="position: sticky; position: -webkit-sticky; z-index: 1; top: 0;">
+                        <div class="label-list-view">
+                            <span>WELL LIST</span>
+                            <span class="label-buttom fa fa-forward" aria-hidden="true"
+                                ng-click="self.moveAllWell()"></span>
+                            <span class="label-buttom fa fa-minus-circle" aria-hidden="true"
+                                ng-click="self.refesh()"></span>
+                        </div>
+                        <input class="input-search-list-view" type="text" placeholder="Search well this project"
+                            ng-model="wellListSearch">
+                    </div>
+                    <wi-base-treeview name="abc" config="wellList" on-click-function="onClickWell"
+                        filter="{{wellListSearch}}">
+                    </wi-base-treeview>
+                </div>
+            </side-bar>
+            <side-bar my-default-width="199" style="border-right: 1px solid #dedede;">
+                <div class="menu-left-top">
+                    <div style="position: sticky; position: -webkit-sticky; z-index: 1; top: 0;">
+                        <div class="label-list-view">
+                            <span>SHOW TO MAP</span>
+                            <span class="label-buttom fa fa-minus-circle" aria-hidden="true"
+                                ng-click="self.cleanMap()"></span>
+                            <span class="label-buttom fa fa-caret-left" aria-hidden="true"
+                                ng-click="self.deleteWell()"></span>
+                            <!-- <span class="label-buttom fa fa-eye-slash" aria-hidden="true"
+                                ng-click="self.showAllPopup()"></span> -->
+                        </div>
+                        <input class="input-search-list-view" type="text" placeholder="Search well displayed"
+                            ng-model="wellSelectSearch">
+                    </div>
+                    <!-- <wi-base-treeview name="abc" config="wellSelect" on-click-function="focusWellonMap">
+                            </wi-base-treeview> -->
+                    <!-- <wi-base-treeview name="abc" config="wellSelect" on-click-function="removeWellonMap">
+                            </wi-base-treeview> -->
+                    <wi-base-treeview name="abc" config="wellSelect" on-click-function="getIdWell"
+                        filter="{{wellSelectSearch}}">
+                    </wi-base-treeview>
+                </div>
+            </side-bar>
+        </div>
+        <div class="main-body-center">
+            <map-view class="mapView"
+                mapbox-token='pk.eyJ1IjoiazU0aHVuZ3liIiwiYSI6ImNqdGZtNDE4ODF1OXEzeW85djJ5c29nYnoifQ.-VfHeKXV9avmbia1E7BFcQ'
+                wells='wellSelect' zone-map='zoneMap' focus-well='focusWell'>
+            </map-view>
+        </div>
+    </div>
+</div>

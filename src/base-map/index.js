@@ -1,37 +1,44 @@
-var app = angular.module('myApp', ['mapView', 'sideBar', 'wi-base-treeview', 'wiLogin', 'ngDialog', 'wiToken']);
-app.controller('myCtrl', function ($scope, $http, wiToken) {
+var componentName = 'baseMap';
+module.exports.name = componentName;
+require('./style.less');
 
+var app = angular.module(componentName, ['mapView', 'sideBar', 'wi-base-treeview', 'wiLogin', 'ngDialog', 'wiToken']);
+app.component(componentName, {
+    template: require('./template.html'),
+    controller: baseMapController,
+    controllerAs: 'self',
+    bindings: {
+        zoneDefault: "@",
+        hasWiLogin: "<"
+    },
+    transclude: true
+});
+
+function baseMapController($scope, $http, wiToken) {
+    let self = this;
     function getZoneList() {
-        $scope.zoneFieldTable = [{
-            field: "+proj=utm +zone=9 +ellps=WGS84 +datum=WGS84 +units=m +no_defs",
-            title: "WGS_1984_UTM_Zone_9N"
-        }, {
-            field: "+proj=utm +zone=8 +ellps=WGS84 +datum=WGS84 +units=m +no_defs",
-            title: "WGS_1984_UTM_Zone_8N"
-        }, {
-            field: "+proj=utm +zone=9 +south +ellps=WGS84 +datum=WGS84 +units=m +no_defs",
-            title: "WGS_1984_UTM_Zone_9S"
-        }, {
-            field: "+proj=utm +zone=9 +ellps=WGS84 +datum=WGS84 +units=m +no_defs",
-            title: "WGS_1984_UTM_Zone_9N"
-        }, {
-            field: "+proj=utm +zone=8 +south +ellps=WGS84 +datum=WGS84 +units=m +no_defs",
-            title: "WGS_1984_UTM_Zone_8S"
-        }, {
-            field: "+proj=utm +zone=7 +south +ellps=WGS84 +datum=WGS84 +units=m +no_defs",
-            title: "WGS_1984_UTM_Zone_7S"
-        }, {
-            field: "+proj=utm +zone=49 +ellps=WGS84 +datum=WGS84 +units=m +no_defs",
-            title: "WGS_1984_UTM_Zone_49N"
-        }];
-        // Show display value
-        $scope.zoneSelected = $scope.zoneFieldTable[6];
-        // Get value default
-        $scope.zoneMap = $scope.zoneSelected.field;
-        // Change value
-        $scope.hasChanged = function () {
-            $scope.zoneMap = $scope.zoneSelected.field;
-        }
+        $http({
+            method: 'POST',
+            url: 'http://dev.i2g.cloud/utm-zones',
+            data: {},
+            headers: {}
+        }).then(function (response) {
+            $scope.zoneFieldTable = response.data;
+            // Show display value
+            $scope.zoneSelected = $scope.zoneFieldTable.find(function (zone) {
+                return zone.Name === self.zoneDefault
+            });
+            // Get value default
+            if ($scope.zoneSelected) {
+                $scope.zoneMap = $scope.zoneSelected.output;
+            }
+            // Change value
+            $scope.hasChanged = function () {
+                $scope.zoneMap = $scope.zoneSelected.output;
+            }
+        }, function (errorResponse) {
+            console.error(errorResponse);
+        });
     }
 
     $scope.wellList = [];
@@ -46,7 +53,7 @@ app.controller('myCtrl', function ($scope, $http, wiToken) {
     $scope.$watch(function () {
         return localStorage.getItem('token');
     }, function (newValue, oldValue) {
-        console.log(newValue, oldValue);
+        // console.log(newValue, oldValue);
         if ((localStorage.getItem("token")) !== null) {
             getProjectList();
             getZoneList();
@@ -78,6 +85,11 @@ app.controller('myCtrl', function ($scope, $http, wiToken) {
 
     function getProjectList(projectList) {
         var projectList = [];
+        let _token = wiToken.getToken();
+        if(!_token){
+            window.alert("Please login!");
+            return;
+        }
         $http({
             method: 'POST',
             url: 'http://dev.i2g.cloud/project/list',
@@ -97,7 +109,7 @@ app.controller('myCtrl', function ($scope, $http, wiToken) {
                 });
             }
         }, function (errorResponse) {
-            window.alert("Please login!");
+            window.alert("Unauthorized access!");
             console.error(errorResponse);
         });
         $scope.projectList = projectList;
@@ -162,7 +174,7 @@ app.controller('myCtrl', function ($scope, $http, wiToken) {
         }
     }
     this.showAllPopup = function () {
-        
+
     }
     $scope.getIdWell = function (wellSelectIdx) {
         // this.baseClick.apply(this, arguments);
@@ -172,4 +184,4 @@ app.controller('myCtrl', function ($scope, $http, wiToken) {
     $scope.focusWellonMap = function (wellSelectIdx) {
         $scope.focusWell = $scope.wellSelect[wellSelectIdx].properties;
     }
-});
+}
