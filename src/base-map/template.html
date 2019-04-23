@@ -12,7 +12,7 @@
                 ng-options="item.Name for item in zoneFieldTable" ng-model="zoneSelected" ng-change="hasChanged()">
             </select>
         </span>
-        <wi-login ng-if="self.hasWiLogin" whoami="main-service" register-url='https://www.i2g.cloud/register-information/'>
+        <wi-login ng-if="self.hasWiLogin" whoami="main-service" app-name="Pây Máp" register-url='https://www.i2g.cloud/register-information/'>
         </wi-login>
     </div>
     <div class="main-body">
