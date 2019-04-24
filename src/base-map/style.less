@@ -119,6 +119,119 @@ base-map {
 }
 
 /* change style special of wi-base-treeview for basemap */
+wi-tree-view {
+    & div input {
+        width: 100%;
+        line-height: 1.5;
+        padding: 10px 10px 10px 14px;
+        border: none;
+        border-bottom: 1px solid #f0f0f0;
+        outline: none;
+        box-sizing: border-box;
+
+        &::placeholder {
+            color: #cecece;
+        }
+    }
+}
+
+// wi-tree-node {
+//     &>div {
+//         cursor: default;
+//         //margin: 0 0 0 15px;
+//         padding-left: 12px;
+
+//     }
+
+//     .node-caret,
+//     .node-label,
+//     .node-icon {
+//         display: flex;
+//         padding-right: 10px;
+//         font-size: 13px;
+//     }
+
+//     .node-caret {
+//         color: #cccbcb;
+//         font-size: 14px;
+//         cursor: pointer;
+//         width: 16px;
+//     }
+
+//     .invisible {
+//         visibility: hidden;
+//     }
+
+//     .node-content {
+//         border-bottom: 1px solid #f0f0f0;
+//         position: relative;
+//         white-space: nowrap;
+//         text-overflow: ellipsis;
+//         overflow: hidden;
+//         // padding: 11px;
+//         display: flex;
+//         align-items: center;
+//         transition-property: padding, margin;
+//         transition-duration: 0.2s;
+//         &, &::after {
+//             line-height: 3em;
+//         }
+
+//         &.search-mode>div {
+//             opacity: 0.2;
+//         }
+
+//         &.search-mode.highlight {
+//             color: #0077be;
+
+//             &>div {
+//                 opacity: 1;
+//             }
+//         }
+
+//         &.selected {
+//             background: linear-gradient(to left, #f0f0f0, #fff);
+//             //padding: 11px;
+
+//             &::after {
+//                 background-color: #0077be;
+//                 line-height: 3em;
+//             }
+//         }
+
+//         &::after {
+//             content: "2r";
+//             color: transparent;
+//             display: block;
+//             position: absolute;
+//             top: 0;
+//             width: 4px;
+//         }
+
+//         &::after {
+//             right: 0;
+//         }
+//     }
+//     .node-content:hover {
+//         background: linear-gradient(to left, #f0f0f0, #fff);
+//     }
+
+//     .dragging {
+//         border: none;
+//         background-color: transparent;
+//         z-index: 1;
+//         &.selected {
+//             background: transparent;
+//             //padding: 11px;
+
+//             &::after {
+//                 background-color: transparent;
+//                 line-height: 2.3em;
+//             }
+//         }
+//     }
+
+// }
 
 wi-base-treeview {
     .wi-treeview-container {

@@ -12,7 +12,8 @@
                 ng-options="item.Name for item in zoneFieldTable" ng-model="zoneSelected" ng-change="hasChanged()">
             </select>
         </span>
-        <wi-login ng-if="self.hasWiLogin" whoami="main-service" app-name="Pây Máp" register-url='https://www.i2g.cloud/register-information/'>
+        <wi-login ng-if="self.hasWiLogin" whoami="main-service" app-name="Base Map"
+            register-url='https://www.i2g.cloud/register-information/'>
         </wi-login>
     </div>
     <div class="main-body">
@@ -29,6 +30,17 @@
                     <wi-base-treeview name="abc" config="projectList" on-click-function="onClickPrj"
                         filter="{{prjSearch}}">
                     </wi-base-treeview>
+
+                    <!-- ////////////////////////////////////////////////////// -->
+
+                    <!-- <wi-tree-view tree-root="treeConfig" get-label="self.getLabel" get-icon="self.getIcon"
+                        get-children="self.getChildren" run-match="self.runMatch" click-fn='self.clickFunction'>
+                        <div class="label-list-view">
+                            <span>PROJECT LIST</span>
+                        </div>
+                    </wi-tree-view> -->
+
+                      <!-- ////////////////////////////////////////////////////// -->
                 </div>
                 <div class="height-60">
                     <div style="position: sticky; position: -webkit-sticky; z-index: 1; top: 0;">

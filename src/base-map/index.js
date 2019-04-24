@@ -2,7 +2,7 @@ var componentName = 'baseMap';
 module.exports.name = componentName;
 require('./style.less');
 
-var app = angular.module(componentName, ['mapView', 'sideBar', 'wi-base-treeview', 'wiLogin', 'ngDialog', 'wiToken']);
+var app = angular.module(componentName, ['mapView', 'sideBar', 'wi-base-treeview', 'wiTreeView', 'wiDroppable', 'wiLogin', 'ngDialog', 'wiToken']);
 app.component(componentName, {
     template: require('./template.html'),
     controller: baseMapController,
@@ -31,6 +31,7 @@ function baseMapController($scope, $http, wiToken) {
         if ((localStorage.getItem("token")) !== null) {
             getProjectList();
             getZoneList();
+            getCurveTree();
         }
 
         if (self.username && self.password) {
@@ -57,13 +58,12 @@ function baseMapController($scope, $http, wiToken) {
             if ((localStorage.getItem("token")) !== null) {
                 getProjectList();
                 getZoneList();
+                getCurveTree();
             }
 
         });
     }
 
-
-    //GET ZONE FROM SERVER
     function getZoneList() {
         $http({
             method: 'POST',
@@ -101,6 +101,7 @@ function baseMapController($scope, $http, wiToken) {
     this.refesh = function () {
         getProjectList();
         getZoneList();
+        getCurveTree();
         $scope.wellList = [];
         $scope.wellSelect = [];
     }
@@ -220,9 +221,7 @@ function baseMapController($scope, $http, wiToken) {
             $scope.wellSelect.push($scope.wellList[wellIdx]);
         }
     }
-    // $scope.removeWellonMap = function (wellSelectIdx) {
-    //     $scope.wellSelect.splice((wellSelectIdx), 1);
-    // }
+
     this.deleteWell = function () {
         for (let index = 0; index < $scope.wellSelect.length; index++) {
             if ($scope.wellSelect[index].properties.idWell === $scope.deleteWellId) {
@@ -243,4 +242,135 @@ function baseMapController($scope, $http, wiToken) {
             properties: wellToPush
         });
     }
+
+
+
+    ////////////////////////////////////////////////////////////////////
+
+
+    this.getLabel = function (node) {
+        if (node.idCurve) {
+            return node.name;
+        } else if (node.idDataset) {
+            return node.name;
+        } else if (node.idWell) {
+            return node.name;
+        } else if (node.idProject) {
+            return node.alias;
+        }
+    }
+    this.getIcon = function (node) {
+        if (node.idCurve) return "curve-16x16";
+        else if (node.idDataset) return "curve-data-16x16";
+        else if (node.idWell) return "well-16x16";
+        else if (node.idProject) return "project-normal-16x16";
+    }
+    this.getChildren = function (node) {
+        if (node.idDataset) {
+            return node.curves;
+        } else if (node.idWell) {
+            return node.datasets;
+        } else if (node.idProject) {
+            return node.wells;
+        }
+    }
+    this.runMatch = function (node, criteria) {
+        return node.name.includes(criteria);
+    }
+    this.clickFunction = function ($event, node) {
+
+        if (node.idCurve) {
+            console.log("Curve clicked");
+        } else if (node.idDataset) {
+            console.log("Dataset clicked");
+        } else if (node.idWell) {
+            console.log("Well clicked");
+        } else if (node.idProject) {
+            if (!node.timestamp || (Date.now() - node.timestamp > 10 * 1000)) {
+                getWells(node.idProject, node, function (err, wells) {
+                    if (err) {
+                        return alertMessage.error(err.data.content);
+                    }
+                    node.wells = wells;
+                    async.eachOf(node.wells, function (well, idx, cb) {
+                        getDatasets(well.idWell, well, function (err, datasets) {
+                            if (err) {
+                                return cb(err);
+                            }
+                            well.datasets = datasets;
+                            cb();
+                        });
+                    }, function (err) {
+                        if (err) {
+                            return alertMessage.error(err.message);
+                        }
+                        node.timestamp = Date.now();
+                    });
+                });
+            }
+        }
+    }
+    this.getCurveTree = getCurveTree;
+    const BASE_URL = "http://dev.i2g.cloud";
+
+    function getCurveTree() {
+        $scope.treeConfig = [];
+        getProjects($scope.treeConfig, function (err, projects) {
+            if (err) {
+                return alertMessage.error(err.data.content);
+            }
+            $scope.treeConfig = projects;
+        });
+    }
+
+    function getProjects(treeConfig, cb) {
+        $http({
+            method: 'POST',
+            url: BASE_URL + '/project/list',
+            data: {},
+            headers: {
+                "Authorization": wiToken.getToken(),
+            }
+        }).then(function (response) {
+            let projects = response.data.content;
+            cb(null, projects, treeConfig);
+        }, function (err) {
+            cb(err);
+        });
+    }
+
+    function getWells(projectId, projectNodeChildren, cb) {
+        $http({
+            method: 'POST',
+            url: BASE_URL + '/project/well/list',
+            data: {
+                idProject: projectId
+            },
+            headers: {
+                "Authorization": wiToken.getToken(),
+            }
+        }).then(function (response) {
+            cb(null, response.data.content, projectNodeChildren);
+        }, function (err) {
+            cb(err);
+        });
+    }
+
+    function getDatasets(wellId, wellNodeChildren, cb) {
+        $http({
+            method: 'POST',
+            url: BASE_URL + '/project/well/info',
+            data: {
+                idWell: wellId
+            },
+            headers: {
+                "Authorization": wiToken.getToken(),
+            }
+        }).then(function (response) {
+            cb(null, response.data.content.datasets, wellNodeChildren);
+        }, function (err) {
+            cb(err);
+        });
+    }
+
 }
