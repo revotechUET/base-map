@@ -21,9 +21,7 @@
     "jquery-ui": "^1.12.1",
     "katex": "^0.10.1",
     "lodash": "^4.17.11",
-    "misc-component": "https://github.com/tunghoang/misc-component.git"
-  },
-  "devDependencies": {
+    "misc-component": "https://github.com/tunghoang/misc-component.git",
     "async": "^2.6.2"
   }
 }

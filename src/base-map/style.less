@@ -41,13 +41,17 @@ base-map {
             flex: 1;
             display: flex;
             overflow: hidden;
+            position: relative;
 
             .main-body-left {
                 display: flex;
+                z-index: 1;
+                height: calc(100%);
+                position: absolute;
 
                 .label-list-view {
-                    height: 44px;
-                    padding: 14px;
+                    height: 40px;
+                    padding: 11px 13px;
                     font-weight: bold;
                     background: #f4f4f4;
                     border-bottom: 3px solid #efefef;
@@ -55,6 +59,7 @@ base-map {
 
                 .label-buttom {
                     float: right;
+                    font-size: 115%;
                     cursor: pointer;
                     color: #bbbbbb;
                     margin: 2px 5px 0 25px;
@@ -89,6 +94,9 @@ base-map {
 
             .main-body-center {
                 flex: 1;
+                display: flex;
+                height: 100%;
+                position: relative;
             }
         }
     }
@@ -105,24 +113,38 @@ base-map {
         height: 50%;
         overflow: auto;
     }
+
     .height-60 {
         height: 60%;
         overflow: auto;
     }
+
     .height-40 {
-        height: 40%;
+        height: 100%;
         overflow: auto;
     }
+
+    // ::-webkit-scrollbar {
+    //     display: none;
+    // }
+
     ::-webkit-scrollbar {
-        display: none;
+        background: #f4f4f4;
+        width: 10px;
     }
+
+    ::-webkit-scrollbar-thumb {
+        background-color: #dcdcdc;
+    }
+
 }
+
 
 /* change style special of wi-base-treeview for basemap */
 wi-tree-view {
     & div input {
         width: 100%;
-        line-height: 1.5;
+        line-height: 1.4;
         padding: 10px 10px 10px 14px;
         border: none;
         border-bottom: 1px solid #f0f0f0;
@@ -134,136 +156,142 @@ wi-tree-view {
         }
     }
 }
+wi-droppable {
+    height: 100%;
+}
+wi-tree-node {
+    &>div {
+        cursor: default;
+        //margin: 0 0 0 15px;
+        padding-left: 12px;
 
-// wi-tree-node {
-//     &>div {
-//         cursor: default;
-//         //margin: 0 0 0 15px;
-//         padding-left: 12px;
+    }
 
-//     }
+    .node-caret,
+    .node-label,
+    .node-icon {
+        display: flex;
+        padding-right: 10px;
+        font-size: 13px;
+    }
 
-//     .node-caret,
-//     .node-label,
-//     .node-icon {
-//         display: flex;
-//         padding-right: 10px;
-//         font-size: 13px;
-//     }
+    .node-caret {
+        color: #cccbcb;
+        font-size: 14px;
+        cursor: pointer;
+        width: 16px;
+    }
 
-//     .node-caret {
-//         color: #cccbcb;
-//         font-size: 14px;
-//         cursor: pointer;
-//         width: 16px;
-//     }
+    .invisible {
+        visibility: hidden;
+    }
 
-//     .invisible {
-//         visibility: hidden;
-//     }
+    .node-content {
+        border-bottom: 1px solid #f0f0f0;
+        position: relative;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        // padding: 11px;
+        display: flex;
+        align-items: center;
+        transition-property: padding, margin;
+        transition-duration: 0.2s;
 
-//     .node-content {
-//         border-bottom: 1px solid #f0f0f0;
-//         position: relative;
-//         white-space: nowrap;
-//         text-overflow: ellipsis;
-//         overflow: hidden;
-//         // padding: 11px;
-//         display: flex;
-//         align-items: center;
-//         transition-property: padding, margin;
-//         transition-duration: 0.2s;
-//         &, &::after {
-//             line-height: 3em;
-//         }
+        &,
+        &::after {
+            line-height: 3em;
+        }
 
-//         &.search-mode>div {
-//             opacity: 0.2;
-//         }
+        &.search-mode>div {
+            opacity: 0.2;
+        }
 
-//         &.search-mode.highlight {
-//             color: #0077be;
+        &.search-mode.highlight {
+            color: #0077be;
 
-//             &>div {
-//                 opacity: 1;
-//             }
-//         }
-
-//         &.selected {
-//             background: linear-gradient(to left, #f0f0f0, #fff);
-//             //padding: 11px;
-
-//             &::after {
-//                 background-color: #0077be;
-//                 line-height: 3em;
-//             }
-//         }
-
-//         &::after {
-//             content: "2r";
-//             color: transparent;
-//             display: block;
-//             position: absolute;
-//             top: 0;
-//             width: 4px;
-//         }
-
-//         &::after {
-//             right: 0;
-//         }
-//     }
-//     .node-content:hover {
-//         background: linear-gradient(to left, #f0f0f0, #fff);
-//     }
-
-//     .dragging {
-//         border: none;
-//         background-color: transparent;
-//         z-index: 1;
-//         &.selected {
-//             background: transparent;
-//             //padding: 11px;
-
-//             &::after {
-//                 background-color: transparent;
-//                 line-height: 2.3em;
-//             }
-//         }
-//     }
-
-// }
-
-wi-base-treeview {
-    .wi-treeview-container {
-        border-bottom: 1px solid #f4f4f4;
-        .wi-parent-content {
-            align-items: center;
-
-
-            >div.item-content {
-                align-items: center;
-                margin-left: 6px;
-                .display-inline-block{
-                    padding-top: 0 !important;
-                    display: flex;
-                }
+            &>div {
+                opacity: 1;
             }
+        }
 
-            .icon-expanded {
-                display: none;
+        &.selected {
+            background: linear-gradient(to left, #f0f0f0, #fff);
+            //padding: 11px;
+
+            &::after {
+                background-color: #0077be;
+                line-height: 3em;
+            }
+        }
+
+        &::after {
+            content: "2r";
+            color: transparent;
+            display: block;
+            position: absolute;
+            top: 0;
+            width: 4px;
+        }
+
+        &::after {
+            right: 0;
+        }
+    }
+
+    .node-content:hover {
+        background: linear-gradient(to left, #f0f0f0, #fff);
+    }
+
+    .dragging {
+        border: none;
+        background-color: transparent;
+        z-index: 1;
+
+        &.selected {
+            background: transparent;
+            //padding: 11px;
+
+            &::after {
+                background-color: transparent;
+                line-height: 2.3em;
             }
         }
     }
 
-    .wi-treeview-container:focus {
-        color: #000;
-        font-weight: bold;
-        background: #f4f4f4;
-        border-left: 4px solid #0074c5;
-        margin: 0;
-        padding: 0 6px;
-        display: flex;
-        align-items: center;
-        transition: none;
-    }
 }
+
+// wi-base-treeview {
+//     .wi-treeview-container {
+//         border-bottom: 1px solid #f4f4f4;
+//         .wi-parent-content {
+//             align-items: center;
+
+
+//             >div.item-content {
+//                 align-items: center;
+//                 margin-left: 6px;
+//                 .display-inline-block{
+//                     padding-top: 0 !important;
+//                     display: flex;
+//                 }
+//             }
+
+//             .icon-expanded {
+//                 display: none;
+//             }
+//         }
+//     }
+
+//     .wi-treeview-container:focus {
+//         color: #000;
+//         font-weight: bold;
+//         background: #f4f4f4;
+//         border-left: 4px solid #0074c5;
+//         margin: 0;
+//         padding: 0 6px;
+//         display: flex;
+//         align-items: center;
+//         transition: none;
+//     }
+// }

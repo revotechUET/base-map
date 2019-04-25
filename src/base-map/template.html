@@ -18,68 +18,45 @@
     </div>
     <div class="main-body">
         <div class="main-body-left">
-            <side-bar my-default-width="177" style="border-right: 1px solid #dedede;">
+            <side-bar my-default-width="250" style="border-right: 1px solid #dedede;">
                 <div ng-if="self.hasProjectList" class="height-40">
-                    <div style="position: sticky; position: -webkit-sticky; z-index: 1; top: 0;">
-                        <div class="label-list-view">
-                            <span>PROJECT LIST</span>
-                        </div>
-                        <input class="input-search-list-view" type="text" placeholder="Search your project"
-                            ng-model="prjSearch">
-                    </div>
-                    <wi-base-treeview name="abc" config="projectList" on-click-function="onClickPrj"
-                        filter="{{prjSearch}}">
-                    </wi-base-treeview>
-
-                    <!-- ////////////////////////////////////////////////////// -->
-
-                    <!-- <wi-tree-view tree-root="treeConfig" get-label="self.getLabel" get-icon="self.getIcon"
+                    <wi-tree-view tree-root="treeConfig" get-label="self.getLabel" get-icon="self.getIcon"
                         get-children="self.getChildren" run-match="self.runMatch" click-fn='self.clickFunction'>
                         <div class="label-list-view">
                             <span>PROJECT LIST</span>
                         </div>
-                    </wi-tree-view> -->
-
-                      <!-- ////////////////////////////////////////////////////// -->
-                </div>
-                <div class="height-60">
-                    <div style="position: sticky; position: -webkit-sticky; z-index: 1; top: 0;">
-                        <div class="label-list-view">
-                            <span>WELL LIST</span>
-                            <span class="label-buttom fa fa-forward" aria-hidden="true"
-                                ng-click="self.moveAllWell()"></span>
-                            <span class="label-buttom fa fa-minus-circle" aria-hidden="true"
-                                ng-click="self.refesh()"></span>
-                        </div>
-                        <input class="input-search-list-view" type="text" placeholder="Search well this project"
-                            ng-model="wellListSearch">
-                    </div>
-                    <wi-base-treeview name="abc" config="wellList" on-click-function="onClickWell"
-                        filter="{{wellListSearch}}">
-                    </wi-base-treeview>
+                    </wi-tree-view>
                 </div>
             </side-bar>
-            <side-bar my-default-width="199" style="border-right: 1px solid #dedede;">
-                <div class="menu-left-top">
-                    <div style="position: sticky; position: -webkit-sticky; z-index: 1; top: 0;">
-                        <div class="label-list-view">
-                            <span>WELL SHOWN</span>
-                        </div>
-                    <!-- <wi-base-treeview name="abc" config="wellSelect" on-click-function="focusWellonMap">
-                            </wi-base-treeview> -->
-                    <!-- <wi-base-treeview name="abc" config="wellSelect" on-click-function="removeWellonMap">
-                            </wi-base-treeview> -->
-                    <wi-base-treeview name="abc" config="wellSelect" on-click-function="getIdWell"
-                        filter="{{wellSelectSearch}}">
-                    </wi-base-treeview>
+            <side-bar my-default-width="250" style="border-right: 1px solid #dedede;">
+
+                <div ng-if="self.hasProjectList" class="height-40">
+                    <wi-droppable on-drop="self.dropFn" style="flex: 1; display: flex;"
+                        container-style="{flex: 1, margin: 0, border: 'none'}">
+                        <wi-tree-view tree-root="wellSelect" get-label="self.getLabel" get-icon="self.getIcon"
+                            get-children="self.getChildren" run-match="self.runMatch" click-fn='self.clickWellFunction'>
+                            <div class="label-list-view">
+                                <span>WELL SHOWN</span>
+                                <span style="color: #ff8a81;" class="label-buttom fa fa-times-circle-o" aria-hidden="true"
+                                    ng-click="self.cleanMap()"></span>
+                                <span style="color: #ff8a81;" class="label-buttom fa fa-times-circle" aria-hidden="true"
+                                    ng-click="self.deleteWell()"></span>
+                                <!-- <span class="label-buttom fa fa-eye-slash" aria-hidden="true"
+                                ng-click="self.showAllPopup()"></span> -->
+                            </div>
+                        </wi-tree-view>
+                    </wi-droppable>
                 </div>
+
             </side-bar>
         </div>
+        <!-- <wi-droppable on-drop="self.dropFn" style="flex: 1; display: flex;" container-style="{flex: 1}"> -->
         <div class="main-body-center">
             <map-view class="mapView"
                 mapbox-token='pk.eyJ1IjoiazU0aHVuZ3liIiwiYSI6ImNqdGZtNDE4ODF1OXEzeW85djJ5c29nYnoifQ.-VfHeKXV9avmbia1E7BFcQ'
                 wells='wellSelect' zone-map='zoneMap' focus-well='focusWell'>
             </map-view>
         </div>
+        <!-- </wi-droppable> -->
     </div>
 </div>

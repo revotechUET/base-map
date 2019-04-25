@@ -17,7 +17,7 @@ app.component(componentName, {
   transclude: true
 });
 
-function mapViewController($scope) {
+function mapViewController($scope, $timeout) {
 
   let self = this;
   let map;
@@ -26,7 +26,10 @@ function mapViewController($scope) {
   let popups = [];
 
   this.$onInit = function () {
-    drawMap();
+    $timeout(function () {
+      drawMap();
+      console.log('Draw map')
+    }, 1000);
     $scope.$watch(function () {
       return [self.wells, self.mapboxToken, self.zoneMap];
     }, function () {
@@ -133,10 +136,10 @@ function mapViewController($scope) {
       popups.length = 0;
       if (!(self.wells || []).length) return 0;
       for (let index = 0; index < self.wells.length; index++) {
-        let lat = getLat(self.wells[index].properties.well_headers);
-        let long = getLong(self.wells[index].properties.well_headers);
-        let x = getX(self.wells[index].properties.well_headers);
-        let y = getY(self.wells[index].properties.well_headers);
+        let lat = getLat(self.wells[index].well_headers);
+        let long = getLong(self.wells[index].well_headers);
+        let x = getX(self.wells[index].well_headers);
+        let y = getY(self.wells[index].well_headers);
         let latX = proj4(firstProjection, secondProjection, [x, y])[1];
         let lngY = proj4(firstProjection, secondProjection, [x, y])[0];
         let popup = new mapboxgl.Popup({
@@ -144,7 +147,7 @@ function mapViewController($scope) {
             offset: 25,
             closeButton: false
           })
-          .setText(self.wells[index].properties.name);
+          .setText(self.wells[index].name);
         if (checkCoordinate(lat, long, x, y) === true) {
           markers.push(new mapboxgl.Marker()
             .setLngLat([long, lat])
