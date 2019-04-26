@@ -23,7 +23,6 @@ function baseMapController($scope, $http, wiToken, $timeout) {
     let self = this;
     $scope.wellSelect = [];
     $scope.focusWell = [];
-    $scope.deleteWellId = 0;
 
     this.$onInit = function () {
         //CHECK TOKEN
@@ -96,17 +95,21 @@ function baseMapController($scope, $http, wiToken, $timeout) {
     }
 
     this.deleteWell = function () {
-        for (let index = 0; index < $scope.wellSelect.length; index++) {
-            if ($scope.wellSelect[index].idWell === $scope.deleteWellId) {
-                $scope.wellSelect.splice((index), 1);
-            }
+        console.log("delete selected wells")
+        let deleteNodes = Object.values(self.selectedIdsHash).map(item => item.data);
+        for (let deleteNode of deleteNodes) {
+            let idx = $scope.wellSelect.findIndex(node => (node === deleteNode));
+            $scope.wellSelect.splice(idx, 1);
         }
+        self.selectedIdsHash = {};
     }
+
     this.showAllPopup = function () {
 
     }
 
-    this.dropFn = function (event, helper, node) {
+    function addNode(event, helper, node) {
+
         if (node.idWell) {
             let wellId = node.idWell;
             let foundWell = $scope.wellSelect.find(function (item) {
@@ -135,6 +138,13 @@ function baseMapController($scope, $http, wiToken, $timeout) {
 
                 }
             });
+        }
+
+    }
+    this.dropFn = function (event, helper, nodeArray) {
+
+        for (let node of nodeArray) {
+            addNode(event, helper, node);
         }
 
     }
@@ -176,7 +186,6 @@ function baseMapController($scope, $http, wiToken, $timeout) {
         return node.name.includes(criteria);
     }
     this.clickWellFunction = function ($event, node) {
-        $scope.deleteWellId = node.idWell;
         $scope.focusWell = node;
     }
     this.clickFunction = function ($event, node) {

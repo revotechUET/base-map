@@ -34,7 +34,8 @@
                     <wi-droppable on-drop="self.dropFn" style="flex: 1; display: flex;"
                         container-style="{flex: 1, margin: 0, border: 'none'}">
                         <wi-tree-view tree-root="wellSelect" get-label="self.getLabel" get-icon="self.getIcon"
-                            get-children="self.getChildren" run-match="self.runMatch" click-fn='self.clickWellFunction'>
+                            get-children="self.getChildren" run-match="self.runMatch" 
+                            selected-ids="self.selectedIdsHash" click-fn='self.clickWellFunction'>
                             <div class="label-list-view">
                                 <span>WELL SHOWN</span>
                                 <span style="color: #ff8a81;" class="label-buttom fa fa-times-circle-o" aria-hidden="true"
