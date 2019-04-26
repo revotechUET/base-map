@@ -23,6 +23,7 @@ function baseMapController($scope, $http, wiToken, $timeout) {
     let self = this;
     $scope.wellSelect = [];
     $scope.focusWell = [];
+    self.selectedIdsHash = {}
 
     this.$onInit = function () {
         //CHECK TOKEN
