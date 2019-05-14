@@ -285,6 +285,4 @@ function baseMapController($scope, $http, wiToken, $timeout) {
         });
     }
 
-
-
 }
