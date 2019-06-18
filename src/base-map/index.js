@@ -1,6 +1,8 @@
 var componentName = 'baseMap';
 module.exports.name = componentName;
 require('./style.less');
+const queryString = require('query-string')
+
 let config = require("../../config/default").default;
 if (process.env.NODE_ENV === "development") {
     config = require("../../config/default").dev;
@@ -29,7 +31,7 @@ app.component(componentName, {
     transclude: true
 });
 
-function baseMapController($scope, $http, wiToken, $timeout) {
+function baseMapController($scope, $http, wiToken, $timeout, $location) {
 
     let self = this;
     $scope.wellSelect = [];
@@ -38,7 +40,11 @@ function baseMapController($scope, $http, wiToken, $timeout) {
 
     this.$onInit = function () {
         //CHECK TOKEN
-        self.getLoginUrl = `${WI_AUTH_HOST}/login`;
+        
+        self.baseUrl = $location.search().baseUrl || self.baseUrl;
+        // self.getLoginUrl = `${WI_AUTH_HOST}/login`;
+		self.loginUrl = `${WI_AUTH_HOST}/login` || $location.search().loginUrl || self.loginUrl;
+		self.queryString = queryString.parse(location.search);
         if ((localStorage.getItem("token")) !== null) {
             getZoneList();
             getCurveTree();

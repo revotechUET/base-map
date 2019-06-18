@@ -15,5 +15,8 @@
     "style-loader": "^0.23.1",
     "webpack": "^4.34.0",
     "webpack-cli": "^3.3.4"
+  },
+  "dependencies": {
+    "query-string": "^6.7.0"
   }
 }
