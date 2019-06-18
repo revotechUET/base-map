@@ -1,0 +1,14 @@
+{
+  "default": {
+    "wi_auth": "http://localhost:2999",
+    "wi_backend": "http://localhost:3000"
+  },
+  "dev": {
+    "wi_auth": "http://admin.dev.i2g.cloud",
+    "wi_backend": "http://dev.i2g.cloud"
+  },
+  "production": {
+    "wi_auth": "http://users.i2g.cloud",
+    "wi_backend": "http://api-1.i2g.cloud"
+  }
+}

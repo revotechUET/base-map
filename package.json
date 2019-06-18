@@ -1,11 +1,19 @@
 {
   "name": "base-map",
   "version": "0.0.1",
+  "scripts": {
+    "local": "webpack -w",
+    "build-dev": "NODE_ENV=dev && webpack",
+    "build-prod": "NODE_ENV=production && webpack",
+    "start": "http-server ."
+  },
   "devDependencies": {
     "css-loader": "^2.1.1",
     "html-loader": "^0.5.5",
     "less": "^3.9.0",
     "less-loader": "^4.1.0",
-    "style-loader": "^0.23.1"
+    "style-loader": "^0.23.1",
+    "webpack": "^4.34.0",
+    "webpack-cli": "^3.3.4"
   }
 }

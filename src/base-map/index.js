@@ -1,6 +1,15 @@
 var componentName = 'baseMap';
 module.exports.name = componentName;
 require('./style.less');
+const NODE_ENV = process.env.NODE_ENV;
+let config = require("../../config/default").default;
+if (NODE_ENV === "dev") {
+    config = require("../../config/default").dev;
+} else if (NODE_ENV === "production") {
+    config = require("../../config/default").production;
+}
+const WI_AUTH_HOST = config.wi_auth;
+const WI_BACKEND_HOST = config.wi_backend;
 
 var app = angular.module(componentName, ['mapView', 'sideBar', 'wiTreeView', 'wiDroppable', 'wiLogin', 'ngDialog', 'wiToken']);
 app.component(componentName, {
@@ -13,7 +22,8 @@ app.component(componentName, {
         projectId: "<",
         hasProjectList: "<",
         username: "@",
-        password: "@"
+        password: "@",
+        getLoginUrl: "<"
     },
     transclude: true
 });
@@ -27,6 +37,7 @@ function baseMapController($scope, $http, wiToken, $timeout) {
 
     this.$onInit = function () {
         //CHECK TOKEN
+        self.getLoginUrl = WI_AUTH_HOST;
         if ((localStorage.getItem("token")) !== null) {
             getZoneList();
             getCurveTree();
@@ -35,7 +46,7 @@ function baseMapController($scope, $http, wiToken, $timeout) {
         if (self.username && self.password) {
             $http({
                 method: 'POST',
-                url: 'http://admin.dev.i2g.cloud/login',
+                url: `${WI_AUTH_HOST}/login`,
                 data: {
                     username: self.username,
                     password: self.password,
@@ -63,7 +74,7 @@ function baseMapController($scope, $http, wiToken, $timeout) {
     function getZoneList() {
         $http({
             method: 'POST',
-            url: 'http://dev.i2g.cloud/utm-zones',
+            url: `${WI_BACKEND_HOST}/utm-zones`,
             data: {},
             headers: {}
         }).then(function (response) {
@@ -223,7 +234,7 @@ function baseMapController($scope, $http, wiToken, $timeout) {
         }
     }
     this.getCurveTree = getCurveTree;
-    const BASE_URL = "http://dev.i2g.cloud";
+    const BASE_URL = WI_BACKEND_HOST;
 
     function getCurveTree() {
         $scope.treeConfig = [];
@@ -284,5 +295,4 @@ function baseMapController($scope, $http, wiToken, $timeout) {
             cb(err);
         });
     }
-
 }

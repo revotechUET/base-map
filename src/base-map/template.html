@@ -12,7 +12,7 @@
                 ng-options="item.Name for item in zoneFieldTable" ng-model="zoneSelected" ng-change="hasChanged()">
             </select>
         </span>
-        <wi-login ng-if="self.hasWiLogin" whoami="main-service" app-name="Base Map"
+        <wi-login ng-if="self.hasWiLogin" whoami="main-service" app-name="Base Map" login-url="{{self.getLoginUrl}}"
             register-url='https://www.i2g.cloud/register-information/'>
         </wi-login>
     </div>
@@ -34,7 +34,7 @@
                     <wi-droppable on-drop="self.dropFn" style="flex: 1; display: flex;"
                         container-style="{flex: 1, margin: 0, border: 'none'}">
                         <wi-tree-view tree-root="wellSelect" get-label="self.getLabel" get-icon="self.getIcon"
-                            get-children="self.getChildren" run-match="self.runMatch" 
+                            get-children="self.getChildren" run-match="self.runMatch"
                             selected-ids="self.selectedIdsHash" click-fn='self.clickWellFunction'>
                             <div class="label-list-view">
                                 <span>WELL SHOWN</span>
