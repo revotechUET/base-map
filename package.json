@@ -2,7 +2,7 @@
   "name": "base-map",
   "version": "0.0.1",
   "scripts": {
-    "local": "webpack -w",
+    "local": "webpack --mode=none",
     "build-dev": "webpack  --mode=development",
     "build-prod": "webpack --mode=production",
     "start": "http-server ."
