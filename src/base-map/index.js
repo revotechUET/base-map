@@ -2,7 +2,7 @@ var componentName = 'baseMap';
 module.exports.name = componentName;
 require('./style.less');
 
-var app = angular.module(componentName, ['mapView', 'sideBar', 'wi-base-treeview', 'wiTreeView', 'wiDroppable', 'wiLogin', 'ngDialog', 'wiToken']);
+var app = angular.module(componentName, ['mapView', 'sideBar', 'wiTreeView', 'wiDroppable', 'wiLogin', 'ngDialog', 'wiToken']);
 app.component(componentName, {
     template: require('./template.html'),
     controller: baseMapController,
@@ -192,11 +192,11 @@ function baseMapController($scope, $http, wiToken, $timeout) {
     this.clickFunction = function ($event, node) {
 
         if (node.idCurve) {
-            console.log("Curve clicked");
+            // console.log("Curve clicked");
         } else if (node.idDataset) {
-            console.log("Dataset clicked");
+            // console.log("Dataset clicked");
         } else if (node.idWell) {
-            console.log("Well clicked");
+            // console.log("Well clicked");
         } else if (node.idProject) {
             if (!node.timestamp || (Date.now() - node.timestamp > 10 * 1000)) {
                 getWells(node.idProject, node, function (err, wells) {

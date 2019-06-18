@@ -28,7 +28,7 @@ function mapViewController($scope, $timeout) {
   this.$onInit = function () {
     $timeout(function () {
       drawMap();
-      console.log('Draw map')
+      // console.log('Draw map')
     }, 1000);
     $scope.$watch(function () {
       return [self.wells, self.mapboxToken, self.zoneMap];
