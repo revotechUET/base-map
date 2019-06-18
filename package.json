@@ -4,7 +4,7 @@
   "scripts": {
     "local": "webpack -w",
     "build-dev": "webpack  --mode=development",
-    "build-prod": "webpack -p --env production",
+    "build-prod": "webpack --env production",
     "start": "http-server ."
   },
   "devDependencies": {
