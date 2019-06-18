@@ -38,7 +38,7 @@ function baseMapController($scope, $http, wiToken, $timeout) {
 
     this.$onInit = function () {
         //CHECK TOKEN
-        self.getLoginUrl = WI_AUTH_HOST;
+        self.getLoginUrl = `${WI_AUTH_HOST}/login`;
         if ((localStorage.getItem("token")) !== null) {
             getZoneList();
             getCurveTree();

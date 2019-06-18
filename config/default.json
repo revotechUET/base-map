@@ -8,7 +8,7 @@
     "wi_backend": "http://dev.i2g.cloud"
   },
   "production": {
-    "wi_auth": "http://users.i2g.cloud",
-    "wi_backend": "http://api-1.i2g.cloud"
+    "wi_auth": "https://users.i2g.cloud",
+    "wi_backend": "https://api-1.i2g.cloud"
   }
 }
