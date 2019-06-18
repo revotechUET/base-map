@@ -1,13 +1,14 @@
 var componentName = 'baseMap';
 module.exports.name = componentName;
 require('./style.less');
-const NODE_ENV = process.env.NODE_ENV;
 let config = require("../../config/default").default;
-if (NODE_ENV === "dev") {
+if (process.env.NODE_ENV === "development") {
     config = require("../../config/default").dev;
-} else if (NODE_ENV === "production") {
+} else if (process.env.NODE_ENV === "production") {
     config = require("../../config/default").production;
 }
+console.log("config", config);
+console.log("NODE_ENV", process.env.NODE_ENV);
 const WI_AUTH_HOST = config.wi_auth;
 const WI_BACKEND_HOST = config.wi_backend;
 

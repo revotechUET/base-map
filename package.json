@@ -3,8 +3,8 @@
   "version": "0.0.1",
   "scripts": {
     "local": "webpack -w",
-    "build-dev": "NODE_ENV=dev && webpack",
-    "build-prod": "NODE_ENV=production && webpack",
+    "build-dev": "webpack  --mode=development",
+    "build-prod": "webpack -p --env production",
     "start": "http-server ."
   },
   "devDependencies": {
