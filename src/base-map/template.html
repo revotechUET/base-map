@@ -18,7 +18,7 @@
     </div>
     <div class="main-body">
         <div class="main-body-left">
-            <side-bar my-default-width="250" style="border-right: 1px solid #dedede;">
+            <side-bar my-default-width="188" style="border-right: 1px solid #dedede;">
                 <div ng-if="self.hasProjectList" class="height-40">
                     <wi-tree-view tree-root="treeConfig" get-label="self.getLabel" get-icon="self.getIcon"
                         get-children="self.getChildren" run-match="self.runMatch" hide-unmatched="true" click-fn='self.clickFunction'>
@@ -28,7 +28,7 @@
                     </wi-tree-view>
                 </div>
             </side-bar>
-            <side-bar my-default-width="250" style="border-right: 1px solid #dedede;">
+            <side-bar my-default-width="286" style="border-right: 1px solid #dedede;">
 
                 <div ng-if="self.hasProjectList" class="height-40">
                     <wi-droppable on-drop="self.dropFn" style="flex: 1; display: flex;"
@@ -37,13 +37,19 @@
                             get-children="self.getChildren" run-match="self.runMatch" hide-unmatched="true"
                             selected-ids="self.selectedIdsHash" click-fn='self.clickWellFunction'>
                             <div class="label-list-view">
-                                <span>WELL SHOWN</span>
-                                <span style="color: #ff8a81;" class="label-buttom fa fa-times-circle-o" aria-hidden="true"
+                                <span>WELL</span>
+                                <span class="fn-button" 
+                                    ng-click="self.showAllPopup()">POPUP ALL</span>
+                                <span class="fn-button" 
+                                    ng-click="self.deleteWell()">DELETE</span>
+                                <span class="fn-button" 
+                                    ng-click="self.cleanMap()">CLEAR</span>
+                                <!-- <span style="color: #ff8a81;" class="label-buttom fa fa-times-circle-o" aria-hidden="true"
                                     ng-click="self.cleanMap()"></span>
                                 <span style="color: #ff8a81;" class="label-buttom fa fa-times-circle" aria-hidden="true"
                                     ng-click="self.deleteWell()"></span>
                                 <span style="color: #0077be;"class="label-buttom fa fa-eye-slash" aria-hidden="true"
-                                ng-click="self.showAllPopup()"></span>
+                                ng-click="self.showAllPopup()"></span> -->
                             </div>
                         </wi-tree-view>
                     </wi-droppable>

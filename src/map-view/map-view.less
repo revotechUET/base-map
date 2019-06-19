@@ -80,7 +80,7 @@ map-view {
     }
 
     .switchStyle-content {
-        right: 10px;
+        right: 9px;
         z-index: 1;
         cursor: pointer;
         
@@ -92,11 +92,17 @@ map-view {
     .theme-map {
         background-size: cover;
         -webkit-box-shadow: 0 0 2px rgba(0, 0, 0, 0.1);
-        box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1);
+        border: 2px solid #cdcdcd;
         margin-bottom: 10px;
         border-radius: 3px;
-        width           : 30px;
-        height          : 30px;
+        width           : 32px;
+        height          : 32px;
+        transition      : all 0.2s ease-in;
+
+        &:hover {
+            border: 2px solid #0468c5;
+            transition      : all 0.2s ease-in;
+        }
     }
     .theme1 {
         background-image: url('./images/img01.png');
@@ -109,5 +115,9 @@ map-view {
     }
     .theme4 {
         background-image: url('./images/img04.png');
+    }
+    .active {
+        border: 2px solid #00b1ff;
+        transition      : all 0.2s ease-in;
     }
 }

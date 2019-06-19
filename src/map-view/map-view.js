@@ -25,6 +25,7 @@ function mapViewController($scope, $timeout) {
   let popups = [];
 
   this.$onInit = function () {
+    self.activeTheme = 'theme1';
     $timeout(function () {
       drawMap();
       // console.log('Draw map')
@@ -66,7 +67,7 @@ function mapViewController($scope, $timeout) {
   }
   // CHANGE STYLE
   this.changeStyleMap1 = function (){
-    map.setStyle('mapbox://styles/mapbox/dark-v10');
+    map.setStyle('mapbox://styles/mapbox/light-v10');
   }
   this.changeStyleMap2 = function (){
     map.setStyle('mapbox://styles/mapbox/streets-v11');
@@ -75,7 +76,7 @@ function mapViewController($scope, $timeout) {
     map.setStyle('mapbox://styles/mapbox/satellite-v9');
   }
   this.changeStyleMap4 = function (){
-    map.setStyle('mapbox://styles/mapbox/light-v10');
+    map.setStyle('mapbox://styles/mapbox/dark-v10');
   }
   
   // SHOW POPUP
@@ -129,7 +130,6 @@ function mapViewController($scope, $timeout) {
   }
   // SHOW MARKER
   function drawMarkers() {
-    console.log("..........................")
     let firstProjection = self.zoneMap;
     let secondProjection = "+proj=longlat +ellps=WGS84 +datum=WGS84 +units=degrees";
     for (let index = 0; index < popups.length; index++) {

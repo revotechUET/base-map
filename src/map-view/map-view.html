@@ -1,10 +1,10 @@
 <div id="map">
     <span class="switchStyle fa fa-adjust" ng-click="self.showTheme = !self.showTheme"></span>
     <div ng-show="self.showTheme" class="switchStyle-content">
-        <div class="theme-map theme1" ng-click="self.changeStyleMap1();"></div>
-        <div class="theme-map theme2" ng-click="self.changeStyleMap2();"></div>
-        <div class="theme-map theme3" ng-click="self.changeStyleMap3();"></div>
-        <div class="theme-map theme4" ng-click="self.changeStyleMap4();"></div>
+        <div ng-class="{'active': self.activeTheme === 'theme1'}" class="theme-map theme1" ng-click="self.changeStyleMap1(); self.activeTheme = 'theme1'"></div>
+        <div ng-class="{'active': self.activeTheme === 'theme2'}" class="theme-map theme2" ng-click="self.changeStyleMap2(); self.activeTheme = 'theme2'"></div>
+        <div ng-class="{'active': self.activeTheme === 'theme3'}" class="theme-map theme3" ng-click="self.changeStyleMap3(); self.activeTheme = 'theme3'"></div>
+        <div ng-class="{'active': self.activeTheme === 'theme4'}" class="theme-map theme4" ng-click="self.changeStyleMap4(); self.activeTheme = 'theme4'"></div>
     </div>
 </div>
 
