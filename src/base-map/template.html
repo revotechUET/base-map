@@ -34,7 +34,7 @@
                     <wi-droppable on-drop="self.dropFn" style="flex: 1; display: flex;"
                         container-style="{flex: 1, margin: 0, border: 'none'}">
                         <wi-tree-view tree-root="wellSelect" get-label="self.getLabel" get-icon="self.getIcon"
-                            get-children="self.getChildren" run-match="self.runMatch"
+                            get-children="self.getChildren" run-match="self.runMatch" hide-unmatched="true"
                             selected-ids="self.selectedIdsHash" click-fn='self.clickWellFunction'>
                             <div class="label-list-view">
                                 <span>WELL SHOWN</span>
@@ -42,8 +42,8 @@
                                     ng-click="self.cleanMap()"></span>
                                 <span style="color: #ff8a81;" class="label-buttom fa fa-times-circle" aria-hidden="true"
                                     ng-click="self.deleteWell()"></span>
-                                <!-- <span class="label-buttom fa fa-eye-slash" aria-hidden="true"
-                                ng-click="self.showAllPopup()"></span> -->
+                                <span style="color: #0077be;"class="label-buttom fa fa-eye-slash" aria-hidden="true"
+                                ng-click="self.showAllPopup()"></span>
                             </div>
                         </wi-tree-view>
                     </wi-droppable>

@@ -1,6 +1,6 @@
 var componentName = 'mapView';
 module.exports.name = componentName;
-require('./map-view.css');
+require('./map-view.less');
 
 var app = angular.module(componentName, []);
 
@@ -22,7 +22,6 @@ function mapViewController($scope, $timeout) {
   let self = this;
   let map;
   let markers = [];
-  let styleNumber = 1;
   let popups = [];
 
   this.$onInit = function () {
@@ -31,7 +30,12 @@ function mapViewController($scope, $timeout) {
       // console.log('Draw map')
     }, 1000);
     $scope.$watch(function () {
-      return [self.wells, self.mapboxToken, self.zoneMap];
+      return [self.wells];
+    }, function () {
+      drawMarkers();
+    }, true);
+    $scope.$watch(function () {
+      return [self.mapboxToken, self.zoneMap];
     }, function () {
       drawMarkersDebounced();
     }, true);
@@ -61,26 +65,19 @@ function mapViewController($scope, $timeout) {
     }));
   }
   // CHANGE STYLE
-  this.changeStyleMap = function () {
-    if (styleNumber === 1) {
-      map.setStyle('mapbox://styles/mapbox/dark-v10');
-      // console.log("Change style dark map");
-      styleNumber = styleNumber + 1;
-    } else if (styleNumber === 2) {
-      map.setStyle('mapbox://styles/mapbox/streets-v11');
-      // console.log("Change style streets map");
-      styleNumber = styleNumber + 1;
-    } else if (styleNumber === 3) {
-      map.setStyle('mapbox://styles/mapbox/satellite-v9');
-      // console.log("Change style satellite map");
-      styleNumber = styleNumber + 1;
-    } else if (styleNumber === 4) {
-      map.setStyle('mapbox://styles/mapbox/light-v10');
-      // console.log("Change style light map");
-      styleNumber = 1;
-    }
-    // console.log(styleNumber);
+  this.changeStyleMap1 = function (){
+    map.setStyle('mapbox://styles/mapbox/dark-v10');
   }
+  this.changeStyleMap2 = function (){
+    map.setStyle('mapbox://styles/mapbox/streets-v11');
+  }
+  this.changeStyleMap3 = function (){
+    map.setStyle('mapbox://styles/mapbox/satellite-v9');
+  }
+  this.changeStyleMap4 = function (){
+    map.setStyle('mapbox://styles/mapbox/light-v10');
+  }
+  
   // SHOW POPUP
   function focusWell() {
     for (let index = 0; index < popups.length; index++) {
@@ -97,6 +94,11 @@ function mapViewController($scope, $timeout) {
       let lngY = proj4(firstProjection, secondProjection, [x, y])[0];
 
       if (checkCoordinate(lat, long, x, y) === true) {
+        map.flyTo({
+          center: [long-0.1, lat],
+          zoom: 10,
+          pitch: 60
+          });
         popups.push(new mapboxgl.Popup({
             closeOnClick: true,
             offset: 25,
@@ -106,6 +108,11 @@ function mapViewController($scope, $timeout) {
           .setText(String(self.focusWell.name))
           .addTo(map));
       } else if (checkCoordinate(lat, long, x, y) === false) {
+        map.flyTo({
+          center: [lngY-0.1, latX],
+          zoom: 10,
+          pitch: 60
+          });
         popups.push(new mapboxgl.Popup({
             closeOnClick: true,
             offset: 25,
@@ -122,6 +129,7 @@ function mapViewController($scope, $timeout) {
   }
   // SHOW MARKER
   function drawMarkers() {
+    console.log("..........................")
     let firstProjection = self.zoneMap;
     let secondProjection = "+proj=longlat +ellps=WGS84 +datum=WGS84 +units=degrees";
     for (let index = 0; index < popups.length; index++) {
@@ -153,11 +161,19 @@ function mapViewController($scope, $timeout) {
             .setLngLat([long, lat])
             .setPopup(popup)
             .addTo(map));
+        map.flyTo({
+          center: [long-4, lat],
+          zoom: 5
+          });
         } else if (checkCoordinate(lat, long, x, y) === false) {
           markers.push(new mapboxgl.Marker()
             .setLngLat([lngY, latX])
             .setPopup(popup)
             .addTo(map));
+        map.flyTo({
+          center: [lngY-4, latX],
+          zoom: 5
+        });
         }
       }
     } else {

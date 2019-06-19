@@ -1,0 +1,113 @@
+map-view {
+    #map {
+        height  : 100%;
+        width   : 100%;
+        position: absolute;
+    }
+
+    .mapboxgl-ctrl-bottom-left {
+        bottom : 0;
+        left   : 0;
+        display: none;
+    }
+
+    .mapboxgl-ctrl-bottom-right {
+        right  : 0;
+        bottom : 0;
+        display: none;
+    }
+
+    .mapboxgl-popup {
+        position: absolute;
+        top     : -13px;
+    }
+
+    .mapboxgl-popup-content {
+        position      : relative;
+        background    : #0074c4;
+        border-radius : 3px;
+        font-weight   : bold;
+        color         : #fff;
+        font-size     : 14px;
+        border        : 1px solid #0077be;
+        box-shadow    : 0 2px 15px rgba(0, 0, 0, 0.1);
+        padding       : 7px 10px 5px 10px;
+        pointer-events: auto;
+    }
+
+    .mapboxgl-popup-close-button {
+        position        : absolute;
+        left            : 6px;
+        top             : 8px;
+        border          : 0;
+        border-radius   : 0 3px 0 0;
+        cursor          : pointer;
+        background-color: transparent;
+    }
+
+    .mapboxgl-popup-anchor-bottom .mapboxgl-popup-tip {
+        -webkit-align-self: center;
+        align-self        : center;
+        margin-bottom     : 8px;
+        border-top-color  : #0074c4;
+    }
+
+    .mapboxgl-popup-anchor-top .mapboxgl-popup-tip {
+        border-bottom-color: #0074c4;
+    }
+
+    .mapboxgl-popup-anchor-right .mapboxgl-popup-tip {
+        border-left-color: #0074c4;
+    }
+
+    .mapboxgl-popup-anchor-left .mapboxgl-popup-tip {
+        border-right-color: #0074c4;
+    }
+
+    .switchStyle {
+        right             : 10px;
+        z-index           : 1;
+        padding           : 8px;
+        cursor            : pointer;
+        -webkit-box-shadow: 0 0 2px rgba(0, 0, 0, 0.1);
+        box-shadow        : 0 0 0 2px rgba(0, 0, 0, 0.1);
+        border-radius     : 4px;
+        background        : #fff;
+        position          : absolute;
+        font-size         : 16px;
+        color             : #0074c5;
+        top               : 150px;
+    }
+
+    .switchStyle-content {
+        right: 10px;
+        z-index: 1;
+        cursor: pointer;
+        
+        border-radius: 4px;
+        position: absolute;
+        top: 192px;
+    }
+
+    .theme-map {
+        background-size: cover;
+        -webkit-box-shadow: 0 0 2px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1);
+        margin-bottom: 10px;
+        border-radius: 3px;
+        width           : 30px;
+        height          : 30px;
+    }
+    .theme1 {
+        background-image: url('./images/img01.png');
+    }
+    .theme2 {
+        background-image: url('./images/img02.png');
+    }
+    .theme3 {
+        background-image: url('./images/img03.png');
+    }
+    .theme4 {
+        background-image: url('./images/img04.png');
+    }
+}
