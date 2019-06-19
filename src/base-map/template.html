@@ -21,7 +21,7 @@
             <side-bar my-default-width="250" style="border-right: 1px solid #dedede;">
                 <div ng-if="self.hasProjectList" class="height-40">
                     <wi-tree-view tree-root="treeConfig" get-label="self.getLabel" get-icon="self.getIcon"
-                        get-children="self.getChildren" run-match="self.runMatch" click-fn='self.clickFunction'>
+                        get-children="self.getChildren" run-match="self.runMatch" hide-unmatched="true" click-fn='self.clickFunction'>
                         <div class="label-list-view">
                             <span>PROJECT LIST</span>
                         </div>

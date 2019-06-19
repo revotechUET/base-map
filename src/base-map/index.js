@@ -189,7 +189,7 @@ function baseMapController($scope, $http, wiToken, $timeout, $location) {
         if (node.idWell) {
             return node.name;
         } else if (node.idProject) {
-            return node.name;
+            return node.alias || node.name;
         }
     }
     this.getIcon = function (node) {
@@ -202,7 +202,10 @@ function baseMapController($scope, $http, wiToken, $timeout, $location) {
         }
     }
     this.runMatch = function (node, criteria) {
-        return node.name.includes(criteria);
+        // return node.name.includes(criteria);
+        let keySearch = criteria.toLowerCase();
+        let searchArray = node.name.toLowerCase();
+        return searchArray.includes(keySearch);
     }
     this.clickWellFunction = function ($event, node) {
         $scope.focusWell = node;
