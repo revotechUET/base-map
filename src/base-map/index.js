@@ -224,7 +224,8 @@ function baseMapController($scope, $http, wiToken, $timeout, $location) {
                     if (err) {
                         return alertMessage.error(err.data.content);
                     }
-                    node.wells = wells.sort((w1, w2) => (w1.name.localeCompare(w2.name)));
+                    // node.wells = wells.sort((w1, w2) => (w1.name.localeCompare(w2.name)));
+                    node.wells = wells;
                     async.eachOf(node.wells, function (well, idx, cb) {
                         getDatasets(well.idWell, well, function (err, datasets) {
                             if (err) {
@@ -252,7 +253,9 @@ function baseMapController($scope, $http, wiToken, $timeout, $location) {
             if (err) {
                 return alertMessage.error(err.data.content);
             }
-            $scope.treeConfig = projects.sort((w1, w2) => (w1.alias.localeCompare(w2.alias)));
+            // $scope.treeConfig = projects.sort((w1, w2) => (w1.alias.localeCompare(w2.alias)));
+            $scope.treeConfig = projects;
+
         });
     }
 
