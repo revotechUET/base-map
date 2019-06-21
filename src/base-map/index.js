@@ -202,7 +202,11 @@ function baseMapController($scope, $http, wiToken, $timeout, $location) {
         }
     }
     this.runMatch = function (node, criteria) {
-        // return node.name.includes(criteria);
+        let keySearch = criteria.toLowerCase();
+        let searchArray = node.alias.toLowerCase();
+        return searchArray.includes(keySearch);
+    }
+    this.runMatchWell = function (node, criteria) {
         let keySearch = criteria.toLowerCase();
         let searchArray = node.name.toLowerCase();
         return searchArray.includes(keySearch);

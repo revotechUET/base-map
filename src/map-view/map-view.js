@@ -982,7 +982,7 @@ function mapViewController($scope, $timeout) {
     map = new mapboxgl.Map({
       container: 'map',
       style: 'mapbox://styles/mapbox/light-v10',
-      center: [107, 11],
+      center: [101, 21.13],
       zoom: 5,
     });
     map.addControl(new mapboxgl.FullscreenControl());
@@ -993,6 +993,8 @@ function mapViewController($scope, $timeout) {
       },
       trackUserLocation: true
     }));
+   
+  
     // map.on('load', function () {
     //   map.addLayer(zoneLine);
     // });
