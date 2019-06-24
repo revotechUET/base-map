@@ -29,7 +29,7 @@ map-view {
         font-weight   : bold;
         color         : #fff;
         font-size     : 14px;
-        border        : 1px solid #0077be;
+        border        : 1px solid #fff;
         box-shadow    : 0 2px 15px rgba(0, 0, 0, 0.1);
         padding       : 7px 10px 5px 10px;
         pointer-events: auto;
@@ -49,19 +49,19 @@ map-view {
         -webkit-align-self: center;
         align-self        : center;
         margin-bottom     : 8px;
-        border-top-color  : #0074c4;
+        border-top-color  : #0074c5;
     }
 
     .mapboxgl-popup-anchor-top .mapboxgl-popup-tip {
-        border-bottom-color: #0074c4;
+        border-bottom-color: #0074c5;
     }
 
     .mapboxgl-popup-anchor-right .mapboxgl-popup-tip {
-        border-left-color: #0074c4;
+        border-left-color: #0074c5;
     }
 
     .mapboxgl-popup-anchor-left .mapboxgl-popup-tip {
-        border-right-color: #0074c4;
+        border-right-color: #0074c5;
     }
 
     .switchStyle {
@@ -76,7 +76,7 @@ map-view {
         position          : absolute;
         font-size         : 16px;
         color             : #0074c5;
-        top               : 190px;
+        top               : 303px;
     }
 
     .switchStyle-content {
@@ -86,7 +86,7 @@ map-view {
         
         border-radius: 4px;
         position: absolute;
-        top: 232px;
+        top: 343px;
     }
 
     .theme-map {
@@ -118,6 +118,11 @@ map-view {
     }
     .active {
         border: 2px solid #00b1ff;
+        transition      : all 0.2s ease-in;
+    }
+    .allPopup{
+        color: #0077be !important;
+        box-shadow: 0 0 0 2px rgb(10, 121, 207);
         transition      : all 0.2s ease-in;
     }
 }

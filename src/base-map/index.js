@@ -31,7 +31,7 @@ app.component(componentName, {
     transclude: true
 });
 
-function baseMapController($scope, $http, wiToken, $timeout, $location) {
+function baseMapController($scope, $http, wiToken, $timeout, $location, ngDialog) {
 
     let self = this;
     $scope.wellSelect = [];
@@ -121,10 +121,6 @@ function baseMapController($scope, $http, wiToken, $timeout, $location) {
             $scope.wellSelect.splice(idx, 1);
         }
         self.selectedIdsHash = {};
-    }
-
-    this.showAllPopup = function () {
-        
     }
 
     function addNode(event, helper, node) {
@@ -226,7 +222,12 @@ function baseMapController($scope, $http, wiToken, $timeout, $location) {
             if (!node.timestamp || (Date.now() - node.timestamp > 10 * 1000)) {
                 getWells(node.idProject, node, function (err, wells) {
                     if (err) {
-                        return alertMessage.error(err.data.content);
+                        ngDialog.open({
+                            template: 'templateError',
+                            className: 'ngdialog-theme-default',
+                            scope: $scope,
+                        });
+                        return console.log(err);
                     }
                     // node.wells = wells.sort((w1, w2) => (w1.name.localeCompare(w2.name)));
                     node.wells = wells;
@@ -240,7 +241,7 @@ function baseMapController($scope, $http, wiToken, $timeout, $location) {
                         });
                     }, function (err) {
                         if (err) {
-                            return alertMessage.error(err.message);
+                            return console.log(err);
                         }
                         node.timestamp = Date.now();
                     });
@@ -255,7 +256,7 @@ function baseMapController($scope, $http, wiToken, $timeout, $location) {
         $scope.treeConfig = [];
         getProjects($scope.treeConfig, function (err, projects) {
             if (err) {
-                return alertMessage.error(err.data.content);
+                return console.log(err);
             }
             // $scope.treeConfig = projects.sort((w1, w2) => (w1.alias.localeCompare(w2.alias)));
             $scope.treeConfig = projects;

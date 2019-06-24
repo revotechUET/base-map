@@ -12,6 +12,25 @@
     border-radius: 3px;
     display: none;
     }
+    .calculation-box {
+        display: none;
+        height: 64px;
+        width: 212px;
+        position: absolute;
+        bottom: 70px;
+        right: 12px;
+        background: rgba(0,0,0,0.5);
+        color: #fff;
+        font-size: 11px;
+        padding: 5px 10px;
+        text-align: center;
+        }
+        
+        p {
+        font-family: 'Open Sans';
+        margin: 0;
+        font-size: 13px;
+        }
     </style>
 <div id="map">
     <span class="switchStyle fa fa-adjust" ng-click="self.showTheme = !self.showTheme"></span>
@@ -21,6 +40,10 @@
         <div ng-class="{'active': self.activeTheme === 'theme3'}" class="theme-map theme3" ng-click="self.changeStyleMap3(); self.activeTheme = 'theme3'"></div>
         <div ng-class="{'active': self.activeTheme === 'theme4'}" class="theme-map theme4" ng-click="self.changeStyleMap4(); self.activeTheme = 'theme4'"></div>
     </div>
+    <span ng-class="{'allPopup': self.allPopup}" class="switchStyle fa fa-comment" ng-click="self.allPopup = !self.allPopup" style="top: 261px; padding: 7px; color: #ccc;"></span>
 </div>
 <pre id='coordinates' class='coordinates'></pre>
+<div class='calculation-box'>
+    <div id='calculated-area'></div>
+</div>
 
