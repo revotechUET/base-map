@@ -1056,9 +1056,9 @@ function mapViewController($scope, $timeout) {
       }
     }
     // Show ZoneLine
-    map.on('load', function () {
-      map.addLayer(zoneLine);
-    });
+    // map.on('load', function () {
+    //   map.addLayer(zoneLine);
+    // });
 
     // show marker default
     // let popupMarkerDrag = new mapboxgl.Popup({
