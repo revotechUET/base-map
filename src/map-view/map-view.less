@@ -5,6 +5,102 @@ map-view {
         position: absolute;
     }
 
+    .mapboxgl-ctrl-top-right {
+        top  : 30px;
+        right: 30px;
+    }
+
+    .mapboxgl-ctrl-group>button {
+        width : 40px !important;
+        height: 40px !important;
+    }
+
+    .mapboxgl-ctrl-group:not(:empty) {
+        box-shadow     : 0 4px 14px -2px rgba(0, 0, 0, 0.09);
+        flex-direction : column;
+        display        : flex;
+        align-items    : center;
+        justify-content: center;
+    }
+
+    .mapboxgl-ctrl-group>button+button {
+        border-top: none;
+    }
+
+    .mapboxgl-ctrl>button:hover {
+        background-color: #e4ecfa;
+    }
+
+    .mapboxgl-user-location-dot {
+        background-color: #1da1f2;
+        align-items     : center;
+        display         : flex;
+        justify-content : center;
+
+    }
+
+    .mapboxgl-user-location-dot::before {
+        width : 40px;
+        height: 40px;
+    }
+
+    .mapboxgl-ctrl-icon.mapboxgl-ctrl-fullscreen {
+            background-image : url('data:image/svg+xml,%3C%3Fxml%20version%3D%221.0%22%20encoding%3D%22UTF-8%22%3F%3E%0A%3Csvg%20width%3D%2232px%22%20height%3D%2232px%22%20viewBox%3D%220%200%2032%2032%22%20version%3D%221.1%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20xmlns%3Axlink%3D%22http%3A%2F%2Fwww.w3.org%2F1999%2Fxlink%22%3E%0A%20%20%20%20%3C!--%20Generator%3A%20Sketch%2052.5%20(67469)%20-%20http%3A%2F%2Fwww.bohemiancoding.com%2Fsketch%20--%3E%0A%20%20%20%20%3Ctitle%3Ebasemap_32x32%3C%2Ftitle%3E%0A%20%20%20%20%3Cdesc%3ECreated%20with%20Sketch.%3C%2Fdesc%3E%0A%20%20%20%20%3Cdefs%3E%0A%20%20%20%20%20%20%20%20%3ClinearGradient%20x1%3D%2250%25%22%20y1%3D%2210.9802572%25%22%20x2%3D%2250%25%22%20y2%3D%2297.5075758%25%22%20id%3D%22linearGradient-1%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3Cstop%20stop-color%3D%22%2300ACFF%22%20stop-opacity%3D%220%22%20offset%3D%220%25%22%3E%3C%2Fstop%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3Cstop%20stop-color%3D%22%2300A6F7%22%20stop-opacity%3D%220.118938634%22%20offset%3D%2249.2255238%25%22%3E%3C%2Fstop%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3Cstop%20stop-color%3D%22%23008DD9%22%20stop-opacity%3D%220.582762374%22%20offset%3D%2287.0597001%25%22%3E%3C%2Fstop%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3Cstop%20stop-color%3D%22%230C88D1%22%20offset%3D%22100%25%22%3E%3C%2Fstop%3E%0A%20%20%20%20%20%20%20%20%3C%2FlinearGradient%3E%0A%20%20%20%20%20%20%20%20%3ClinearGradient%20x1%3D%220%25%22%20y1%3D%22100%25%22%20x2%3D%220%25%22%20y2%3D%2214.0956676%25%22%20id%3D%22linearGradient-2%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3Cstop%20stop-color%3D%22%231AAAFF%22%20offset%3D%220%25%22%3E%3C%2Fstop%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3Cstop%20stop-color%3D%22%230077BE%22%20offset%3D%22100%25%22%3E%3C%2Fstop%3E%0A%20%20%20%20%20%20%20%20%3C%2FlinearGradient%3E%0A%20%20%20%20%20%20%20%20%3ClinearGradient%20x1%3D%220%25%22%20y1%3D%22100%25%22%20x2%3D%220%25%22%20y2%3D%2225.3303513%25%22%20id%3D%22linearGradient-3%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3Cstop%20stop-color%3D%22%231AAAFF%22%20offset%3D%220%25%22%3E%3C%2Fstop%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3Cstop%20stop-color%3D%22%230077BE%22%20offset%3D%22100%25%22%3E%3C%2Fstop%3E%0A%20%20%20%20%20%20%20%20%3C%2FlinearGradient%3E%0A%20%20%20%20%20%20%20%20%3ClinearGradient%20x1%3D%2250%25%22%20y1%3D%220%25%22%20x2%3D%2250%25%22%20y2%3D%22100%25%22%20id%3D%22linearGradient-4%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3Cstop%20stop-color%3D%22%2300AFE0%22%20offset%3D%220%25%22%3E%3C%2Fstop%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3Cstop%20stop-color%3D%22%230077BE%22%20offset%3D%22100%25%22%3E%3C%2Fstop%3E%0A%20%20%20%20%20%20%20%20%3C%2FlinearGradient%3E%0A%20%20%20%20%3C%2Fdefs%3E%0A%20%20%20%20%3Cg%20id%3D%22basemap_32x32%22%20stroke%3D%22none%22%20stroke-width%3D%221%22%20fill%3D%22none%22%20fill-rule%3D%22evenodd%22%3E%0A%20%20%20%20%20%20%20%20%3Cpath%20d%3D%22M7.42773874%2C12.5%20L25.1155365%2C12.5%20C25.533153%2C12.5%2025.9067943%2C12.7595173%2026.0526042%2C13.1508522%20L31.2689504%2C27.1508522%20C31.4617794%2C27.6683804%2031.1985587%2C28.2442387%2030.6810305%2C28.4370677%20C30.569329%2C28.4786872%2030.4510859%2C28.5%2030.3318827%2C28.5%20L2.21139258%2C28.5%20C1.65910783%2C28.5%201.21139258%2C28.0522847%201.21139258%2C27.5%20C1.21139258%2C27.3807968%201.23270537%2C27.2625537%201.27432492%2C27.1508522%20L6.49067107%2C13.1508522%20C6.63648094%2C12.7595173%207.01012229%2C12.5%207.42773874%2C12.5%20Z%22%20id%3D%22Rectangle%22%20fill%3D%22url(%23linearGradient-1)%22%3E%3C%2Fpath%3E%0A%20%20%20%20%20%20%20%20%3Cg%20id%3D%22Group-2%22%20transform%3D%22translate(18.621366%2C%207.000000)%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3Cpath%20d%3D%22M5.95675904%2C0.02782875%20C5.95675904%2C0.0326364423%204.97271433%2C2.95124344%203.65854819%2C5.02782875%20C2.11666628%2C7.46424012%200.667684456%2C8.90727799%200.526845553%2C11.2577798%20C0.329440546%2C14.55233%202.78174069%2C17.0000053%205.95675904%2C17.0000053%20C9.13177738%2C17.0000053%2011.6402003%2C14.557255%2011.4810711%2C11.2577798%20C11.3735235%2C9.02782875%209.96091748%2C7.54470933%208.32253336%2C5.02782875%20C7.17644292%2C3.26720818%205.95675904%2C0.0230210577%205.95675904%2C0.02782875%20Z%22%20id%3D%22Fill-1%22%20fill%3D%22url(%23linearGradient-2)%22%20transform%3D%22translate(6.001979%2C%208.513914)%20rotate(-180.000000)%20translate(-6.001979%2C%20-8.513914)%20%22%3E%3C%2Fpath%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3Ccircle%20id%3D%22Oval%22%20fill%3D%22%23FFFFFF%22%20cx%3D%226%22%20cy%3D%225.27829041%22%20r%3D%221.72170959%22%3E%3C%2Fcircle%3E%0A%20%20%20%20%20%20%20%20%3C%2Fg%3E%0A%20%20%20%20%20%20%20%20%3Cg%20id%3D%22Group-2%22%20opacity%3D%220.665178571%22%20transform%3D%22translate(11.094392%2C%201.994853)%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3Cpath%20d%3D%22M3.8543735%2C0.0180068382%20C3.8543735%2C0.021117698%203.21763868%2C1.90962811%202.36729589%2C3.25330096%20C1.36960759%2C4.82980243%200.432031119%2C5.76353282%200.340900063%2C7.28444577%20C0.213167412%2C9.41621352%201.79994986%2C11.0000035%203.8543735%2C11.0000035%20C5.90879713%2C11.0000035%207.53189433%2C9.41940031%207.42892834%2C7.28444577%20C7.35933875%2C5.84153625%206.44529954%2C4.88187074%205.38516865%2C3.25330096%20C4.64358071%2C2.11407588%203.8543735%2C0.0148959785%203.8543735%2C0.0180068382%20Z%22%20id%3D%22Fill-1%22%20fill%3D%22url(%23linearGradient-3)%22%20transform%3D%22translate(3.883634%2C%205.509003)%20rotate(-180.000000)%20translate(-3.883634%2C%20-5.509003)%20%22%3E%3C%2Fpath%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3Ccircle%20id%3D%22Oval%22%20fill%3D%22%23FFFFFF%22%20cx%3D%223.88235294%22%20cy%3D%223.41536438%22%20r%3D%221.11404738%22%3E%3C%2Fcircle%3E%0A%20%20%20%20%20%20%20%20%3C%2Fg%3E%0A%20%20%20%20%20%20%20%20%3Cg%20id%3D%22Group%22%20transform%3D%22translate(4.000000%2C%2010.000000)%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3Cpolyline%20id%3D%22Line%22%20stroke%3D%22%230077BE%22%20stroke-linecap%3D%22round%22%20points%3D%221.14679327%2014.020864%202.99739666%201%205%201%207%2014.020864%22%3E%3C%2Fpolyline%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3Crect%20id%3D%22Rectangle-7-Copy-7%22%20fill%3D%22%230077BE%22%20x%3D%221.50837665%22%20y%3D%228.28571429%22%20width%3D%225.08972693%22%20height%3D%221%22%20rx%3D%220.5%22%3E%3C%2Frect%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3Crect%20id%3D%22Rectangle-7-Copy-8%22%20fill%3D%22%230077BE%22%20x%3D%221.97107909%22%20y%3D%225.71428571%22%20width%3D%224.16432203%22%20height%3D%221%22%20rx%3D%220.5%22%3E%3C%2Frect%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3Crect%20id%3D%22Rectangle-7-Copy-9%22%20fill%3D%22%230077BE%22%20x%3D%222.43378154%22%20y%3D%223.14285714%22%20width%3D%223.23891714%22%20height%3D%221%22%20rx%3D%220.5%22%3E%3C%2Frect%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3Crect%20id%3D%22Rectangle-7-Copy-6%22%20fill%3D%22%230077BE%22%20x%3D%221.0456742%22%20y%3D%2210.8571429%22%20width%3D%226.01513183%22%20height%3D%221%22%20rx%3D%220.5%22%3E%3C%2Frect%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3Cpath%20d%3D%22M4%2C1%20L4%2C14.020864%22%20id%3D%22Line-2%22%20stroke%3D%22%230077BE%22%20stroke-width%3D%220.5%22%20stroke-linecap%3D%22round%22%3E%3C%2Fpath%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3Crect%20id%3D%22Rectangle-7-Copy-10%22%20fill%3D%22%230077BE%22%20x%3D%221.91783898%22%20y%3D%22-8.8817842e-16%22%20width%3D%224.16432203%22%20height%3D%221%22%20rx%3D%220.5%22%3E%3C%2Frect%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3Cg%20id%3D%22Rectangle-7-Copy-11%22%20transform%3D%22translate(0.000000%2C%2014.000000)%22%20fill%3D%22%230077BE%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Crect%20id%3D%22Rectangle-7-Copy-10%22%20x%3D%220%22%20y%3D%22-9.99200722e-16%22%20width%3D%222%22%20height%3D%221%22%20rx%3D%220.5%22%3E%3C%2Frect%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3C%2Fg%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3Cg%20id%3D%22Rectangle-7-Copy-12%22%20transform%3D%22translate(3.000000%2C%2014.000000)%22%20fill%3D%22%230077BE%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Crect%20id%3D%22Rectangle-7-Copy-10%22%20x%3D%220%22%20y%3D%22-9.99200722e-16%22%20width%3D%222%22%20height%3D%221%22%20rx%3D%220.5%22%3E%3C%2Frect%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3C%2Fg%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3Cg%20id%3D%22Rectangle-7-Copy-13%22%20transform%3D%22translate(6.000000%2C%2014.000000)%22%20fill%3D%22%230077BE%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Crect%20id%3D%22Rectangle-7-Copy-10%22%20x%3D%220%22%20y%3D%22-9.99200722e-16%22%20width%3D%222%22%20height%3D%221%22%20rx%3D%220.5%22%3E%3C%2Frect%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3C%2Fg%3E%0A%20%20%20%20%20%20%20%20%3C%2Fg%3E%0A%20%20%20%20%20%20%20%20%3Ccircle%20id%3D%22Oval-Copy-3%22%20fill%3D%22url(%23linearGradient-4)%22%20cx%3D%2217.6373577%22%20cy%3D%2222.9595795%22%20r%3D%221%22%3E%3C%2Fcircle%3E%0A%20%20%20%20%20%20%20%20%3Ccircle%20id%3D%22Oval-Copy-9%22%20fill%3D%22url(%23linearGradient-4)%22%20cx%3D%2219.2223748%22%20cy%3D%2223.6268864%22%20r%3D%221%22%3E%3C%2Fcircle%3E%0A%20%20%20%20%20%20%20%20%3Ccircle%20id%3D%22Oval-Copy-10%22%20fill%3D%22url(%23linearGradient-4)%22%20cx%3D%2220.8760585%22%20cy%3D%2224.2030386%22%20r%3D%221%22%3E%3C%2Fcircle%3E%0A%20%20%20%20%20%20%20%20%3Ccircle%20id%3D%22Oval-Copy-11%22%20fill%3D%22url(%23linearGradient-4)%22%20cx%3D%2222.4919527%22%20cy%3D%2224.8154672%22%20r%3D%221%22%3E%3C%2Fcircle%3E%0A%20%20%20%20%20%20%20%20%3Ccircle%20id%3D%22Oval-Copy-13%22%20fill%3D%22url(%23linearGradient-4)%22%20cx%3D%2224.6404033%22%20cy%3D%2225.536706%22%20r%3D%221%22%3E%3C%2Fcircle%3E%0A%20%20%20%20%20%20%20%20%3Ccircle%20id%3D%22Oval-Copy-4%22%20fill%3D%22url(%23linearGradient-4)%22%20cx%3D%2216.0188992%22%20cy%3D%2222.340053%22%20r%3D%221%22%3E%3C%2Fcircle%3E%0A%20%20%20%20%20%20%20%20%3Ccircle%20id%3D%22Oval-Copy-5%22%20fill%3D%22url(%23linearGradient-4)%22%20opacity%3D%220.456682478%22%20cx%3D%2214.7223748%22%20cy%3D%2215.8263626%22%20r%3D%221%22%3E%3C%2Fcircle%3E%0A%20%20%20%20%20%20%20%20%3Ccircle%20id%3D%22Oval-Copy-17%22%20fill%3D%22url(%23linearGradient-4)%22%20opacity%3D%220.456682478%22%20cx%3D%2217.4940124%22%20cy%3D%2217.5%22%20r%3D%221%22%3E%3C%2Fcircle%3E%0A%20%20%20%20%20%20%20%20%3Ccircle%20id%3D%22Oval-Copy-18%22%20fill%3D%22url(%23linearGradient-4)%22%20opacity%3D%220.456682478%22%20cx%3D%2216.0188992%22%20cy%3D%2216.6626267%22%20r%3D%221%22%3E%3C%2Fcircle%3E%0A%20%20%20%20%20%20%20%20%3Ccircle%20id%3D%22Oval-Copy-12%22%20fill%3D%22url(%23linearGradient-4)%22%20opacity%3D%220.602934338%22%20cx%3D%2217.3577417%22%20cy%3D%2219.5%22%20r%3D%221%22%3E%3C%2Fcircle%3E%0A%20%20%20%20%20%20%20%20%3Ccircle%20id%3D%22Oval-Copy-16%22%20fill%3D%22url(%23linearGradient-4)%22%20opacity%3D%220.602934338%22%20cx%3D%2219.0372468%22%20cy%3D%2218.5%22%20r%3D%221%22%3E%3C%2Fcircle%3E%0A%20%20%20%20%20%20%20%20%3Ccircle%20id%3D%22Oval-Copy-14%22%20fill%3D%22url(%23linearGradient-4)%22%20opacity%3D%220.602934338%22%20cx%3D%2215.9377895%22%20cy%3D%2220.5%22%20r%3D%221%22%3E%3C%2Fcircle%3E%0A%20%20%20%20%20%20%20%20%3Ccircle%20id%3D%22Oval-Copy-15%22%20fill%3D%22url(%23linearGradient-4)%22%20opacity%3D%220.602934338%22%20cx%3D%2214.2223748%22%20cy%3D%2221.5%22%20r%3D%221%22%3E%3C%2Fcircle%3E%0A%20%20%20%20%20%20%20%20%3Ccircle%20id%3D%22Oval-Copy-6%22%20fill%3D%22url(%23linearGradient-4)%22%20opacity%3D%220.311151414%22%20cx%3D%2213.1443829%22%20cy%3D%2214.915%22%20r%3D%221%22%3E%3C%2Fcircle%3E%0A%20%20%20%20%20%20%20%20%3Ccircle%20id%3D%22Oval-Copy-7%22%20fill%3D%22url(%23linearGradient-4)%22%20opacity%3D%220.311151414%22%20cx%3D%2214.7223748%22%20cy%3D%2213.915%22%20r%3D%221%22%3E%3C%2Fcircle%3E%0A%20%20%20%20%3C%2Fg%3E%0A%3C%2Fsvg%3E');
+        background-repeat  : no-repeat;
+        background-position: center;
+    }
+
+    .mapboxgl-ctrl-icon.mapboxgl-ctrl-zoom-in {
+        background-image : url('data:image/svg+xml,%3C%3Fxml%20version%3D%221.0%22%20encoding%3D%22UTF-8%22%3F%3E%0A%3Csvg%20width%3D%2216px%22%20height%3D%2216px%22%20viewBox%3D%220%200%2016%2016%22%20version%3D%221.1%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20xmlns%3Axlink%3D%22http%3A%2F%2Fwww.w3.org%2F1999%2Fxlink%22%3E%0A%20%20%20%20%3C!--%20Generator%3A%20Sketch%2052.5%20(67469)%20-%20http%3A%2F%2Fwww.bohemiancoding.com%2Fsketch%20--%3E%0A%20%20%20%20%3Ctitle%3Ebasemap_zoom_in_16x16%3C%2Ftitle%3E%0A%20%20%20%20%3Cdesc%3ECreated%20with%20Sketch.%3C%2Fdesc%3E%0A%20%20%20%20%3Cg%20id%3D%22basemap_zoom_in_16x16%22%20stroke%3D%22none%22%20stroke-width%3D%221%22%20fill%3D%22none%22%20fill-rule%3D%22evenodd%22%3E%0A%20%20%20%20%20%20%20%20%3Cg%20id%3D%22Group%22%20transform%3D%22translate(1.000000%2C%201.000000)%22%20fill%3D%22%233F87DA%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3Crect%20id%3D%22Rectangle%22%20x%3D%220%22%20y%3D%226%22%20width%3D%2214%22%20height%3D%222%22%20rx%3D%221%22%3E%3C%2Frect%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3Crect%20id%3D%22Rectangle%22%20transform%3D%22translate(7.000000%2C%207.000000)%20rotate(-270.000000)%20translate(-7.000000%2C%20-7.000000)%20%22%20x%3D%220%22%20y%3D%226%22%20width%3D%2214%22%20height%3D%222%22%20rx%3D%221%22%3E%3C%2Frect%3E%0A%20%20%20%20%20%20%20%20%3C%2Fg%3E%0A%20%20%20%20%3C%2Fg%3E%0A%3C%2Fsvg%3E');
+        background-repeat  : no-repeat;
+        background-position: center;
+    }
+
+    .mapboxgl-ctrl-icon.mapboxgl-ctrl-zoom-out {
+        background-image : url('data:image/svg+xml,%3C%3Fxml%20version%3D%221.0%22%20encoding%3D%22UTF-8%22%3F%3E%0A%3Csvg%20width%3D%2216px%22%20height%3D%2216px%22%20viewBox%3D%220%200%2016%2016%22%20version%3D%221.1%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20xmlns%3Axlink%3D%22http%3A%2F%2Fwww.w3.org%2F1999%2Fxlink%22%3E%0A%20%20%20%20%3C!--%20Generator%3A%20Sketch%2052.5%20(67469)%20-%20http%3A%2F%2Fwww.bohemiancoding.com%2Fsketch%20--%3E%0A%20%20%20%20%3Ctitle%3Ebasemap_zoom_out_16x16%3C%2Ftitle%3E%0A%20%20%20%20%3Cdesc%3ECreated%20with%20Sketch.%3C%2Fdesc%3E%0A%20%20%20%20%3Cg%20id%3D%22basemap_zoom_out_16x16%22%20stroke%3D%22none%22%20stroke-width%3D%221%22%20fill%3D%22none%22%20fill-rule%3D%22evenodd%22%3E%0A%20%20%20%20%20%20%20%20%3Crect%20id%3D%22Rectangle%22%20fill%3D%22%233F87DA%22%20x%3D%221%22%20y%3D%227%22%20width%3D%2214%22%20height%3D%222%22%20rx%3D%221%22%3E%3C%2Frect%3E%0A%20%20%20%20%3C%2Fg%3E%0A%3C%2Fsvg%3E');
+
+        background-repeat  : no-repeat;
+        background-position: center;
+    }
+
+    .mapboxgl-ctrl-icon.mapboxgl-ctrl-compass>.mapboxgl-ctrl-compass-arrow {
+        background-image : url('data:image/svg+xml,%3C%3Fxml%20version%3D%221.0%22%20encoding%3D%22UTF-8%22%3F%3E%0A%3Csvg%20width%3D%2216px%22%20height%3D%2216px%22%20viewBox%3D%220%200%2016%2016%22%20version%3D%221.1%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20xmlns%3Axlink%3D%22http%3A%2F%2Fwww.w3.org%2F1999%2Fxlink%22%3E%0A%20%20%20%20%3C!--%20Generator%3A%20Sketch%2052.5%20(67469)%20-%20http%3A%2F%2Fwww.bohemiancoding.com%2Fsketch%20--%3E%0A%20%20%20%20%3Ctitle%3Ebasemap_pitch_16x16%3C%2Ftitle%3E%0A%20%20%20%20%3Cdesc%3ECreated%20with%20Sketch.%3C%2Fdesc%3E%0A%20%20%20%20%3Cg%20id%3D%22basemap_pitch_16x16%22%20stroke%3D%22none%22%20stroke-width%3D%221%22%20fill%3D%22none%22%20fill-rule%3D%22evenodd%22%3E%0A%20%20%20%20%20%20%20%20%3Cpolygon%20id%3D%22Triangle%22%20fill%3D%22%233F87DA%22%20points%3D%228%201%2013%206%203%206%22%3E%3C%2Fpolygon%3E%0A%20%20%20%20%20%20%20%20%3Cpolygon%20id%3D%22Triangle%22%20fill%3D%22%233F87DA%22%20transform%3D%22translate(8.000000%2C%2012.500000)%20rotate(-180.000000)%20translate(-8.000000%2C%20-12.500000)%20%22%20points%3D%228%2010%2013%2015%203%2015%22%3E%3C%2Fpolygon%3E%0A%20%20%20%20%3C%2Fg%3E%0A%3C%2Fsvg%3E');
+
+        background-repeat  : no-repeat;
+        background-position: center;
+    }
+
+    .mapboxgl-ctrl-icon.mapboxgl-ctrl-geolocate {
+        background-image : url('data:image/svg+xml,%3C%3Fxml%20version%3D%221.0%22%20encoding%3D%22UTF-8%22%3F%3E%0A%3Csvg%20width%3D%2216px%22%20height%3D%2216px%22%20viewBox%3D%220%200%2016%2016%22%20version%3D%221.1%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20xmlns%3Axlink%3D%22http%3A%2F%2Fwww.w3.org%2F1999%2Fxlink%22%3E%0A%20%20%20%20%3C!--%20Generator%3A%20Sketch%2052.5%20(67469)%20-%20http%3A%2F%2Fwww.bohemiancoding.com%2Fsketch%20--%3E%0A%20%20%20%20%3Ctitle%3Ebasemap_loaction_ok_16x16%3C%2Ftitle%3E%0A%20%20%20%20%3Cdesc%3ECreated%20with%20Sketch.%3C%2Fdesc%3E%0A%20%20%20%20%3Cg%20id%3D%22basemap_loaction_ok_16x16%22%20stroke%3D%22none%22%20stroke-width%3D%221%22%20fill%3D%22none%22%20fill-rule%3D%22evenodd%22%3E%0A%20%20%20%20%20%20%20%20%3Cpath%20d%3D%22M1.76470588%2C8.05882353%20L14.4201681%2C1.3092437%20C14.5176301%2C1.25726396%2014.6387766%2C1.29413462%2014.6907563%2C1.39159664%20C14.7221289%2C1.45042017%2014.7221289%2C1.5210084%2014.6907563%2C1.57983193%20L7.94117647%2C14.2352941%20C7.81122712%2C14.4789492%207.50836092%2C14.5711258%207.26470588%2C14.4411765%20C7.10177414%2C14.3542795%207%2C14.184656%207%2C14%20L7%2C9.5%20C7%2C9.22385763%206.77614237%2C9%206.5%2C9%20L2%2C9%20C1.72385763%2C9%201.5%2C8.77614237%201.5%2C8.5%20C1.5%2C8.31534402%201.60177414%2C8.14572046%201.76470588%2C8.05882353%20Z%22%20id%3D%22Rectangle%22%20fill%3D%22%233F87DA%22%3E%3C%2Fpath%3E%0A%20%20%20%20%3C%2Fg%3E%0A%3C%2Fsvg%3E');
+
+        background-repeat  : no-repeat;
+        background-position: center;
+    }
+    .mapboxgl-ctrl-icon.mapboxgl-ctrl-geolocate.mapboxgl-ctrl-geolocate-active {
+        background-image : url('data:image/svg+xml,%3C%3Fxml%20version%3D%221.0%22%20encoding%3D%22UTF-8%22%3F%3E%0A%3Csvg%20width%3D%2216px%22%20height%3D%2216px%22%20viewBox%3D%220%200%2016%2016%22%20version%3D%221.1%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20xmlns%3Axlink%3D%22http%3A%2F%2Fwww.w3.org%2F1999%2Fxlink%22%3E%0A%20%20%20%20%3C!--%20Generator%3A%20Sketch%2052.5%20(67469)%20-%20http%3A%2F%2Fwww.bohemiancoding.com%2Fsketch%20--%3E%0A%20%20%20%20%3Ctitle%3Ebasemap_loaction_search_16x16%3C%2Ftitle%3E%0A%20%20%20%20%3Cdesc%3ECreated%20with%20Sketch.%3C%2Fdesc%3E%0A%20%20%20%20%3Cg%20id%3D%22basemap_loaction_search_16x16%22%20stroke%3D%22none%22%20stroke-width%3D%221%22%20fill%3D%22none%22%20fill-rule%3D%22evenodd%22%3E%0A%20%20%20%20%20%20%20%20%3Cpath%20d%3D%22M13.7857143%2C2.21428571%20L2%2C8.5%20L6.5%2C8.5%20C7.05228475%2C8.5%207.5%2C8.94771525%207.5%2C9.5%20L7.5%2C14%20L13.7857143%2C2.21428571%20Z%22%20id%3D%22Rectangle%22%20stroke%3D%22%23A7A7A7%22%3E%3C%2Fpath%3E%0A%20%20%20%20%3C%2Fg%3E%0A%3C%2Fsvg%3E');
+
+        background-repeat  : no-repeat;
+        background-position: center;
+    }
+    .mapboxgl-ctrl-icon.mapboxgl-ctrl-geolocate.mapboxgl-ctrl-geolocate-background {
+        background-image : url('data:image/svg+xml,%3C%3Fxml%20version%3D%221.0%22%20encoding%3D%22UTF-8%22%3F%3E%0A%3Csvg%20width%3D%2216px%22%20height%3D%2216px%22%20viewBox%3D%220%200%2016%2016%22%20version%3D%221.1%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20xmlns%3Axlink%3D%22http%3A%2F%2Fwww.w3.org%2F1999%2Fxlink%22%3E%0A%20%20%20%20%3C!--%20Generator%3A%20Sketch%2052.5%20(67469)%20-%20http%3A%2F%2Fwww.bohemiancoding.com%2Fsketch%20--%3E%0A%20%20%20%20%3Ctitle%3Ebasemap_loaction_find_16x16%3C%2Ftitle%3E%0A%20%20%20%20%3Cdesc%3ECreated%20with%20Sketch.%3C%2Fdesc%3E%0A%20%20%20%20%3Cg%20id%3D%22basemap_loaction_find_16x16%22%20stroke%3D%22none%22%20stroke-width%3D%221%22%20fill%3D%22none%22%20fill-rule%3D%22evenodd%22%3E%0A%20%20%20%20%20%20%20%20%3Cpath%20d%3D%22M13.7857143%2C2.21428571%20L2%2C8.5%20L6.5%2C8.5%20C7.05228475%2C8.5%207.5%2C8.94771525%207.5%2C9.5%20L7.5%2C14%20L13.7857143%2C2.21428571%20Z%22%20id%3D%22Rectangle%22%20stroke%3D%22%233F87DA%22%3E%3C%2Fpath%3E%0A%20%20%20%20%3C%2Fg%3E%0A%3C%2Fsvg%3E');
+        background-repeat  : no-repeat;
+        background-position: center;
+    }
+    .mapbox-gl-draw_polygon {
+        background-image : url('data:image/svg+xml,%3C%3Fxml%20version%3D%221.0%22%20encoding%3D%22UTF-8%22%3F%3E%0A%3Csvg%20width%3D%2216px%22%20height%3D%2216px%22%20viewBox%3D%220%200%2016%2016%22%20version%3D%221.1%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20xmlns%3Axlink%3D%22http%3A%2F%2Fwww.w3.org%2F1999%2Fxlink%22%3E%0A%20%20%20%20%3C!--%20Generator%3A%20Sketch%2052.5%20(67469)%20-%20http%3A%2F%2Fwww.bohemiancoding.com%2Fsketch%20--%3E%0A%20%20%20%20%3Ctitle%3Ebasemap_draw_16x16%3C%2Ftitle%3E%0A%20%20%20%20%3Cdesc%3ECreated%20with%20Sketch.%3C%2Fdesc%3E%0A%20%20%20%20%3Cg%20id%3D%22basemap_draw_16x16%22%20stroke%3D%22none%22%20stroke-width%3D%221%22%20fill%3D%22none%22%20fill-rule%3D%22evenodd%22%3E%0A%20%20%20%20%20%20%20%20%3Cg%20id%3D%22Group%22%20transform%3D%22translate(1.000000%2C%202.000000)%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3Cpath%20d%3D%22M3.44362102%2C1.55969131%20L2.56457757%2C10.3614505%20L11.4380253%2C8.60171073%20L10.5590363%2C2.44878823%20L3.44362102%2C1.55969131%20Z%22%20id%3D%22Rectangle%22%20stroke%3D%22%233F87DA%22%20opacity%3D%220.474283854%22%3E%3C%2Fpath%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3Ccircle%20id%3D%22Oval%22%20fill%3D%22%233F87DA%22%20cx%3D%223.5%22%20cy%3D%221.5%22%20r%3D%221.5%22%3E%3C%2Fcircle%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3Ccircle%20id%3D%22Oval-Copy%22%20fill%3D%22%233F87DA%22%20cx%3D%222.88501134%22%20cy%3D%2210.1149887%22%20r%3D%222.11498866%22%3E%3C%2Fcircle%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3Ccircle%20id%3D%22Oval-Copy-2%22%20fill%3D%22%233F87DA%22%20cx%3D%2211.5%22%20cy%3D%228.5%22%20r%3D%221.5%22%3E%3C%2Fcircle%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3Ccircle%20id%3D%22Oval-Copy-3%22%20fill%3D%22%233F87DA%22%20cx%3D%2210.5%22%20cy%3D%222.5%22%20r%3D%221.5%22%3E%3C%2Fcircle%3E%0A%20%20%20%20%20%20%20%20%3C%2Fg%3E%0A%20%20%20%20%3C%2Fg%3E%0A%3C%2Fsvg%3E');
+
+        background-repeat  : no-repeat;
+        background-position: center;
+    }
+
+    .mapbox-gl-draw_trash {
+        background-image : url('data:image/svg+xml,%3C%3Fxml%20version%3D%221.0%22%20encoding%3D%22UTF-8%22%3F%3E%0A%3Csvg%20width%3D%2216px%22%20height%3D%2216px%22%20viewBox%3D%220%200%2016%2016%22%20version%3D%221.1%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20xmlns%3Axlink%3D%22http%3A%2F%2Fwww.w3.org%2F1999%2Fxlink%22%3E%0A%20%20%20%20%3C!--%20Generator%3A%20Sketch%2052.5%20(67469)%20-%20http%3A%2F%2Fwww.bohemiancoding.com%2Fsketch%20--%3E%0A%20%20%20%20%3Ctitle%3Ebasemap_earse_16x16%3C%2Ftitle%3E%0A%20%20%20%20%3Cdesc%3ECreated%20with%20Sketch.%3C%2Fdesc%3E%0A%20%20%20%20%3Cg%20id%3D%22basemap_earse_16x16%22%20stroke%3D%22none%22%20stroke-width%3D%221%22%20fill%3D%22none%22%20fill-rule%3D%22evenodd%22%3E%0A%20%20%20%20%20%20%20%20%3Cg%20id%3D%22Group%22%20transform%3D%22translate(8.000000%2C%208.000000)%20rotate(-315.000000)%20translate(-8.000000%2C%20-8.000000)%20translate(1.000000%2C%201.000000)%22%20fill%3D%22%233F87DA%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3Crect%20id%3D%22Rectangle%22%20x%3D%220%22%20y%3D%226%22%20width%3D%2214%22%20height%3D%222%22%20rx%3D%221%22%3E%3C%2Frect%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3Crect%20id%3D%22Rectangle%22%20transform%3D%22translate(7.000000%2C%207.000000)%20rotate(-270.000000)%20translate(-7.000000%2C%20-7.000000)%20%22%20x%3D%220%22%20y%3D%226%22%20width%3D%2214%22%20height%3D%222%22%20rx%3D%221%22%3E%3C%2Frect%3E%0A%20%20%20%20%20%20%20%20%3C%2Fg%3E%0A%20%20%20%20%3C%2Fg%3E%0A%3C%2Fsvg%3E');
+
+        background-repeat  : no-repeat;
+        background-position: center;
+    }
+
     .mapboxgl-ctrl-bottom-left {
         bottom : 0;
         left   : 0;
@@ -64,65 +160,5 @@ map-view {
         border-right-color: #0074c5;
     }
 
-    .switchStyle {
-        right             : 10px;
-        z-index           : 1;
-        padding           : 8px;
-        cursor            : pointer;
-        -webkit-box-shadow: 0 0 2px rgba(0, 0, 0, 0.1);
-        box-shadow        : 0 0 0 2px rgba(0, 0, 0, 0.1);
-        border-radius     : 4px;
-        background        : #fff;
-        position          : absolute;
-        font-size         : 16px;
-        color             : #0074c5;
-        top               : 303px;
-    }
 
-    .switchStyle-content {
-        right: 9px;
-        z-index: 1;
-        cursor: pointer;
-        
-        border-radius: 4px;
-        position: absolute;
-        top: 343px;
-    }
-
-    .theme-map {
-        background-size: cover;
-        -webkit-box-shadow: 0 0 2px rgba(0, 0, 0, 0.1);
-        border: 2px solid #cdcdcd;
-        margin-bottom: 10px;
-        border-radius: 3px;
-        width           : 32px;
-        height          : 32px;
-        transition      : all 0.2s ease-in;
-
-        &:hover {
-            border: 2px solid #0468c5;
-            transition      : all 0.2s ease-in;
-        }
-    }
-    .theme1 {
-        background-image: url('./images/img01.png');
-    }
-    .theme2 {
-        background-image: url('./images/img02.png');
-    }
-    .theme3 {
-        background-image: url('./images/img03.png');
-    }
-    .theme4 {
-        background-image: url('./images/img04.png');
-    }
-    .active {
-        border: 2px solid #00b1ff;
-        transition      : all 0.2s ease-in;
-    }
-    .allPopup{
-        color: #0077be !important;
-        box-shadow: 0 0 0 2px rgb(10, 121, 207);
-        transition      : all 0.2s ease-in;
-    }
 }

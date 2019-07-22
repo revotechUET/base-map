@@ -1,6 +1,6 @@
 var componentName = 'baseMap';
 module.exports.name = componentName;
-require('./style.less');
+require('./new-style.less');
 const queryString = require('query-string')
 
 let config = require("../../config/default").default;
@@ -9,14 +9,14 @@ if (process.env.NODE_ENV === "development") {
 } else if (process.env.NODE_ENV === "production") {
     config = require("../../config/default").production;
 }
-console.log("config", config);
-console.log("NODE_ENV", process.env.NODE_ENV);
+// console.log("config", config);
+// console.log("NODE_ENV", process.env.NODE_ENV);
 const WI_AUTH_HOST = config.wi_auth;
 const WI_BACKEND_HOST = config.wi_backend;
 
-var app = angular.module(componentName, ['mapView', 'sideBar', 'wiTreeView', 'wiDroppable', 'wiLogin', 'ngDialog', 'wiToken']);
+var app = angular.module(componentName, ['mapView', 'sideBar', 'wiTreeView', 'wiDroppable', 'wiLogin', 'ngDialog', 'wiToken', 'angularResizable']);
 app.component(componentName, {
-    template: require('./template.html'),
+    template: require('./new-template.html'),
     controller: baseMapController,
     controllerAs: 'self',
     bindings: {
@@ -34,17 +34,18 @@ app.component(componentName, {
 function baseMapController($scope, $http, wiToken, $timeout, $location, ngDialog) {
 
     let self = this;
+    self.noWell = true;
     $scope.wellSelect = [];
     $scope.focusWell = [];
+    $scope.allPopup = false;
+    self.activeTheme = 'theme6'
     self.selectedIdsHash = {}
 
     this.$onInit = function () {
-        //CHECK TOKEN
-        
         self.baseUrl = $location.search().baseUrl || self.baseUrl;
         // self.getLoginUrl = `${WI_AUTH_HOST}/login`;
-		self.loginUrl = `${WI_AUTH_HOST}/login` || $location.search().loginUrl || self.loginUrl;
-		self.queryString = queryString.parse(location.search);
+        self.loginUrl = `${WI_AUTH_HOST}/login` || $location.search().loginUrl || self.loginUrl;
+        self.queryString = queryString.parse(location.search);
         if ((localStorage.getItem("token")) !== null) {
             getZoneList();
             getCurveTree();
@@ -77,6 +78,13 @@ function baseMapController($scope, $http, wiToken, $timeout, $location, ngDialog
             }
         });
     }
+    $scope.tab = 2;
+    $scope.setTab = function (newTab) {
+        $scope.tab = newTab;
+    };
+    $scope.isSet = function (tabNum) {
+        return $scope.tab === tabNum;
+    };
 
     function getZoneList() {
         $http({
@@ -95,22 +103,32 @@ function baseMapController($scope, $http, wiToken, $timeout, $location, ngDialog
                 $scope.zoneMap = $scope.zoneSelected.output;
             }
             // Change value
-            $scope.hasChanged = function () {
-                $scope.zoneMap = $scope.zoneSelected.output;
+            $scope.hasChanged = function (item) {
+                $scope.zoneMap = item.output;
             }
         }, function (errorResponse) {
             console.error(errorResponse);
         });
+    }
+    this.allPopup = function () {
+        $scope.allPopup = !$scope.allPopup;
+    }
+    this.changeStyleMap = function (theme) {
+        $scope.themeMap = theme;
+        
     }
 
     this.refesh = function () {
         getZoneList();
         getCurveTree();
         $scope.wellSelect = [];
+        self.noWell = true;
+
     }
 
     this.cleanMap = function () {
         $scope.wellSelect = [];
+        self.noWell = true;
     }
 
     this.deleteWell = function () {
@@ -133,6 +151,8 @@ function baseMapController($scope, $http, wiToken, $timeout, $location, ngDialog
             if (!foundWell) {
                 $timeout(function () {
                     $scope.wellSelect.push(node);
+                    self.noWell = false;
+
                 })
             }
         } else if (node.idProject) {
@@ -148,6 +168,8 @@ function baseMapController($scope, $http, wiToken, $timeout, $location, ngDialog
                     if (!foundWell) {
                         $timeout(function () {
                             $scope.wellSelect.push(wells[index]);
+                            self.noWell = false;
+
                         })
                     }
 
@@ -182,18 +204,18 @@ function baseMapController($scope, $http, wiToken, $timeout, $location, ngDialog
     }
 
     this.getLabel = function (node) {
-        if (node.idWell) {
+        if (node && node.idWell) {
             return node.name;
-        } else if (node.idProject) {
+        } else if (node && node.idProject) {
             return node.alias || node.name;
         }
     }
     this.getIcon = function (node) {
-        if (node.idWell) return "well-16x16";
-        else if (node.idProject) return "project-normal-16x16";
+        if (node && node.idWell) return "well-16x16";
+        else if (node && node.idProject) return "project-normal-16x16";
     }
     this.getChildren = function (node) {
-        if (node.idProject) {
+        if (node && node.idProject) {
             return node.wells;
         }
     }

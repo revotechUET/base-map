@@ -1,0 +1,165 @@
+<div class="main slim-scroller" ng-class="{'change-height': self.hideMain}">
+    <div class="tab">
+        <div style="display: flex;">
+            <div class="tab-name fa fa-user-circle-o" style="color: #4085ff; font-size: 17px; position: relative; z-index: 1;" ng-click="self.showUser = !self.showUser">
+                <div ng-show="self.showUser" class="user">
+                    <wi-login ng-if="self.hasWiLogin" 
+                        whoami="main-service" 
+                        app-name="Base Map" 
+                        login-url="{{self.loginUrl}}" 
+                        query-string="self.queryString"
+                        register-url='https://www.i2g.cloud/register-information/'>
+                    </wi-login>
+                </div>
+            </div>
+            <div class="tab-name" ng-class="{'active' : isSet(1)}" ng-click="setTab(1)">Project list</div>
+            <div class="tab-name" ng-class="{'active' : isSet(2)}" ng-click="setTab(2)">Setting</div>
+        </div>
+        <div style="display: flex;">
+            <div class="tab-name ti ti-reload" ng-click="self.refesh()" style="color: #99a3ba; font-size: 17px;">
+            </div>
+            <div ng-show="self.hideMain" class="tab-name ti ti-arrow-circle-down"
+                style="color: #99a3ba; font-size: 17px;" ng-click="self.hideMain = !self.hideMain"></div>
+            <div ng-show="!self.hideMain" class="tab-name ti ti-arrow-circle-up"
+                style="color: #99a3ba; font-size: 17px;" ng-click="self.hideMain = !self.hideMain"></div>
+        </div>
+    </div>
+    <div ng-show="isSet(1) && !self.hideMain" class="content">
+        <div class="content-top" resizable r-directions="['bottom']" r-flex="true">
+            <wi-tree-view tree-root="treeConfig" get-label="self.getLabel" get-icon="self.getIcon"
+                get-children="self.getChildren" run-match="self.runMatch" hide-unmatched="true"
+                click-fn='self.clickFunction'>
+            </wi-tree-view>
+        </div>
+        <div class="content-bottom">
+            <wi-droppable on-drop="self.dropFn" style="flex: 1; display: flex; overflow: hidden;position: absolute;"
+                container-style="{flex: 1, margin: 0, border: 'none', overflow: 'auto'}">
+                <div ng-show="self.noWell" class="no-wells">
+                    <div>
+                        <div class="ti ti-import" 
+                        style="font-size: 40px;
+                        margin-bottom: 20px;
+                        color: #5592ff;"></div>
+                        <div>Drop wells here</div>
+                    </div>
+                </div>
+                <wi-tree-view ng-show="!self.noWell" tree-root="wellSelect" get-label="self.getLabel"          get-icon="self.getIcon"
+                    get-children="self.getChildren" run-match="self.runMatchWell" hide-unmatched="true"
+                    selected-ids="self.selectedIdsHash" click-fn='self.clickWellFunction'>
+                </wi-tree-view>
+            </wi-droppable>
+            <div class="tab-function">
+                <div class="tab-fn-name ti ti-close" ng-click="self.deleteWell()"></div>
+                <div class="tab-fn-name ti-paint-roller" ng-click="self.cleanMap()"></div>
+            </div>
+        </div>
+    </div>
+    <div ng-show="isSet(2) && !self.hideMain" class="content">
+        <div style="flex: 1; margin: 15px; user-select: none; overflow: hidden;display: flex; flex-direction: column;">
+            <div class="setting">
+                <div class="setting-title">Appearance</div>
+                <div class="setting-content">
+                    <span>Change the map color </span>
+                </div>
+                <div style="display: flex; margin-top: 10px;justify-content: space-between;">
+                    <div ng-class="{'active fa fa-check': self.activeTheme === 'theme1'}"
+                        ng-click="self.changeStyleMap(1); self.activeTheme = 'theme1'" class="theme"
+                        style="background: #62a8fa"></div>
+                    <div ng-class="{'active fa fa-check': self.activeTheme === 'theme2'}"
+                        ng-click="self.changeStyleMap(2); self.activeTheme = 'theme2'" class="theme"
+                        style="background: #93d3f3"></div>
+                    <div ng-class="{'active fa fa-check': self.activeTheme === 'theme3'}"
+                        ng-click="self.changeStyleMap(3); self.activeTheme = 'theme3'" class="theme"
+                        style="background: #4377c6"></div>
+                    <div ng-class="{'active fa fa-check': self.activeTheme === 'theme4'}"
+                        ng-click="self.changeStyleMap(4); self.activeTheme = 'theme4'" class="theme"
+                        style="background: #0045ad"></div>
+                    <div ng-class="{'active fa fa-check': self.activeTheme === 'theme5'}"
+                        ng-click="self.changeStyleMap(5); self.activeTheme = 'theme5'" class="theme"
+                        style="background: #435090"></div>
+                    <div ng-class="{'active fa fa-check': self.activeTheme === 'theme6'}"
+                        ng-click="self.changeStyleMap(6); self.activeTheme = 'theme6'" class="theme"
+                        style="background: #544996;margin-right: 0;"></div>
+                </div>
+            </div>
+            <div class="setting">
+                <div class="setting-title">Control panel</div>
+                <div class="setting-content">
+                    <span>Zoom, Location and draw </span>
+                    <label class="switch">
+                        <input type="checkbox" checked>
+                        <span class="slider round" ng-click="self.showControl()"></span>
+                    </label>
+                </div>
+            </div>
+            <div class="setting">
+                <div class="setting-title">Deep ocean</div>
+                <div class="setting-content">
+                    <span>Show the depth of the ocean </span>
+                    <label class="switch">
+                        <input type="checkbox" checked>
+                        <span class="slider round" ng-click=""></span>
+                    </label>
+                </div>
+            </div>
+            <div class="setting">
+                <div class="setting-title">Popup</div>
+                <div class="setting-content">
+                    <span>Display all names well on the popup</span>
+                    <label class="switch">
+                        <input type="checkbox">
+                        <span class="slider round" ng-click="self.allPopup()"></span>
+                    </label>
+                </div>
+            </div>
+            <div class="setting">
+                <div class="setting-title">Drag-marker</div>
+                <div class="setting-content">
+                    <span>Displays coordinates information at the drag-marker location</span>
+                    <label class="switch">
+                        <input type="checkbox" checked>
+                        <span class="slider round" ng-click=""></span>
+                    </label>
+                </div>
+            </div>
+            <div class="setting">
+                <div class="setting-title">Show UTM Zone</div>
+                <div class="setting-content">
+                    <span>Display names and division of zones on the map</span>
+                    <label class="switch">
+                        <input type="checkbox" checked>
+                        <span class="slider round" ng-click=""></span>
+                    </label>
+                </div>
+            </div>
+            <div class="setting" style="overflow: hidden; margin-bottom: 0">
+                <div class="setting-title">Zone</div>
+                <div class="setting-content" style="align-items: flex-start;">
+                    <span>{{zoneMap}}</span>
+                </div>
+                <div class="filter-zone">
+                    <input class="searchInput" type="text" placeholder="Search zone" ng-model="searchProject">
+                    <!-- <div class="filter">
+                        <div ng-click="self.showDialogZoneName = !self.showDialogZoneName">25</div>
+                        <div>S</div>
+                    </div> -->
+                </div>
+
+                <div class="list-zone">
+                    <div class="zone" ng-repeat="item in zoneFieldTable | filter:searchProject track by $index"
+                        ng-click="hasChanged(item)"
+                        ng-class="{'selected-zone': zoneMap == item.output}">
+                        <div class="icon apply-16x16"></div>
+                        <div class="icon explorer-search-16x16"></div>
+                        <span ng-bind="item.Name"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+<map-view class="mapView"
+    mapbox-token='pk.eyJ1IjoiazU0aHVuZ3liIiwiYSI6ImNqdGZtNDE4ODF1OXEzeW85djJ5c29nYnoifQ.-VfHeKXV9avmbia1E7BFcQ'
+    wells='wellSelect' zone-map='zoneMap' focus-well='focusWell' all-popup='allPopup' theme='themeMap'>
+</map-view>
