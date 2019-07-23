@@ -1,13 +1,12 @@
 <div class="main slim-scroller" ng-class="{'change-height': self.hideMain}">
     <div class="tab">
         <div style="display: flex;">
-            <div class="tab-name fa fa-user-circle-o" style="color: #4085ff; font-size: 17px; position: relative; z-index: 1;" ng-click="self.showUser = !self.showUser">
+            <div class="tab-name fa fa-user-circle-o"
+                style="color: #4085ff; font-size: 17px; position: relative; z-index: 1;"
+                ng-click="self.showUser = !self.showUser">
                 <div ng-show="self.showUser" class="user">
-                    <wi-login ng-if="self.hasWiLogin" 
-                        whoami="main-service" 
-                        app-name="Base Map" 
-                        login-url="{{self.loginUrl}}" 
-                        query-string="self.queryString"
+                    <wi-login ng-if="self.hasWiLogin" whoami="main-service" app-name="Base Map"
+                        login-url="{{self.loginUrl}}" query-string="self.queryString"
                         register-url='https://www.i2g.cloud/register-information/'>
                     </wi-login>
                 </div>
@@ -36,16 +35,15 @@
                 container-style="{flex: 1, margin: 0, border: 'none', overflow: 'auto'}">
                 <div ng-show="self.noWell" class="no-wells">
                     <div>
-                        <div class="ti ti-import" 
-                        style="font-size: 40px;
+                        <div class="ti ti-import" style="font-size: 40px;
                         margin-bottom: 20px;
                         color: #5592ff;"></div>
                         <div>Drop wells here</div>
                     </div>
                 </div>
-                <wi-tree-view ng-show="!self.noWell" tree-root="wellSelect" get-label="self.getLabel"          get-icon="self.getIcon"
-                    get-children="self.getChildren" run-match="self.runMatchWell" hide-unmatched="true"
-                    selected-ids="self.selectedIdsHash" click-fn='self.clickWellFunction'>
+                <wi-tree-view ng-show="!self.noWell" tree-root="wellSelect" get-label="self.getLabel"
+                    get-icon="self.getIcon" get-children="self.getChildren" run-match="self.runMatchWell"
+                    hide-unmatched="true" selected-ids="self.selectedIdsHash" click-fn='self.clickWellFunction'>
                 </wi-tree-view>
             </wi-droppable>
             <div class="tab-function">
@@ -92,16 +90,16 @@
                     </label>
                 </div>
             </div>
-            <!-- <div class="setting">
+            <div class="setting">
                 <div class="setting-title">Deep ocean</div>
                 <div class="setting-content">
                     <span>Show the depth of the ocean </span>
                     <label class="switch">
-                        <input type="checkbox" >
+                        <input type="checkbox">
                         <span class="slider round" ng-click="self.deepOcean = !self.deepOcean"></span>
                     </label>
                 </div>
-            </div> -->
+            </div>
             <div class="setting">
                 <div class="setting-title">Popup</div>
                 <div class="setting-content">
@@ -138,23 +136,37 @@
                     <span>{{zoneMap}}</span>
                 </div>
                 <div class="filter-zone">
-                    <input class="searchInput" type="text" placeholder="Search zone" ng-model="searchProject">
-                    <!-- <div class="filter">
-                        <div ng-click="self.showDialogZoneName = !self.showDialogZoneName">25</div>
-                        <div>S</div>
-                    </div> -->
-                </div>
-
-                <div class="list-zone">
-                    <div class="zone" ng-repeat="item in zoneFieldTable | filter:searchProject track by $index"
-                        ng-class="{'selected-zone': zoneMap == item.output}">
-                        <div style="display: flex;">
-                            <div ng-click="hasChanged(item)" class="icon apply-16x16"></div>
-                            <div style="margin-left: 10px;">{{$index}}</div>
-                        </div>
-                        <!-- <div ng-click="forcusZone(item)" class="icon explorer-search-16x16"></div> -->
-                        <span ng-click="hasChanged(item)" ng-bind="item.Name"></span>
+                    <div class="filter">
+                        <div style="margin-left: 0" class="ti ti-search"></div>
                     </div>
+                    <input class="searchInput" type="text" placeholder="Search zone" ng-model="searchProject">
+                    <div class="filter">
+                        <div ng-click="self.showDetailZone = !self.showDetailZone"
+                            ng-class="{'show-detail-zone': !self.showDetailZone}" class="ti ti-comment"
+                            style="padding: 10px;"></div>
+                    </div>
+                </div>
+                <div
+                    style="height: 20px; z-index: 1;background-image: linear-gradient(to top, #fff0 , #fff);width: calc(100% - 30px);position: absolute;top: 576px;">
+                </div>
+                <div class="list-zone">
+                    <div class="zone" ng-repeat="item in zoneFieldTable | filter:searchProject track by $index">
+                        <div class="zone-title">
+                            <div ng-class="{'selected-zone': zoneMap == item.output}" style="display: flex;">
+                                <div ng-click="hasChanged(item)" class="icon apply-16x16"></div>
+                                <span ng-click="hasChanged(item)" ng-bind="item.Name"></span>
+                            </div>
+                            <div style="display: flex; align-items: center;">
+                                <span class="ti ti-arrow-right"></span>
+                            </div>
+                        </div>
+                        <span ng-show="!self.showDetailZone" class="zone-name" ng-bind="item.output"></span>
+
+
+                    </div>
+                </div>
+                <div
+                    style="height: 20px; background-image: linear-gradient(to top, #fff , #fff0); width: calc(100% - 30px); position: absolute; bottom: 14px;">
                 </div>
             </div>
         </div>
@@ -163,12 +175,6 @@
 </div>
 <map-view class="mapView"
     mapbox-token='pk.eyJ1IjoiazU0aHVuZ3liIiwiYSI6ImNqdGZtNDE4ODF1OXEzeW85djJ5c29nYnoifQ.-VfHeKXV9avmbia1E7BFcQ'
-    wells='wellSelect' 
-    zone-map='zoneMap' 
-    focus-well='focusWell' 
-    all-popup='allPopup' 
-    theme='themeMap' 
-    control-panel="self.controlPanel"
-    deep-ocean="self.deepOcean"
-    point="self.point">
+    wells='wellSelect' zone-map='zoneMap' focus-well='focusWell' all-popup='allPopup' theme='themeMap'
+    control-panel="self.controlPanel" deep-ocean="self.deepOcean" point="self.point">
 </map-view>

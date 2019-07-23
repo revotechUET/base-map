@@ -3,7 +3,6 @@ base-map {
         border : none;
         padding: 8px 10px;
         width  : 100%;
-        border : 1px solid #e4ecfa;
     }
 
     input:focus {
@@ -210,22 +209,29 @@ base-map {
                     display        : flex;
                     align-items    : center;
                     justify-content: space-between;
-                    margin         : 10px 0;
+                    margin         : 10px 0 10px;
+                    border-bottom  : 1px solid #e4ecfa;
 
                     .filter {
                         display    : flex;
                         align-items: center;
+                        transition: all ease-in 0.1s;
+
+
+                        .show-detail-zone {
+                            color     : #3e84ff;
+                            transition: all ease-in 0.1s;
+                        }
 
                         >div {
                             cursor       : pointer;
-                            padding      : 8px 10px;
                             border-radius: 2px;
+                            font-size    : 15px;
                             margin-left  : 15px;
-                            border       : 1px solid #e4ecfa;
                             transition   : all ease-in 0.1s;
 
                             &:hover {
-                                background: #e4ecfa;
+                                color     : #3e84ff;
                                 transition: all ease-in 0.1s;
 
                             }
@@ -239,16 +245,20 @@ base-map {
                     overflow: auto;
 
                     .zone {
-                        padding        : 10px;
                         display        : flex;
+                        flex-direction : column;
                         align-items    : center;
                         justify-content: space-between;
                         color          : #909090;
                         transition     : all ease-in 0.2s;
                         border-radius  : 5px;
                         border         : 1px solid #fff;
-                        >span{
-                            cursor: pointer;
+
+                        .zone-name {
+                            background   : #f4f6f9;
+                            color        : #b2b5bd;
+                            border-radius: 2px;
+                            padding      : 10px 15px;
                         }
 
                         .icon {
@@ -259,37 +269,38 @@ base-map {
                             transition  : all ease-in 0.2s;
 
                             &:hover {
-                                transform : scale(1.5);
+                                transform : scale(1.2);
                                 filter    : grayscale(0) saturate(2);
                                 transition: all ease-in 0.2s;
                             }
                         }
+                    }
 
-                        &:hover {
-                            color     : #000;
-                            background: #f1f1f1;
-                            transition: all ease-in 0.2s;
+                    .zone-title {
+                        display        : flex;
+                        width          : 100%;
+                        align-items    : center;
+                        justify-content: space-between;
+                        margin         : 15px 0 10px;
+                        transition: all ease-in 0.2s;
+
+                        >div {
+                            cursor: pointer;
+                            &:hover {
+                                color     : #3e84ff;
+                                transition: all ease-in 0.2s;
+                            }
                         }
                     }
 
                     .selected-zone {
                         color     : #3e84ff;
                         transition: all ease-in 0.2s;
-                        border    : 1px solid #3e84ff;
-
 
                         .icon {
+                            filter      : hue-rotate(268deg);
                             margin-right: 10px;
-                            filter      : grayscale(0);
                             opacity     : 1;
-                            cursor      : pointer;
-                            transition  : all ease-in 0.2s;
-
-                            &:hover {
-                                transform : scale(1.5);
-                                filter    : grayscale(0) saturate(2);
-                                transition: all ease-in 0.2s;
-                            }
                         }
 
                         &:hover {
@@ -409,11 +420,12 @@ base-map {
         >div span.icon {
             display: none;
         }
+
         .ngdialog .login {
-            font-family    : Roboto, Arial !important;
+            font-family: Roboto, Arial !important;
         }
     }
-    
+
 
 
     wi-tree-node>div {
