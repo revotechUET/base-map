@@ -16,7 +16,10 @@ app.component(componentName, {
     focusWell: '<',
     zoneMap: "<",
     allPopup: "<",
-    theme: "<"
+    theme: "<",
+    controlPanel: "<",
+    deepOcean: "<",
+    point: '<'
   },
   transclude: true
 });
@@ -29,12 +32,28 @@ function mapViewController($scope, $timeout) {
   // let changeStyle = 0;
   let markers = [];
   let popups = [];
+  
 
   this.$onInit = function () {
     $timeout(function () {
       drawMap();
       // console.log('Draw map')
     }, 1000);
+    $scope.$watch(function () {
+      return [self.controlPanel];
+    }, function () {
+      showControl();
+    }, true);
+    $scope.$watch(function () {
+      return [self.point];
+    }, function () {
+      showPointLocation();
+    }, true);
+    // $scope.$watch(function () {
+    //   return [self.deepOcean];
+    // }, function () {
+    //   drawMap();
+    // }, true);
     $scope.$watch(function () {
       return [self.wells, self.theme];
     }, function () {
@@ -77,35 +96,35 @@ function mapViewController($scope, $timeout) {
       trackUserLocation: true
     }));
 
-    //Show zone name
-
     //Deep ocean
-    // map.on('load', function() {
-
-    //   map.addSource('10m-bathymetry-81bsvj', {
-    //   type: 'vector',
-    //   url: 'mapbox://mapbox.9tm8dx88'
-    //   });
-
-    //   map.addLayer({
-    //   "id": "10m-bathymetry-81bsvj",
-    //   "type": "fill",
-    //   "source": "10m-bathymetry-81bsvj",
-    //   "source-layer": "10m-bathymetry-81bsvj",
-    //   "layout": {},
-    //   "paint": {
-    //   "fill-outline-color": "hsla(337, 82%, 62%, 0)",
-    //   "fill-color": [ "interpolate",
-    //   [ "cubic-bezier",
-    //   0, 0.5,
-    //   1, 0.5 ],
-    //   ["get", "DEPTH"],
-    //   200,  "#78bced",
-    //   9000, "#15659f"
-    //   ]
-    //   }
-    //   }, 'land-structure-polygon');
-    //   });
+    if (self.deepOcean) {
+      map.on('load', function () {
+        map.addSource('10m-bathymetry-81bsvj', {
+          type: 'vector',
+          url: 'mapbox://mapbox.9tm8dx88'
+        });
+      });
+      map.on('load', function () {
+        map.addLayer({
+          "id": "10m-bathymetry-81bsvj",
+          "type": "fill",
+          "source": "10m-bathymetry-81bsvj",
+          "source-layer": "10m-bathymetry-81bsvj",
+          "layout": {},
+          "paint": {
+            "fill-outline-color": "hsla(337, 82%, 62%, 0)",
+            "fill-color": ["interpolate",
+              ["cubic-bezier",
+                0, 0.5,
+                1, 0.5],
+              ["get", "DEPTH"],
+              200, "#78bced",
+              9000, "#15659f"
+            ]
+          }
+        }, 'land-structure-polygon');
+      });
+    }
 
     //draw line
     draw = new MapboxDraw({
@@ -134,65 +153,56 @@ function mapViewController($scope, $timeout) {
         if (e.type !== 'draw.delete') alert("Use the draw tools to draw a polygon!");
       }
     }
-    // // Show ZoneLine
-    // map.on('load', function () {
-    //   map.addLayer(zoneLine);
-    // });
-    // map.on('load', function() {
-    //   map.addSource('clusters', {
-    //     type: "geojson",
-    //     data: zoneName
-    //     }
-    //   );
+    // Show ZoneLine
+    map.on('load', function () {
+      map.addLayer(zoneLine);
+    });
+    map.on('load', function () {
+      map.addSource('clusters', {
+        type: "geojson",
+        data: zoneName
+      }
+      );
 
-    //   map.addLayer({
-    //       "id": "clusters",
-    //       "type": "circle",
-    //       "source": "clusters",
-    //       "paint": {
-    //           "circle-radius": 18,
-    //           "circle-color": "#3887be",
-    //           "circle-opacity": 0
-    //       }
-    //   });
+      map.addLayer({
+        "id": "clusters",
+        "type": "circle",
+        "source": "clusters",
+        "paint": {
+          "circle-radius": 18,
+          "circle-color": "#4085ff",
+          "circle-opacity": 0
+        }
+      });
 
-    //   map.addLayer({
-    //     "id": "clusters-label",
-    //     "type": "symbol",
-    //     "source": "clusters",
-    //     "layout": {
-    //       "text-field": "{museum_count}",
-    //       "text-font": [
-    //         "DIN Offc Pro Medium",
-    //         "Arial Unicode MS Bold"
-    //       ],
-    //       "text-size": 10
-    //     }
-    //   });
-    // });
+      map.addLayer({
+        "id": "clusters-label",
+        "type": "symbol",
+        "source": "clusters",
+        "paint": {
+          "text-opacity": 0.5,
+          "text-color": "#4085ff"
+        },
+        "layout": {
+          "text-field": "{museum_count}",
+          "text-font": [
+            "DIN Offc Pro Medium",
+            "Arial Unicode MS Bold"
+          ],
+          "text-size": 12
+        }
+      });
+    });
 
-    // show marker default
-    // let popupMarkerDrag = new mapboxgl.Popup({
-    //   closeOnClick: false,
-    //   offset: 25,
-    //   closeButton: false,
-    // })
-    //   .setText("Drag Marker")
-    //   .addTo(map);
-    // let markerDrag = new mapboxgl.Marker({
-    //   draggable: true
-    // })
-    //   .setPopup(popupMarkerDrag)
-    //   .setLngLat([105.89, 20.99])
-    //   .addTo(map);
+    // show point
 
-    // function onDragEnd() {
-    //   var lngLat = markerDrag.getLngLat();
-    //   coordinates.style.display = 'block';
-    //   coordinates.innerHTML =  lngLat.lng.toFixed(2) + ' - ' + lngLat.lat.toFixed(2);
-    // }
+    map.on('mousemove', function (e) {
+      document.getElementById('latPoint').innerHTML = e.lngLat.lat.toFixed(3);
+      document.getElementById('lngPoint').innerHTML = e.lngLat.lng.toFixed(3);
+      document.getElementById('displayX').innerHTML = e.point.x;
+      document.getElementById('displayY').innerHTML = e.point.y;
 
-    // markerDrag.on('dragend', onDragEnd);
+    });
   }
   // CHANGE STYLE
   function changeStyleMap(theme) {
@@ -215,6 +225,16 @@ function mapViewController($scope, $timeout) {
     else if (theme === 6) {
       map.setStyle('mapbox://styles/mapbox/streets-v11');
     }
+  }
+
+  //SHOW CONTROL
+  function showControl() {
+    $(".mapboxgl-ctrl-top-right").toggleClass('showControl');
+  }
+
+  //SHOW point location
+  function showPointLocation() {
+    $(".controlPanel").toggleClass('showControl');
   }
 
   //SHOW ALL POPOUP

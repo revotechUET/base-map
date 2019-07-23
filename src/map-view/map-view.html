@@ -1,16 +1,16 @@
 <style>
     .coordinates {
         background: rgb(255, 255, 255);
-        color: #4c8dff;
+        color: #333;
         position: absolute;
-        top: 40px;
-        right: 94px;
-        padding: 10px 20px;
+        bottom: 40px;
+        right: 40px;
+        padding: 0 20px;
         margin: 0;
         font-size: 12px;
         line-height: 18px;
         border-radius: 5px;
-        display: none;
+        display: block;
         box-shadow: 0 4px 14px -2px rgba(0, 0, 0, 0.03);
     }
 
@@ -29,22 +29,41 @@
     }
 
     p {
-        font-family: 'Open Sans';
+        font-family: Roboto, Arial !important;
         margin: 0;
         font-size: 13px;
     }
 </style>
-<div id="map">
-    <!-- <span class="switchStyle fa fa-adjust" ng-click="self.showTheme = !self.showTheme"></span>
-    <div ng-show="self.showTheme" class="switchStyle-content">
-        <div ng-class="{'active': self.activeTheme === 'theme1'}" class="theme-map theme1" ng-click="self.changeStyleMap1(); self.activeTheme = 'theme1'"></div>
-        <div ng-class="{'active': self.activeTheme === 'theme2'}" class="theme-map theme2" ng-click="self.changeStyleMap2(); self.activeTheme = 'theme2'"></div>
-        <div ng-class="{'active': self.activeTheme === 'theme3'}" class="theme-map theme3" ng-click="self.changeStyleMap3(); self.activeTheme = 'theme3'"></div>
-        <div ng-class="{'active': self.activeTheme === 'theme4'}" class="theme-map theme4" ng-click="self.changeStyleMap4(); self.activeTheme = 'theme4'"></div>
-    </div> -->
-    <!-- <span ng-class="{'allPopup': self.allPopup}" class="switchStyle fa fa-comment" ng-click="self.allPopup = !self.allPopup" style="top: 261px; padding: 7px; color: #ccc;"></span> -->
+<div id="map"></div>
+<div class="controlPanel">
+    <div class='coordinates' style="bottom: 90px;">
+        <div style="display: flex;">
+            <div style="display: flex; align-items: center; min-width: 100px;justify-content: space-between;border-right: 1px solid #ccc;    padding: 10px 20px 10px 0;">
+                <span><b>Width</b></span>
+                <div id="displayX"></div><span>px</span>
+            </div>
+            <div
+                style="display: flex; align-items: center; min-width: 80px;justify-content: space-between; margin-left: 20px;">
+                <span><b>Height</b></span>
+                <div id="displayY"></div><span>px</span>
+            </div>
+
+        </div>
+    </div>
+    <div class='coordinates'>
+        <div style="display: flex;">
+            <div style="display: flex; align-items: center; min-width: 110px;justify-content: space-between; border-right: 1px solid #ccc;    padding: 10px 20px 10px 0; ">
+                <span><b>Latitude</b></span>
+                <div id="latPoint"></div>
+            </div>
+            <div
+                style="display: flex; align-items: center; min-width: 110px;justify-content: space-between; margin-left: 20px;">
+                <span><b>Longtitude</b></span>
+                <div id="lngPoint"></div>
+            </div>
+        </div>
+    </div>
 </div>
-<div id='coordinates' class='coordinates'></div>
 <div class='calculation-box'>
     <div id='calculated-area'></div>
 </div>

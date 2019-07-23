@@ -38,7 +38,7 @@ function baseMapController($scope, $http, wiToken, $timeout, $location, ngDialog
     $scope.wellSelect = [];
     $scope.focusWell = [];
     $scope.allPopup = false;
-    self.activeTheme = 'theme6'
+    self.activeTheme = 'Custom theme'
     self.selectedIdsHash = {}
 
     this.$onInit = function () {
@@ -115,7 +115,6 @@ function baseMapController($scope, $http, wiToken, $timeout, $location, ngDialog
     }
     this.changeStyleMap = function (theme) {
         $scope.themeMap = theme;
-        
     }
 
     this.refesh = function () {
