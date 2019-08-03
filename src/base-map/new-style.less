@@ -1,4 +1,6 @@
 base-map {
+   
+
     .searchInput {
         border : none;
         padding: 8px 10px;
@@ -40,6 +42,7 @@ base-map {
         z-index       : 1;
         border-radius : 5px;
         box-shadow    : 0 4px 50px -2px rgba(18, 22, 33, 0.05);
+        animation     : showing-side 3s;
 
         .tab {
             border-bottom  : 1px solid #e4ecfa;
@@ -90,10 +93,30 @@ base-map {
             }
         }
 
+        @keyframes showing-side {
+            0% {
+                transform: translate(-700px, 0);
+            }
+
+            80% {
+                transform: translate(-600px, 0);
+            }
+
+            95% {
+                transform: translate(10px, 0);
+            }
+
+            100% {
+                transform: translate(0, 0);
+            }
+
+        }
+
         .content {
             display       : flex;
             flex-direction: column;
             flex          : 1;
+
 
             .content-top {
                 flex-basis    : 50%;
@@ -176,6 +199,15 @@ base-map {
                         min-width    : 80px;
                     }
                 }
+                .zone-btn {
+                    padding: 5px 20px;
+                    background: #4085ff;
+                    border-radius: 2px;
+                    display: flex;
+                    align-items: center;
+                    color: #fff;
+                    cursor: pointer;
+                }
 
                 .theme {
                     width          : 30px;
@@ -215,7 +247,7 @@ base-map {
                     .filter {
                         display    : flex;
                         align-items: center;
-                        transition: all ease-in 0.1s;
+                        transition : all ease-in 0.1s;
 
 
                         .show-detail-zone {
@@ -282,10 +314,11 @@ base-map {
                         align-items    : center;
                         justify-content: space-between;
                         margin         : 15px 0 10px;
-                        transition: all ease-in 0.2s;
+                        transition     : all ease-in 0.2s;
 
                         >div {
                             cursor: pointer;
+
                             &:hover {
                                 color     : #3e84ff;
                                 transition: all ease-in 0.2s;
@@ -313,6 +346,145 @@ base-map {
             }
         }
     }
+
+    .dialog {
+        font-family  : Roboto, Arial !important;
+        font-size    : 12px;
+        position     : absolute;
+        width        : 300px;
+        height       : 410px;
+        background   : #fff;
+        z-index      : 1;
+        margin       : 40px 40px 0 380px;
+        border-radius: 5px;
+        box-shadow   : 0 10px 10px #00000017;
+        transform    : translate(0px, -1000px);
+        transition   : all ease-in 0.3s;
+
+        &.show-dialog {
+            transition: all ease-in 0.3s;
+            transform : translate(0px, 0px);
+        }
+
+        .gradient-top {
+            position        : absolute;
+            top             : 61px;
+            width           : 100%;
+            height          : 25px;
+            z-index         : 1;
+            background-image: linear-gradient(180deg, #fff, #fff0);
+        }
+
+        .gradient-bottom {
+            position        : absolute;
+            bottom          : 147px;
+            width           : 100%;
+            height          : 25px;
+            z-index         : 1;
+            background-image: linear-gradient(0deg, #fff, #fff0);
+
+        }
+
+        .display-dialog {
+            display       : flex;
+            height        : 100%;
+            flex-direction: column;
+            position      : relative;
+
+            .footer-dialog {
+                display        : flex;
+                align-items    : center;
+                justify-content: space-between;
+                flex-basis     : 76px;
+                width          : 100%;
+                bottom         : 0;
+                padding        : 0 20px;
+
+                .title-dialog {
+                    font-weight: 500;
+                    color      : #99a3ba;
+                }
+
+                .next {
+                    color        : #ffffff;
+                    font-size    : 12px;
+                    cursor       : pointer;
+                    padding      : 5px 20px;
+                    align-items  : center;
+                    display      : flex;
+                    background   : #4085ff;
+                    border-radius: 2px;
+                    transition   : all ease-in 0.2s;
+
+                    &:hover {
+                        transition: all ease-in 0.2s;
+                        background: #619bff;
+                    }
+
+                    &:active {
+                        transition: all ease-in 0.2s;
+                        transform : scale(0.8);
+                    }
+                }
+            }
+
+            .header-dialog {
+                display        : flex;
+                align-items    : center;
+                justify-content: space-between;
+                height         : 42px;
+                padding        : 0 15px;
+
+                .title-dialog {
+                    font-weight: 500;
+                }
+            }
+
+            .main-dialog {
+                flex          : 1;
+                display       : flex;
+                padding       : 20px 0;
+                flex-direction: column;
+
+
+
+                .scroll {
+                    display       : flex;
+                    flex-direction: row;
+                    position      : relative;
+
+
+                    .scroll-block {
+                        overflow      : auto;
+                        flex          : 1;
+                        display       : flex;
+                        flex-direction: column;
+                        height        : 200px;
+
+                        >div {
+                            cursor       : pointer;
+                            padding      : 10px;
+                            font-size    : 17px;
+                            text-align   : center;
+                            font-weight  : bold;
+                            margin-bottom: 20px;
+                            border-radius: 5px;
+                            color        : #c7d7f5;
+                            border       : 1px solid #e4ecfa;
+                            transition   : all ease-in 0.1s;
+
+                            &:hover {
+                                background: #4085ff;
+                                transition: all ease-in 0.1s;
+                            }
+                        }
+                    }
+                }
+
+            }
+        }
+    }
+
 
     //SWITCH BUTTON
 
@@ -404,6 +576,12 @@ base-map {
         background   : #9aa4bb57 !important;
         border-radius: 10px;
     }
+
+    .hide-scroller ::-webkit-scrollbar-thumb {
+        background   : #ffffff57 !important;
+        border-radius: 10px;
+    }
+
 
     wi-login>div {
         right          : unset;
@@ -503,4 +681,13 @@ base-map {
     }
 
     //////////////////////////////////////////////////////////////////////////////////////
+}
+wi-map-loading .main-spinner {
+    position: absolute;
+    height: 100vh;
+    width: 100vw;
+    transform: scale(0.6);
+    // background: #ffffffab;
+    z-index: 9999999 !important;
+    
 }

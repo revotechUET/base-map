@@ -1,4 +1,7 @@
-<div class="main slim-scroller" ng-class="{'change-height': self.hideMain}">
+<div ng-class="{'show-dialog': self.showDialog}" class="dialog">
+    ${require('./dialog-zone-utms.html')}
+</div>
+<div id="main" class="main slim-scroller" ng-class="{'change-height': self.hideMain}">
     <div class="tab">
         <div style="display: flex;">
             <div class="tab-name fa fa-user-circle-o"
@@ -53,6 +56,7 @@
         </div>
     </div>
     <div ng-show="isSet(2) && !self.hideMain" class="content">
+
         <div style="flex: 1; margin: 15px; user-select: none; overflow: hidden;display: flex; flex-direction: column;">
             <div class="setting">
                 <div class="setting-title">Appearance</div>
@@ -130,11 +134,16 @@
                     </label>
                 </div>
             </div>
-            <div class="setting" style="overflow: hidden; margin-bottom: 0">
-                <div class="setting-title">Zone</div>
-                <div class="setting-content" style="align-items: flex-start;">
-                    <span>{{zoneMap}}</span>
+            <div class="setting" style="overflow: hidden; margin-bottom: 0;">
+                <div>
+                    <div class="setting-title">Zone</div>
+                    <div class="setting-content" style="align-items: flex-start;">
+                        <!-- <span>Zone selected is: </span> -->
+                        <span>{{zoneMap}}</span>
+                    </div>
                 </div>
+                <!-- <span class="zone-btn" ng-click="self.showDialog = !self.showDialog">49N</span> -->
+
                 <div class="filter-zone">
                     <div class="filter">
                         <div style="margin-left: 0" class="ti ti-search"></div>
@@ -145,9 +154,6 @@
                             ng-class="{'show-detail-zone': !self.showDetailZone}" class="ti ti-comment"
                             style="padding: 10px;"></div>
                     </div>
-                </div>
-                <div
-                    style="height: 20px; z-index: 1;background-image: linear-gradient(to top, #fff0 , #fff);width: calc(100% - 30px);position: absolute;top: 576px;">
                 </div>
                 <div class="list-zone">
                     <div class="zone" ng-repeat="item in zoneFieldTable | filter:searchProject track by $index">
@@ -165,14 +171,12 @@
 
                     </div>
                 </div>
-                <div
-                    style="height: 20px; background-image: linear-gradient(to top, #fff , #fff0); width: calc(100% - 30px); position: absolute; bottom: 14px;">
-                </div>
             </div>
         </div>
 
     </div>
 </div>
+
 <map-view class="mapView"
     mapbox-token='pk.eyJ1IjoiazU0aHVuZ3liIiwiYSI6ImNqdGZtNDE4ODF1OXEzeW85djJ5c29nYnoifQ.-VfHeKXV9avmbia1E7BFcQ'
     wells='wellSelect' zone-map='zoneMap' focus-well='focusWell' all-popup='allPopup' theme='themeMap'

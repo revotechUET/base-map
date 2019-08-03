@@ -24,7 +24,7 @@
     <script src="./bower_components/jquery-ui/jquery-ui.min.js"></script>
     <script src="./bower_components/bootstrap-css/js/bootstrap.min.js"></script>
     <script src="./bower_components/async/dist/async.min.js"></script>
-    
+
     <script src="./vendors/mapbox/mapbox-gl.js"></script>
     <script src="./vendors/mapbox/mapbox-gl-geocoder.min.js"></script>
     <script src="./vendors/mapbox/mapbox-gl-directions.js"></script>
@@ -49,11 +49,15 @@
 </head>
 
 <body ng-app="myApp" style="font-size: 12px;">
-    <div style="width: 100vw; height: 100vh; min-width: 100vw; min-height: 100vh;">
-        <base-map zone-default="WGS_1984_UTM_Zone_49N" has-wi-login="true" project-id="" has-project-list="true"></base-map>
+    <div style="width: 100vw; height: 100vh; min-width: 100vw; min-height: 100vh; position: relative;">
+        <div id="loading">
+            <wi-map-loading></wi-map-loading>
+        </div>
+        <base-map zone-default="WGS_1984_UTM_Zone_49N" has-wi-login="true" project-id="" has-project-list="true">
+        </base-map>
     </div>
     <script>
-        angular.module("myApp", ["baseMap"]);
+        angular.module("myApp", ["baseMap", "wiMapLoading"]);
     </script>
 </body>
 

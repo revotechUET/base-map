@@ -42,6 +42,7 @@ function baseMapController($scope, $http, wiToken, $timeout, $location, ngDialog
     self.selectedIdsHash = {}
 
     this.$onInit = function () {
+        self.showDialog = false;
         self.baseUrl = $location.search().baseUrl || self.baseUrl;
         // self.getLoginUrl = `${WI_AUTH_HOST}/login`;
         self.loginUrl = `${WI_AUTH_HOST}/login` || $location.search().loginUrl || self.loginUrl;
@@ -78,13 +79,17 @@ function baseMapController($scope, $http, wiToken, $timeout, $location, ngDialog
             }
         });
     }
-    $scope.tab = 2;
+    $scope.tab = 1;
     $scope.setTab = function (newTab) {
         $scope.tab = newTab;
     };
     $scope.isSet = function (tabNum) {
         return $scope.tab === tabNum;
     };
+    $timeout(() => {
+        var elem = document.getElementById('loading');
+        elem.parentNode.removeChild(elem);
+    }, 6999)
 
     function getZoneList() {
         $http({

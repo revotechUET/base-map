@@ -14,23 +14,28 @@ module.exports = {
 	},
 	module: {
 		rules: [{
-				test: /\.html$/,
-				use: ['html-loader']
-			}, {
-				test: /\.css$/,
-				use: ['style-loader', 'css-loader'],
-			},
-			{
-				test: /\.less$/,
-				use: ['style-loader','css-loader','less-loader'],
-			},
-			{
-				test: /\.(png|jpeg|ttf|...)$/,
-				use: [
-				 { loader: 'url-loader' } 
-				 // limit => file.size =< 8192 bytes ? DataURI : File
-				]
-			  }
+			test: /\.html$/,
+			use: [{
+				loader: 'html-loader',
+				options: {
+					interpolate: true
+				}
+			}]
+		}, {
+			test: /\.css$/,
+			use: ['style-loader', 'css-loader'],
+		},
+		{
+			test: /\.less$/,
+			use: ['style-loader', 'css-loader', 'less-loader'],
+		},
+		{
+			test: /\.(png|jpeg|ttf|...)$/,
+			use: [
+				{ loader: 'url-loader' }
+				// limit => file.size =< 8192 bytes ? DataURI : File
+			]
+		}
 		],
 	},
 }

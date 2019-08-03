@@ -4,6 +4,9 @@ map-view {
         width   : 100%;
         position: absolute;
     }
+    canvas {
+        animation: blurMap 4s;
+    }
     .showControl {
         display: none;
     }
@@ -24,6 +27,39 @@ map-view {
         display        : flex;
         align-items    : center;
         justify-content: center;
+    }
+    .mapboxgl-ctrl-top-right {
+        animation: showControl 3s;
+    }
+    @keyframes showControl {
+        0% {
+            transform: translate(300px, 0);
+        }
+
+        80% {
+            transform: translate(100px, 0);
+        }
+        95% {
+            transform: translate(-20px, 0);
+        }
+
+        100% {
+            transform: translate(0,0);
+        }
+
+    }
+    @keyframes blurMap {
+        0% {
+            filter: blur(1000px);
+        }
+        90% {
+            filter: blur(100px);
+        }
+
+        100% {
+            filter: blur(0px);
+        }
+
     }
 
     .mapboxgl-ctrl-group>button+button {
