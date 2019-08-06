@@ -86,10 +86,10 @@ function baseMapController($scope, $http, wiToken, $timeout, $location, ngDialog
     $scope.isSet = function (tabNum) {
         return $scope.tab === tabNum;
     };
-    $timeout(() => {
-        var elem = document.getElementById('loading');
-        elem.parentNode.removeChild(elem);
-    }, 6999)
+    // $timeout(() => {
+    //     var elem = document.getElementById('loading');
+    //     elem.parentNode.removeChild(elem);
+    // }, 5000)
 
     function getZoneList() {
         $http({

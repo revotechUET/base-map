@@ -3,7 +3,7 @@
 </div>
 <div id="main" class="main slim-scroller" ng-class="{'change-height': self.hideMain}">
     <div class="tab">
-        <div style="display: flex;">
+        <div style="display: flex; align-items: center;">
             <div class="tab-name fa fa-user-circle-o"
                 style="color: #4085ff; font-size: 17px; position: relative; z-index: 1;"
                 ng-click="self.showUser = !self.showUser">
@@ -17,13 +17,13 @@
             <div class="tab-name" ng-class="{'active' : isSet(1)}" ng-click="setTab(1)">Project list</div>
             <div class="tab-name" ng-class="{'active' : isSet(2)}" ng-click="setTab(2)">Setting</div>
         </div>
-        <div style="display: flex;">
-            <div class="tab-name ti ti-reload" ng-click="self.refesh()" style="color: #99a3ba; font-size: 17px;">
+        <div style="display: flex; align-items: center;">
+            <div class="tab-name ti ti-reload" ng-click="self.refesh()" style="color: #99a3ba; font-size: 15px;">
             </div>
             <div ng-show="self.hideMain" class="tab-name ti ti-arrow-circle-down"
-                style="color: #99a3ba; font-size: 17px;" ng-click="self.hideMain = !self.hideMain"></div>
+                style="color: #4085ff; font-size: 15px;" ng-click="self.hideMain = !self.hideMain"></div>
             <div ng-show="!self.hideMain" class="tab-name ti ti-arrow-circle-up"
-                style="color: #99a3ba; font-size: 17px;" ng-click="self.hideMain = !self.hideMain"></div>
+                style="color: #99a3ba; font-size: 15px;" ng-click="self.hideMain = !self.hideMain"></div>
         </div>
     </div>
     <div ng-show="isSet(1) && !self.hideMain" class="content">
@@ -94,7 +94,7 @@
                     </label>
                 </div>
             </div>
-            <div class="setting">
+            <!-- <div class="setting">
                 <div class="setting-title">Deep ocean</div>
                 <div class="setting-content">
                     <span>Show the depth of the ocean </span>
@@ -103,7 +103,7 @@
                         <span class="slider round" ng-click="self.deepOcean = !self.deepOcean"></span>
                     </label>
                 </div>
-            </div>
+            </div> -->
             <div class="setting">
                 <div class="setting-title">Popup</div>
                 <div class="setting-content">
@@ -124,7 +124,7 @@
                     </label>
                 </div>
             </div>
-            <div class="setting">
+            <!-- <div class="setting">
                 <div class="setting-title">Show UTM Zone</div>
                 <div class="setting-content">
                     <span>Display names and division of zones on the map</span>
@@ -133,7 +133,7 @@
                         <span class="slider round" ng-click=""></span>
                     </label>
                 </div>
-            </div>
+            </div> -->
             <div class="setting" style="overflow: hidden; margin-bottom: 0;">
                 <div>
                     <div class="setting-title">Zone</div>
@@ -162,9 +162,9 @@
                                 <div ng-click="hasChanged(item)" class="icon apply-16x16"></div>
                                 <span ng-click="hasChanged(item)" ng-bind="item.Name"></span>
                             </div>
-                            <div style="display: flex; align-items: center;">
+                            <!-- <div style="display: flex; align-items: center;">
                                 <span class="ti ti-arrow-right"></span>
-                            </div>
+                            </div> -->
                         </div>
                         <span ng-show="!self.showDetailZone" class="zone-name" ng-bind="item.output"></span>
 

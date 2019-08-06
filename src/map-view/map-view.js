@@ -38,7 +38,7 @@ function mapViewController($scope, $timeout) {
     $timeout(function () {
       drawMap();
       // console.log('Draw map')
-    }, 1000);
+    }, 10);
     $scope.$watch(function () {
       return [self.controlPanel];
     }, function () {

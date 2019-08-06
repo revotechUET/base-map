@@ -1,10 +1,11 @@
 base-map {
-   
+
 
     .searchInput {
-        border : none;
-        padding: 8px 10px;
-        width  : 100%;
+        border    : none;
+        padding   : 8px 10px;
+        width     : 100%;
+        background: none;
     }
 
     input:focus {
@@ -30,22 +31,25 @@ base-map {
     }
 
     .main {
-        font-family   : Roboto, Arial !important;
-        transition    : height 0.2s ease-in;
-        height        : calc(100% - 80px);
-        width         : 300px;
-        margin        : 40px;
-        display       : flex;
-        flex-direction: column;
-        background    : #fff;
-        position      : fixed;
-        z-index       : 1;
-        border-radius : 5px;
-        box-shadow    : 0 4px 50px -2px rgba(18, 22, 33, 0.05);
-        animation     : showing-side 3s;
+        backdrop-filter    : blur(50px) saturate(4.1) brightness(1.5);
+        font-family        : Roboto, Arial !important;
+        transition         : height 0.2s ease-in;
+        height             : calc(100% - 80px);
+        width              : 300px;
+        margin             : 40px;
+        display            : flex;
+        flex-direction     : column;
+        background         : rgba(255, 255, 255, 0.84);
+        position           : fixed;
+        z-index            : 1;
+        border-radius      : 5px;
+        box-shadow         : 0 4px 50px -2px rgba(18, 22, 33, 0.08);
+        animation          : showing-side 3s;
+        animation-duration : 2.5s;
+        animation-fill-mode: both;
 
         .tab {
-            border-bottom  : 1px solid #e4ecfa;
+            border-bottom  : 1px solid #0000000d;
             display        : flex;
             align-items    : center;
             padding-left   : 16px;
@@ -55,7 +59,7 @@ base-map {
                 padding      : 13px 0 12px 0;
                 font-size    : 12px;
                 font-weight  : 500;
-                border-bottom: 1px solid #fff;
+                border-bottom: 1px solid #fff0;
                 color        : #99a3ba;
                 margin-right : 17px;
                 cursor       : pointer;
@@ -94,6 +98,25 @@ base-map {
         }
 
         @keyframes showing-side {
+
+            // 0% {
+            //     transform: translateX(-500px)
+            // }
+            // 20%,
+            // 50%,
+            // 80%,
+            // 100% {
+            //     transform: translateX(0);
+            // }
+
+            // 40% {
+            //     transform: translateX(-10px);
+            // }
+
+            // 60% {
+            //     transform: translateX(-15px);
+            // }
+
             0% {
                 transform: translate(-700px, 0);
             }
@@ -116,6 +139,7 @@ base-map {
             display       : flex;
             flex-direction: column;
             flex          : 1;
+            height        : inherit;
 
 
             .content-top {
@@ -147,7 +171,7 @@ base-map {
                         margin         : 40px;
                         text-align     : center;
                         border-radius  : 10px;
-                        border         : 1px dashed #ccc;
+                        border         : 1px dashed #5592ff5c;
                     }
                 }
 
@@ -181,11 +205,13 @@ base-map {
 
                 .setting-title {
                     // font-weight: bold;
+                    color         : #000;
                 }
 
                 .setting-content {
-                    color          : #b2b5bd;
+                    color          : #848484;
                     display        : flex;
+                    font-weight    : 400;
                     align-items    : center;
                     justify-content: space-between;
 
@@ -199,14 +225,15 @@ base-map {
                         min-width    : 80px;
                     }
                 }
+
                 .zone-btn {
-                    padding: 5px 20px;
-                    background: #4085ff;
+                    padding      : 5px 20px;
+                    background   : #4085ff;
                     border-radius: 2px;
-                    display: flex;
-                    align-items: center;
-                    color: #fff;
-                    cursor: pointer;
+                    display      : flex;
+                    align-items  : center;
+                    color        : #fff;
+                    cursor       : pointer;
                 }
 
                 .theme {
@@ -242,7 +269,7 @@ base-map {
                     align-items    : center;
                     justify-content: space-between;
                     margin         : 10px 0 10px;
-                    border-bottom  : 1px solid #e4ecfa;
+                    border-bottom  : 1px solid #0000000d;
 
                     .filter {
                         display    : flex;
@@ -284,19 +311,18 @@ base-map {
                         color          : #909090;
                         transition     : all ease-in 0.2s;
                         border-radius  : 5px;
-                        border         : 1px solid #fff;
 
                         .zone-name {
-                            background   : #f4f6f9;
-                            color        : #b2b5bd;
-                            border-radius: 2px;
-                            padding      : 10px 15px;
+                            // background   : #ffffff;
+                            color           : #656565;
+                            border-radius   : 2px;
+                            padding         : 0 15px 10px 15px;
+                            // box-shadow   : 0 3px 4px #00000005;
                         }
 
                         .icon {
                             margin-right: 10px;
                             filter      : grayscale(1);
-                            opacity     : 0.5;
                             cursor      : pointer;
                             transition  : all ease-in 0.2s;
 
@@ -309,11 +335,13 @@ base-map {
                     }
 
                     .zone-title {
+                        color          : #000;
+                        font-weight    : 500;
                         display        : flex;
                         width          : 100%;
                         align-items    : center;
                         justify-content: space-between;
-                        margin         : 15px 0 10px;
+                        margin         : 15px 0 0 0;
                         transition     : all ease-in 0.2s;
 
                         >div {
@@ -510,7 +538,7 @@ base-map {
         right                : 0;
         bottom               : 0;
         // background-color  : #ccc;
-        background-image     : linear-gradient(to right, #a9a9a9, #d6d6d6);
+        background-image     : linear-gradient(to right, #e8e8e8, #d6d6d6);
         -webkit-transition   : .2s;
         transition           : .2s;
     }
@@ -555,8 +583,8 @@ base-map {
     // CUSTOM CSS
     //////////////////////////////////////////////////////////////////////////////////////
     .rg-bottom {
-        border-bottom: 1px solid #e4ecfa;
-        background   : #fff;
+        border-bottom: 1px solid #00000017;
+        background   : #fff0;
         margin-bottom: 0px;
     }
 
@@ -568,7 +596,7 @@ base-map {
     }
 
     .slim-scroller ::-webkit-scrollbar {
-        background: #fff !important;
+        background: #fff0 !important;
         width     : 3px;
     }
 
@@ -615,7 +643,7 @@ base-map {
         line-height  : unset;
         padding      : 7px 15px 7px 7px;
         margin       : 0 10px;
-        background   : #fff;
+        background   : #fff0;
         border-bottom: unset;
         transition   : all ease-in 0.1s;
         border-radius: 2px;
@@ -631,6 +659,7 @@ base-map {
     wi-tree-node .node-label {
         font-size: 12px;
         padding  : 0 10px;
+        color    : #000;
     }
 
     wi-tree-node .node-caret {
@@ -642,13 +671,13 @@ base-map {
     }
 
     wi-tree-node .node-content:hover {
-        background: #f1f1f1;
+        background: #fff;
         transition: all ease-in 0.1s;
 
     }
 
     wi-tree-node .node-content.selected {
-        background   : #f1f1f1;
+        background   : #fff;
         border-radius: 2px;
         transition   : all ease-in 0.1s;
     }
@@ -667,10 +696,10 @@ base-map {
         line-height  : unset;
         padding      : 11px 15px;
         margin-bottom: 10px;
-        border-bottom: 1px solid #e4ecfa;
-        background   : #fff;
+        border-bottom: 1px solid #0000000d;
+        background   : #fff0;
         border-radius: 0;
-        color        : #353535;
+        color        : #000;
     }
 
     wi-droppable {
@@ -682,12 +711,18 @@ base-map {
 
     //////////////////////////////////////////////////////////////////////////////////////
 }
+
 wi-map-loading .main-spinner {
-    position: absolute;
-    height: 100vh;
-    width: 100vw;
-    transform: scale(0.6);
+
+    position     : absolute;
+    height       : 100vh;
+    width        : 100vw;
+    transform    : scale(0.6);
     // background: #ffffffab;
-    z-index: 9999999 !important;
-    
+    z-index      : 9999999 !important;
+
+}
+
+wi-map-loading .spinner {
+    display: none;
 }

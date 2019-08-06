@@ -1,6 +1,7 @@
 <style>
     .coordinates {
-        background: rgb(255, 255, 255);
+        background: #ffffffba;
+        backdrop-filter: blur(5px) brightness(1.2) saturate(1.1);
         color: #333;
         position: absolute;
         bottom: 40px;
@@ -38,7 +39,8 @@
 <div class="controlPanel">
     <div class='coordinates' style="bottom: 90px;">
         <div style="display: flex;">
-            <div style="display: flex; align-items: center; min-width: 100px;justify-content: space-between;border-right: 1px solid #ccc;    padding: 10px 20px 10px 0;">
+            <div
+                style="display: flex; align-items: center; min-width: 100px;justify-content: space-between;border-right: 1px solid #ccc;    padding: 10px 20px 10px 0;">
                 <span><b>Width</b></span>
                 <div id="displayX"></div><span>px</span>
             </div>
@@ -52,7 +54,8 @@
     </div>
     <div class='coordinates'>
         <div style="display: flex;">
-            <div style="display: flex; align-items: center; min-width: 110px;justify-content: space-between; border-right: 1px solid #ccc;    padding: 10px 20px 10px 0; ">
+            <div
+                style="display: flex; align-items: center; min-width: 110px;justify-content: space-between; border-right: 1px solid #ccc;    padding: 10px 20px 10px 0; ">
                 <span><b>Latitude</b></span>
                 <div id="latPoint"></div>
             </div>
