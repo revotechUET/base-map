@@ -255,7 +255,7 @@ function mapViewController($scope, $timeout) {
       map.setStyle('mapbox://styles/mapbox/dark-v10');
     }
     else if (theme === 5) {
-      map.setStyle('mapbox://styles/k54hungyb/cjybozeuz1fu21cocakatd2cm');
+      map.setStyle('mapbox://styles/revotech/ck0g87pab00601crp5poo13pw');
     }
     else if (theme === 6) {
       map.setStyle('mapbox://styles/mapbox/streets-v11');
