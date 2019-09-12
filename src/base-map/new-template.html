@@ -133,6 +133,16 @@
                     </label>
                 </div>
             </div>
+            <div class="setting">
+                <div class="setting-title">Show Contour</div>
+                <div class="setting-content">
+                    <span>Displays contour layer</span>
+                    <label class="switch">
+                        <input type="checkbox">
+                        <span class="slider round" ng-click="self.toggleContour()"></span>
+                    </label>
+                </div>
+            </div>
             <!-- <div class="setting">
                 <div class="setting-title">Show UTM Zone</div>
                 <div class="setting-content">
@@ -190,6 +200,7 @@
     mapbox-token='pk.eyJ1IjoicmV2b3RlY2giLCJhIjoiY2swZGJobWg3MDY2NzNtbnVwaDEyYmttMCJ9.39KL2GsNCiew9XmiLVsTDQ'
     wells='wellSelect' zone-map='zoneMap' focus-well='focusWell' all-popup='allPopup' theme='themeMap'
     focus-curve='focusCurve' get-curve-info-fn='self.getCurveInfoFn' geo-json='self.geoJson'
+    show-contour='self.showContour'
     control-panel="self.controlPanel" deep-ocean="self.deepOcean" point="self.point">
 </map-view>
 <!-- <map-view class="mapView"

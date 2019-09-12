@@ -90,6 +90,9 @@ function baseMapController($scope, $http, $element, wiToken, $timeout, $location
             }
         }
     };
+    this.toggleContour = function() {
+        self.showContour = !self.showContour;
+    }
 
     this.$onInit = function () {
         self.showDialog = false;
@@ -213,12 +216,14 @@ function baseMapController($scope, $http, $element, wiToken, $timeout, $location
     }
 
     async function updateCurveList() {
-        $scope.curveList.length = 0;
         const _curves = $scope.curveList;
         const _wells = $scope.wellSelect;
         if (!_wells.length) return;
-        // const firstWell = _wells[0];
-        const firstWell = await prepareWellDatasets(_wells[0]);
+        for (let i = 0 ; i < _wells.length; ++i) {
+            await prepareWellDatasets(_wells[i]);
+        }
+        _curves.length = 0;
+        const firstWell = _wells[0];
         firstWell.datasets.forEach(ds => {
             ds.curves.forEach(c => {
                 _curves.push({
@@ -230,7 +235,6 @@ function baseMapController($scope, $http, $element, wiToken, $timeout, $location
         for (let i=1; i<_wells.length; ++i) {
             const _well = _wells[i];
             const __curves = [];
-            await prepareWellDatasets(_well);
             _well.datasets.forEach(ds => {
                 ds.curves.forEach(c => {
                     __curves.push({

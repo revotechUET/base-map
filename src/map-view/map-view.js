@@ -18,6 +18,7 @@ app.component(componentName, {
     focusCurve: '<',
     getCurveInfoFn: '<',
     geoJson: '<',
+    showContour: '<',
     zoneMap: "<",
     allPopup: "<",
     theme: "<",
@@ -66,7 +67,10 @@ function mapViewController($scope, $timeout) {
       drawMarkers();
       drawContours();
     }, true);
-    $scope.$watch(() => self.focusCurve, function() {
+    $scope.$watch(() => self.focusCurve, () => {
+      drawContours();
+    })
+    $scope.$watch(() => self.showContour, () => {
       drawContours();
     })
     $scope.$watch(function () {
@@ -431,9 +435,12 @@ function mapViewController($scope, $timeout) {
   const drawContours = _.debounce(_drawContours, 100);
   async function _drawContours() {
     if (!map) return;
+    if (!self.showContour) {
+      contour.data = [];
+      return;
+    }
     if (contour) {
       contour.data = await genContourData();
-      contour.zoneMap = self.zoneMap;
     }
   }
   window._mapView = self;

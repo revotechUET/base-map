@@ -1,6 +1,6 @@
 module.exports = Contour;
-const MIN_COOR = 0.1;
-const PROPAGATE_RATE = 9/10;
+const MIN_COOR = 0.04;
+const PROPAGATE_RATE = 1 - MIN_COOR;
 const NUM_OF_CONTOURS = 10;
 function Contour(container, map, data) {
     const self = this;
@@ -21,7 +21,7 @@ function Contour(container, map, data) {
             .style('background-color', 'rgba(230, 230, 230, 0.1)');
     this.canvas = canvas.node();
 
-    const DEBOUNCED_TIMEOUT = 0;
+    const DEBOUNCED_TIMEOUT = 1/MIN_COOR;
     this.drawGrid = drawGrid;
     this.drawContour = drawContour;
     this.drawGridDebounced = _.debounce(drawGrid, DEBOUNCED_TIMEOUT);
@@ -34,12 +34,13 @@ function Contour(container, map, data) {
         })
     }
 
-    const EPSILON = 10e-9;
+    const EPSILON = 0.5 + 10e-9;
     function getBounds() {
-        const minLat = d3.min(self.data, (d => d.lat));
-        const maxLat = d3.max(self.data, (d => d.lat));
-        const minLng = d3.min(self.data, (d => d.lng));
-        const maxLng = d3.max(self.data, (d => d.lng));
+        const mapBounds = self.map.getBounds();
+        const minLat = Math.max(d3.min(self.data, (d => d.lat)), mapBounds._sw.lat);
+        const maxLat = Math.min(d3.max(self.data, (d => d.lat)), mapBounds._ne.lat);
+        const minLng = Math.max(d3.min(self.data, (d => d.lng)), mapBounds._sw.lng);
+        const maxLng = Math.min(d3.max(self.data, (d => d.lng)), mapBounds._ne.lng);
         if (minLat && maxLat && minLng && maxLng)
             return {
                 _sw: { lat: Math.floor(minLat - EPSILON), lng: Math.floor(minLng - EPSILON) },
@@ -50,35 +51,6 @@ function Contour(container, map, data) {
                 _sw: { lat: 0, lng: 0 },
                 _ne: { lat: 0, lng: 0 }
             };
-        /*
-        const zoneNumberRegex = /\+zone=([0-9]+)/g
-        const isSouthRegex = /\+south/g
-        if (self.zoneMap && typeof(self.zoneMap) === 'string') {
-            const zoneNumberTest = zoneNumberRegex.exec(self.zoneMap);
-            const isSouthTest = isSouthRegex.exec(self.zoneMap);
-            const _ne = { lat: 0, lng: 0 };
-            const _sw = { lat: 0, lng: 0 };
-            if (zoneNumberTest && zoneNumberTest.length) {
-                const zoneNum = Number(zoneNumberTest[1])
-                if (isSouthTest) {
-                    // _sw.lat = ;
-                    // _sw.lng = ;
-                    // _ne.lat = ;
-                    // _ne.lng = ;
-                    return { _ne, _sw};
-                } else {
-                    // _sw.lat = ;
-                    // _sw.lng = ;
-                    // _ne.lat = ;
-                    // _ne.lng = ;
-                    return { _ne, _sw};
-                }
-            } else {
-                return { _ne, _sw };
-            }
-        }
-        return null;
-        */
     }
 
     function getGrid() {
@@ -87,10 +59,17 @@ function Contour(container, map, data) {
         const ne = bounds._ne;
         const lats = [Math.floor(sw.lat), Math.ceil(ne.lat)];
         const lngs = [Math.floor(sw.lng), Math.ceil(ne.lng)];
-        return {
-            lats: d3.range(d3.min(lats), d3.max(lats) + 1, MIN_COOR),
+        const grid = {
+            lats: d3.range(d3.min(lats), d3.max(lats), MIN_COOR),
             lngs: d3.range(d3.min(lngs), d3.max(lngs), MIN_COOR)
         }
+        const statistic = {
+            minLat: d3.min(grid.lats),
+            maxLat: d3.max(grid.lats),
+            minLng: d3.min(grid.lngs),
+            maxLng: d3.max(grid.lngs)
+        }
+        return Object.assign(grid, statistic);
     }
     function drawGrid() {
         clearLayer();
@@ -132,8 +111,8 @@ function Contour(container, map, data) {
         })();
         return d3.scaleSequential(interpolateTerrain).domain(d3.extent(contourData.values)).nice();
     }
-    function calcValueFromDistance(value, distance, {totalValue, meanValue}) {
-        return value / ((distance / MIN_COOR) ** 1);
+    function calcValueFromDistance(value, distance) {
+        return value / (distance / MIN_COOR);
     }
     function getLng(lng) {
         return self.map.getCenter().lng < 0 ? -1 * (360 - lng):lng;
@@ -145,11 +124,11 @@ function Contour(container, map, data) {
             value: d.value
         }))
     }
-    function isInSide({lat, lng}, {lats, lngs}, {ignoreCenterPoint}={}) {
-        const minLat = d3.min(lats);
-        const maxLat = d3.max(lats);
-        const minLng = d3.min(lngs);
-        const maxLng = d3.max(lngs);
+    function isInSide({lat, lng}, {minLat, maxLat, minLng, maxLng}, {ignoreCenterPoint}={}) {
+        // const minLat = d3.min(lats);
+        // const maxLat = d3.max(lats);
+        // const minLng = d3.min(lngs);
+        // const maxLng = d3.max(lngs);
         return (lat - minLat) * (lat - maxLat) <= 0
             && (
                     ignoreCenterPoint
@@ -161,17 +140,18 @@ function Contour(container, map, data) {
         const lat = maxLat - Math.floor(index / contourData.width) * MIN_COOR;
         const lng = minLng + (index % contourData.width) * MIN_COOR;
 
-        const totalValue = data.reduce((acc, curr) => (acc + curr.value), 0);
-        const meanValue = totalValue / data.length
+        // const totalValue = data.reduce((acc, curr) => (acc + curr.value), 0);
+        // const meanValue = totalValue / data.length
+        const grid = getGrid();
 
         const combinedVector = data.reduce((acc, curr) => {
-            if (isInSide(curr, getGrid(), {ignoreCenterPoint: true})) {
+            if (isInSide(curr, grid, {ignoreCenterPoint: true})) {
                 const vector = {
                     lat: (curr.lat - lat),
                     lng: (curr.lng - lng)
                 };
                 const distance = Math.sqrt(vector.lat ** 2 + vector.lng ** 2);
-                const mag = calcValueFromDistance(curr.value, distance, { totalValue, meanValue });
+                const mag = calcValueFromDistance(curr.value, distance);
 
                 let latMag = 0;
                 let lngMag = 0;
@@ -186,34 +166,31 @@ function Contour(container, map, data) {
 
                 acc.lat += Math.sign(vector.lat) * latMag;
                 acc.lng += Math.sign(vector.lng) * lngMag;
-                // acc.lat *= PROPAGATE_RATE;
-                // acc.lng *= PROPAGATE_RATE;
+                acc.lat *= PROPAGATE_RATE;
+                acc.lng *= PROPAGATE_RATE;
             }
             return acc;
         }, {lat: 0, lng: 0});
         return Math.sqrt(combinedVector.lat ** 2 + combinedVector.lng ** 2);
     }
     function getContourData(data) {
-        const { lats, lngs } = getGrid();
+        const { lats, lngs, ...statistic} = getGrid();
         const contourData = {
             width: lngs.length,
             height: lats.length,
             values: new Array(lats.length * lngs.length).fill(null)
         }
-        const minLat = d3.min(lats);
-        const maxLat = d3.max(lats);
-        const minLng = d3.min(lngs);
         data.forEach(d => {
-            if (isInSide(d, {lats, lngs})) {
+            if (isInSide(d, statistic)) {
                 contourData.values[
-                    Math.round(Math.floor((maxLat - d.lat) / MIN_COOR) * contourData.width
-                    + Math.floor((getLng(d.lng) - minLng) / MIN_COOR))
+                    Math.round(Math.floor((statistic.maxLat - d.lat) / MIN_COOR) * contourData.width
+                    + Math.floor((getLng(d.lng) - statistic.minLng) / MIN_COOR))
                 ] = d.value;
             }
         });
         contourData.values.forEach((d, i) => {
             if (d == null) {
-                contourData.values[i] = calcValue(i, contourData, generalizeData(data, {minLat, minLng}), maxLat, minLng);
+                contourData.values[i] = calcValue(i, contourData, generalizeData(data, statistic), statistic.maxLat, statistic.minLng);
             }
         })
         return contourData;
@@ -224,6 +201,7 @@ function Contour(container, map, data) {
         requestAnimationFrame(_drawContour);
     }
     function _drawContour() {
+        if (!self.data || !self.data.length) return;
         const context = self.canvas.getContext('2d');
         /*
         data.forEach(d => {
@@ -257,12 +235,15 @@ function Contour(container, map, data) {
 
         const minVal = d3.min(contourData.values);
         const maxVal = d3.max(contourData.values);
-        const rangeVal = maxVal - minVal;
+        const thresholds = d3.range(1, NUM_OF_CONTOURS, 1)
+            .map(contNum => maxVal / (contNum * 3));
+        thresholds.push(minVal);
 
         const contours = d3.contours()
             .size([contourData.width, contourData.height])
-            .thresholds(d3.range(minVal + rangeVal * 1/NUM_OF_CONTOURS, maxVal, rangeVal * 1/NUM_OF_CONTOURS))
-            // .thresholds(color.ticks(10))
+            .thresholds(thresholds)
+            // .thresholds(d3.range(minVal, maxVal, rangeVal * 1/NUM_OF_CONTOURS))
+            // .thresholds(color.ticks(NUM_OF_CONTOURS))
             (contourData.values)
             .map(transformToPx);
         context.strokeStyle = 'black';
