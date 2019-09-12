@@ -48,6 +48,15 @@
                     get-icon="self.getIcon" get-children="self.getChildren" run-match="self.runMatchWell"
                     hide-unmatched="true" selected-ids="self.selectedIdsHash" click-fn='self.clickWellFunction'>
                 </wi-tree-view>
+                <wi-tree-view ng-show="!self.noWell" tree-root="curveList" get-label="self.getLabel" get-icon="self.getIcon"
+                    get-children="self.getChildren" run-match="self.runMatchCurve" hide-unmatched="true"
+                    selected-ids="self.selectedIdsHash" click-fn='self.clickCurveFunction'>
+                </wi-tree-view>
+                <div>
+                    <input type="file" class="file-upload" accept=".geojson,application/zip" placeholder="choose a file"
+                        onblur="angular.element(this).scope().clearSelectedFile()"
+                        onchange="angular.element(this).scope().onFileChange()"/>
+                </div>
             </wi-droppable>
             <div class="tab-function">
                 <div class="tab-fn-name ti ti-close" ng-click="self.deleteWell()"></div>
@@ -178,7 +187,14 @@
 </div>
 
 <map-view class="mapView"
-    mapbox-token='pk.eyJ1IjoiazU0aHVuZ3liIiwiYSI6ImNqdGZtNDE4ODF1OXEzeW85djJ5c29nYnoifQ.-VfHeKXV9avmbia1E7BFcQ'
+    mapbox-token='pk.eyJ1IjoicmV2b3RlY2giLCJhIjoiY2swZGJobWg3MDY2NzNtbnVwaDEyYmttMCJ9.39KL2GsNCiew9XmiLVsTDQ'
     wells='wellSelect' zone-map='zoneMap' focus-well='focusWell' all-popup='allPopup' theme='themeMap'
+    focus-curve='focusCurve' get-curve-info-fn='self.getCurveInfoFn' geo-json='self.geoJson'
     control-panel="self.controlPanel" deep-ocean="self.deepOcean" point="self.point">
 </map-view>
+<!-- <map-view class="mapView"
+    mapbox-token='pk.eyJ1IjoiazU0aHVuZ3liIiwiYSI6ImNqdGZtNDE4ODF1OXEzeW85djJ5c29nYnoifQ.-VfHeKXV9avmbia1E7BFcQ'
+    wells='wellSelect' zone-map='zoneMap' focus-well='focusWell' all-popup='allPopup' theme='themeMap'
+    focus-curve='focusCurve' get-curve-info-fn='self.getCurveInfoFn'
+    control-panel="self.controlPanel" deep-ocean="self.deepOcean" point="self.point">
+</map-view> -->

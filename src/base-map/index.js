@@ -31,15 +31,65 @@ app.component(componentName, {
     transclude: true
 });
 
-function baseMapController($scope, $http, wiToken, $timeout, $location, ngDialog) {
+function baseMapController($scope, $http, $element, wiToken, $timeout, $location, ngDialog) {
 
     let self = this;
+    window._basemap = self;
     self.noWell = true;
     $scope.wellSelect = [];
     $scope.focusWell = [];
     $scope.allPopup = false;
     self.activeTheme = 'Custom theme'
     self.selectedIdsHash = {}
+    $scope.curveList = [];
+    $scope.focusCurve = null;
+
+    const geoJsonDefault = {
+        "type": "FeatureCollection",
+        "features": []
+    };
+    self.geoJson = geoJsonDefault;
+    $scope.clearSelectedFile = function(event) {
+        const files = $element.find('input.file-upload')[0].files;
+        if (!files || files.length == 0) {
+            self.geoJson = geoJsonDefault;
+            $scope.$digest();
+        }
+    }
+    $scope.onFileChange = function() {
+        const files = $element.find('input.file-upload')[0].files;
+        const file = files[0];
+        if (file) {
+            console.log(file);
+            if (/(.geojson|.json)/.exec(file.name)) {
+                console.log("geojson file reached");
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    console.log(event);
+                    self.geoJson = JSON.parse(event.target.result);
+                    $scope.$digest();
+                }
+                reader.onerror = function(event) {
+                    console.error(event);
+                }
+                reader.readAsText(file);
+            } else {
+                const reader = new FileReader();
+                reader.onload = function (event) {
+                    shp(event.target.result)
+                        .then((geojson) => {
+                            self.geoJson = geojson;
+                            $scope.$digest();
+                        })
+                        .catch(e => console.error(e));
+                }
+                reader.onerror = function (event) {
+                    console.error(event);
+                }
+                reader.readAsArrayBuffer(file);
+            }
+        }
+    };
 
     this.$onInit = function () {
         self.showDialog = false;
@@ -126,12 +176,15 @@ function baseMapController($scope, $http, wiToken, $timeout, $location, ngDialog
         getZoneList();
         getCurveTree();
         $scope.wellSelect = [];
+        $scope.curveList = [];
         self.noWell = true;
 
     }
 
     this.cleanMap = function () {
         $scope.wellSelect = [];
+        $scope.curveList.length = 0;
+        $scope.focusCurve = null;
         self.noWell = true;
     }
 
@@ -143,6 +196,65 @@ function baseMapController($scope, $http, wiToken, $timeout, $location, ngDialog
             $scope.wellSelect.splice(idx, 1);
         }
         self.selectedIdsHash = {};
+        updateCurveList();
+    }
+
+    async function prepareWellDatasets(well) {
+        if (!well.datasets) {
+            const wellInfo = await new Promise((resolve, reject) => {
+                getWellInfo(well.idWell, function (err, wellInfo) {
+                    if (err) return reject(err);
+                    resolve(wellInfo);
+                })
+            });
+            Object.assign(well, wellInfo);
+        }
+        return well;
+    }
+
+    async function updateCurveList() {
+        $scope.curveList.length = 0;
+        const _curves = $scope.curveList;
+        const _wells = $scope.wellSelect;
+        if (!_wells.length) return;
+        // const firstWell = _wells[0];
+        const firstWell = await prepareWellDatasets(_wells[0]);
+        firstWell.datasets.forEach(ds => {
+            ds.curves.forEach(c => {
+                _curves.push({
+                    name: `${ds.name}.${c.name}`,
+                    idCurve: c.idCurve
+                });
+            })
+        });
+        for (let i=1; i<_wells.length; ++i) {
+            const _well = _wells[i];
+            const __curves = [];
+            await prepareWellDatasets(_well);
+            _well.datasets.forEach(ds => {
+                ds.curves.forEach(c => {
+                    __curves.push({
+                        name: `${ds.name}.${c.name}`,
+                        idCurve: c.idCurve
+                    })
+                });
+            });
+            const _disjoinIndexes = [];
+            for (let ci = 0; ci<_curves.length; ++ci) {
+                if (!__curves.find(_c => _c.name == _curves[ci].name)) {
+                    _disjoinIndexes.push(ci);
+                }
+            }
+            _disjoinIndexes.sort().reverse()
+                .forEach(ci => _curves.splice(ci, 1));
+        }
+        if ($scope.focusCurve) {
+            if (!_curves.find(c => c.name == $scope.focusCurve.name))
+                $scope.focusCurve = null;
+        }
+        if(!$scope.$$phase) {
+            $scope.$digest();
+        }
     }
 
     function addNode(event, helper, node) {
@@ -157,6 +269,9 @@ function baseMapController($scope, $http, wiToken, $timeout, $location, ngDialog
                     $scope.wellSelect.push(node);
                     self.noWell = false;
 
+                    $timeout(() => {
+                        updateCurveList();
+                    })
                 })
             }
         } else if (node.idProject) {
@@ -174,6 +289,9 @@ function baseMapController($scope, $http, wiToken, $timeout, $location, ngDialog
                             $scope.wellSelect.push(wells[index]);
                             self.noWell = false;
 
+                            $timeout(() => {
+                                updateCurveList();
+                            })
                         })
                     }
 
@@ -212,11 +330,14 @@ function baseMapController($scope, $http, wiToken, $timeout, $location, ngDialog
             return node.name;
         } else if (node && node.idProject) {
             return node.alias || node.name;
+        } else if (node && node.idCurve) {
+            return node.name;
         }
     }
     this.getIcon = function (node) {
         if (node && node.idWell) return "well-16x16";
         else if (node && node.idProject) return "project-normal-16x16";
+        else if (node && node.idCurve) return "curve-16x16";
     }
     this.getChildren = function (node) {
         if (node && node.idProject) {
@@ -233,8 +354,16 @@ function baseMapController($scope, $http, wiToken, $timeout, $location, ngDialog
         let searchArray = node.name.toLowerCase();
         return searchArray.includes(keySearch);
     }
+    this.runMatchCurve = function (node, criteria) {
+        let keySearch = criteria.toLowerCase();
+        let searchArray = node.name.toLowerCase();
+        return searchArray.includes(keySearch);
+    }
     this.clickWellFunction = function ($event, node) {
         $scope.focusWell = node;
+    }
+    this.clickCurveFunction = function ($event, node) {
+        $scope.focusCurve = node;
     }
     this.clickFunction = function ($event, node) {
 
@@ -335,6 +464,49 @@ function baseMapController($scope, $http, wiToken, $timeout, $location, ngDialog
             }
         }).then(function (response) {
             cb(null, response.data.content.datasets, wellNodeChildren);
+        }, function (err) {
+            cb(err);
+        });
+    }
+
+    this.getCurveInfoFn = getCurveInfo;
+    const cachedCurvesInfo = {};
+    CURVE_CACHING_TIMEOUT = 5000; //ms
+    function getCurveInfo(curveId, cb) {
+        if (cachedCurvesInfo[curveId] && (cachedCurvesInfo.timestamp - Date.now()) < CURVE_CACHING_TIMEOUT)
+            return cb(null, cachedCurvesInfo.content);
+        $http({
+            method: 'POST',
+            url: BASE_URL + '/project/well/dataset/curve/info',
+            data: {
+                idCurve: curveId
+            },
+            headers: {
+                "Authorization": wiToken.getToken(),
+            }
+        }).then(function (response) {
+            cachedCurvesInfo[curveId] = {
+                content: response.data.content,
+                timestamp: Date.now()
+            }
+            cb(null, response.data.content);
+        }, function (err) {
+            cb(err);
+        });
+    }
+
+    function getWellInfo(wellId, cb) {
+        $http({
+            method: 'POST',
+            url: BASE_URL + '/project/well/info',
+            data: {
+                idWell: wellId
+            },
+            headers: {
+                "Authorization": wiToken.getToken(),
+            }
+        }).then(function (response) {
+            cb(null, response.data.content);
         }, function (err) {
             cb(err);
         });

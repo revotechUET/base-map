@@ -3,6 +3,7 @@ module.exports.name = componentName;
 require('./map-view.less');
 const zoneName = require('./zone-name.json')
 const zoneLine = require('./zone-line.json')
+const Contour = require('../contour');
 
 var app = angular.module(componentName, []);
 
@@ -14,6 +15,9 @@ app.component(componentName, {
     wells: "<",
     mapboxToken: "@",
     focusWell: '<',
+    focusCurve: '<',
+    getCurveInfoFn: '<',
+    geoJson: '<',
     zoneMap: "<",
     allPopup: "<",
     theme: "<",
@@ -37,6 +41,7 @@ function mapViewController($scope, $timeout) {
   this.$onInit = function () {
     $timeout(function () {
       drawMap();
+      initContours();
       // console.log('Draw map')
     }, 10);
     $scope.$watch(function () {
@@ -59,11 +64,16 @@ function mapViewController($scope, $timeout) {
     }, function () {
       changeStyleMap(self.theme);
       drawMarkers();
+      drawContours();
     }, true);
+    $scope.$watch(() => self.focusCurve, function() {
+      drawContours();
+    })
     $scope.$watch(function () {
       return [self.mapboxToken, self.zoneMap];
     }, function () {
       drawMarkersDebounced();
+      drawContours();
     }, true);
     $scope.$watch(function () {
       return [self.focusWell];
@@ -75,8 +85,20 @@ function mapViewController($scope, $timeout) {
     }, function () {
       showAllPopup(self.allPopup);
     }, true);
+    $scope.$watch(() => self.geoJson, () => { drawGeoJson(self.geoJson); })
   }
 
+  const geojsonSource = { type: 'geojson', data: { type: "FeatureCollection", features: [] } };
+  function drawGeoJson(geojson) {
+    if(!map) return;
+    let source = map.getSource('geojson-source');
+    if (!source) {
+      const config = geojsonSource;
+      source = map.addSource('geojson-source', config);
+    }
+    Object.assign(geojsonSource.data, geojson);
+    source.setData(geojson);
+  }
   var drawMarkersDebounced = _.debounce(drawMarkers, 100);
   // SHOW MAP
   function drawMap() {
@@ -153,11 +175,14 @@ function mapViewController($scope, $timeout) {
         if (e.type !== 'draw.delete') alert("Use the draw tools to draw a polygon!");
       }
     }
+
     // Show ZoneLine
-    map.on('load', function () {
+    map.on('styledata', function () {
+      if (map.getLayer('lines')) return;
       map.addLayer(zoneLine);
     });
-    map.on('load', function () {
+    map.on('styledata', function () {
+      if (map.getSource('clusters')) return;
       map.addSource('clusters', {
         type: "geojson",
         data: zoneName
@@ -195,7 +220,6 @@ function mapViewController($scope, $timeout) {
     });
 
     // show point
-
     map.on('mousemove', function (e) {
       document.getElementById('latPoint').innerHTML = e.lngLat.lat.toFixed(3);
       document.getElementById('lngPoint').innerHTML = e.lngLat.lng.toFixed(3);
@@ -203,6 +227,17 @@ function mapViewController($scope, $timeout) {
       document.getElementById('displayY').innerHTML = e.point.y;
 
     });
+
+    map.on('styledata', function() {
+      if (map.getSource('geojson-source')) return;
+      map.addSource('geojson-source', geojsonSource);
+      map.addLayer({
+        "id": "geojson-layer",
+        "type": "fill",
+        "source": "geojson-source",
+        "paint": { "fill-color": "hsla(121, 59%, 45%, 0.5)"}
+        });
+    })
   }
   // CHANGE STYLE
   function changeStyleMap(theme) {
@@ -331,8 +366,77 @@ function mapViewController($scope, $timeout) {
     } else {
       // console.log(self.zoneMap);
     }
-
   }
+
+  // show contour
+  const data = [];
+  async function getWellDataForContour(well) {
+    if (!self.focusCurve) return 0;
+    let curve = null;
+    for (let dsi = 0; dsi < well.datasets.length; ++dsi) {
+      const _ds = well.datasets[dsi];
+      curve = _ds.curves.find(c => `${_ds.name}.${c.name}` == self.focusCurve.name);
+      if (curve) break;
+    }
+    if (!curve) return 0;
+    const curveInfo = await new Promise((resolve, reject) => {
+      self.getCurveInfoFn(curve.idCurve, function(err, curveInfo) {
+        if(err) {
+          console.error(err);
+          reject(err);
+        } else {
+          resolve(curveInfo);
+        }
+      });
+    });
+    if (!self.focusCurve) return 0;
+    if (!curveInfo || !curveInfo.DataStatistic) return 0;
+    return curveInfo.DataStatistic.meanValue;
+  }
+  async function genContourData() {
+    const _data = [];
+    let firstProjection = self.zoneMap;
+    let secondProjection = "+proj=longlat +ellps=WGS84 +datum=WGS84 +units=degrees";
+    if (self.zoneMap) {
+      if ((self.wells || []).length) {
+        for (let index = 0; index < self.wells.length; index++) {
+          let lat = getLat(self.wells[index].well_headers);
+          let long = getLong(self.wells[index].well_headers);
+          let x = getX(self.wells[index].well_headers);
+          let y = getY(self.wells[index].well_headers);
+          let latX = proj4(firstProjection, secondProjection, [x, y])[1];
+          let lngY = proj4(firstProjection, secondProjection, [x, y])[0];
+          if (checkCoordinate(lat, long, x, y) === true) {
+            // use long, lat
+            _data.push({ lng: long, lat, value: await getWellDataForContour(self.wells[index]) })
+          } else if (checkCoordinate(lat, long, x, y) === false) {
+            // use lngY, latX
+            _data.push({ lng: lngY, lat: latX, value: await getWellDataForContour(self.wells[index]) })
+          }
+        }
+      }
+      data.length = 0;
+      _data.forEach(d => data.push(d));
+    }
+    return data;
+  }
+  let contour = null;
+  function initContours() {
+    contour = new Contour('#contour-map-container', map, []);
+    map.on('render', function (e) {
+      contour.drawContourDebounced();
+    })
+    window._contour = contour;
+  }
+  const drawContours = _.debounce(_drawContours, 100);
+  async function _drawContours() {
+    if (!map) return;
+    if (contour) {
+      contour.data = await genContourData();
+      contour.zoneMap = self.zoneMap;
+    }
+  }
+  window._mapView = self;
   // SHOW MARKER
   function drawMarkers() {
     let firstProjection = self.zoneMap;
