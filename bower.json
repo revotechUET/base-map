@@ -25,7 +25,11 @@
     "async": "^2.6.2",
     "mapbox-box-draw.js": "mapbox-gl-draw#^0.19.0",
     "themify-icons": "^0.1.2",
-    "angular-resizable": "^1.2.0"
+    "angular-resizable": "^1.2.0",
+    "d3": "^5.12.0",
+    "d3-contour.v1.min": "https://d3js.org/d3-contour.v1.min.js",
+    "d3-hsv.v0.1.min": "https://d3js.org/d3-hsv.v0.1.min.js",
+    "shp": "^3.4.3"
   },
   "resolutions": {
     "angular": "1.7.8",
