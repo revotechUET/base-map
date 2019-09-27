@@ -203,11 +203,8 @@
         <div class="setting-content">
           <span>Zoom, Location and draw </span>
           <label class="switch">
-            <input type="checkbox" ng-checked="self.controlPanel" />
-            <span
-              class="slider round"
-              ng-click="self.controlPanel = !self.controlPanel"
-            ></span>
+            <input type="checkbox" ng-checked="self.controlPanel" ng-click="self.controlPanel = !self.controlPanel"/>
+            <span class="slider round"></span>
           </label>
         </div>
       </div>
@@ -226,8 +223,8 @@
         <div class="setting-content">
           <span>Display all names well on the popup</span>
           <label class="switch">
-            <input type="checkbox" ng-checked="$scope.allPopup" />
-            <span class="slider round" ng-click="self.allPopup()"></span>
+            <input type="checkbox" ng-checked="allPopup" ng-click="self.allPopup()"/>
+            <span class="slider round"></span>
           </label>
         </div>
       </div>
@@ -236,11 +233,8 @@
         <div class="setting-content">
           <span>Displays coordinates information location of point mouse</span>
           <label class="switch">
-            <input type="checkbox" ng-checked="self.point" />
-            <span
-              class="slider round"
-              ng-click="self.point = !self.point"
-            ></span>
+            <input type="checkbox" ng-checked="self.point" ng-click="self.point = !self.point" />
+            <span class="slider round" ></span>
           </label>
         </div>
       </div>
@@ -249,8 +243,8 @@
         <div class="setting-content">
           <span>Displays contour layer</span>
           <label class="switch">
-            <input type="checkbox" ng-checked="self.showContour" />
-            <span class="slider round" ng-click="self.toggleContour()"></span>
+            <input type="checkbox" ng-checked="self.showContour" ng-click="self.toggleContour()"/>
+            <span class="slider round"></span>
           </label>
         </div>
       </div>

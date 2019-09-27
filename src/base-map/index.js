@@ -64,6 +64,7 @@ function baseMapController(
   self.activeTheme = "Custom theme";
   self.controlPanel = true;
   self.point = false;
+  self.showContour = false;
   self.selectedIdsHash = {};
   $scope.curveList = [];
   $scope.focusCurve = null;
@@ -174,7 +175,7 @@ function baseMapController(
             result.mapSetting.then(function(data) {
               data = JSON.parse(data);
               $scope.themeMap = data.themeMap;
-              $scope.allPopup = data.allPopUp;
+              $scope.allPopup = data.allPopup;
               self.activeTheme = data.activeTheme;
               self.controlPanel = data.controlPanel;
               self.point = data.point;
@@ -343,7 +344,7 @@ function baseMapController(
       activeTheme: self.activeTheme,
       controlPanel: self.controlPanel,
       point: self.point,
-      allPopUp: $scope.allPopup,
+      allPopup: $scope.allPopup,
       showContour: self.showContour,
       zoneMap: $scope.zoneMap
     };
