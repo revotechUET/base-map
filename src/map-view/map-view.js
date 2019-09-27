@@ -285,24 +285,21 @@ function mapViewController($scope, $timeout) {
   // CHANGE STYLE
   function changeStyleMap(theme) {
     // CHANGE STYLE
-    // if (theme === 1) {
-    //   map.setStyle('mapbox://styles/mapbox/light-v10');
-    // }
-    // else if (theme === 2) {
-    //   map.setStyle('mapbox://styles/mapbox/satellite-v9');
-    // }
-    // else if (theme === 3) {
-    //   map.setStyle('mapbox://styles/mapbox/streets-v11');
-    // }
-    // else if (theme === 4) {
-    //   map.setStyle('mapbox://styles/mapbox/dark-v10');
-    // }
-    // else if (theme === 5) {
-    //   map.setStyle('mapbox://styles/revotech/ck0g87pab00601crp5poo13pw');
-    // }
-    // else if (theme === 6) {
-    //   map.setStyle('mapbox://styles/mapbox/streets-v11');
-    // }
+    if (map !== undefined) {
+      if (theme === 1) {
+        map.setStyle("mapbox://styles/mapbox/light-v10");
+      } else if (theme === 2) {
+        map.setStyle("mapbox://styles/mapbox/satellite-v9");
+      } else if (theme === 3) {
+        map.setStyle("mapbox://styles/mapbox/streets-v11");
+      } else if (theme === 4) {
+        map.setStyle("mapbox://styles/mapbox/dark-v10");
+      } else if (theme === 5) {
+        map.setStyle("mapbox://styles/revotech/ck0g87pab00601crp5poo13pw");
+      } else if (theme === 6) {
+        map.setStyle("mapbox://styles/mapbox/streets-v11");
+      }
+    }
   }
 
   //SHOW CONTROL

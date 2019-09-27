@@ -39,13 +39,6 @@
       >
         Setting
       </div>
-      <div
-        class="tab-name"
-        ng-class="{'active' : isSet(3)}"
-        ng-click="setTab(3)"
-      >
-        Project Storage
-      </div>
     </div>
     <div style="display: flex; align-items: center;">
       <div
@@ -135,12 +128,7 @@
       <div class="tab-function">
         <div
           class="tab-fn-name ti-download"
-          ng-click="self.downloadContourFile()"
-        ></div>
-
-        <div
-          class="tab-fn-name ti-download"
-          ng-click="self.downloadGeoJsonFile()"
+          ng-click="self.downloadZipFile()"
         ></div>
         <div class="tab-fn-name ti ti-close" ng-click="self.deleteWell()"></div>
         <div
@@ -153,10 +141,10 @@
       <input
         type="file"
         class="file-upload"
-        accept=".json"
-        placeholder="choose a file contour.json"
+        accept=".zip"
+        placeholder="choose a file .zip"
         onblur="angular.element(this).scope().clearSelectedContourFile()"
-        onchange="angular.element(this).scope().onContourFileChange()"
+        onchange="angular.element(this).scope().onZipFileChange()"
       />
     </div>
   </div>
@@ -330,61 +318,31 @@
           </div>
         </div>
       </div>
-      <div class="tab-function">
-        <div
-          style="cursor: pointer; width: 15px;"
-          class="tab-fn-name ti-download"
-          ng-click="self.downloadMapSettingFile()"
-        ></div>
-      </div>
-      <div class="tab-function" style="margin-top: 12px">
-        <input
-          type="file"
-          class="file-upload"
-          accept=".json"
-          placeholder="choose a file mapsetting.json"
-          onblur="angular.element(this).scope().clearSelectedMapSettingFile()"
-          onchange="angular.element(this).scope().onMapSettingFileChange()"
-        />
-      </div>
     </div>
-  </div>
-  <div ng-show="isSet(3) && !self.hideMain" class="content">
-    <div class="content-top" resizable r-directions="['bottom']" r-flex="true">
-      <wi-tree-view
-        tree-root="treeConfig"
-        get-label="self.getLabelProjectStorage"
-        get-icon="self.getIconProjectStorage"
-        get-children="self.getChildrenProjectStorage"
-        run-match="self.runMatch"
-        hide-unmatched="true"
-        click-fn="self.clickFunctionProjectStorage"
-      >
-      </wi-tree-view>
-    </div>
-  </div>
-</div>
 
-<map-view
-  class="mapView"
-  mapbox-token="pk.eyJ1IjoicmV2b3RlY2giLCJhIjoiY2swZGJobWg3MDY2NzNtbnVwaDEyYmttMCJ9.39KL2GsNCiew9XmiLVsTDQ"
-  wells="wellSelect"
-  zone-map="zoneMap"
-  focus-well="focusWell"
-  all-popup="allPopup"
-  theme="themeMap"
-  focus-curve="focusCurve"
-  get-curve-info-fn="self.getCurveInfoFn"
-  geo-json="self.geoJson"
-  show-contour="self.showContour"
-  control-panel="self.controlPanel"
-  deep-ocean="self.deepOcean"
-  point="self.point"
->
-</map-view>
-<!-- <map-view class="mapView"
+    <map-view
+      class="mapView"
+      mapbox-token="pk.eyJ1IjoicmV2b3RlY2giLCJhIjoiY2swZGJobWg3MDY2NzNtbnVwaDEyYmttMCJ9.39KL2GsNCiew9XmiLVsTDQ"
+      wells="wellSelect"
+      zone-map="zoneMap"
+      focus-well="focusWell"
+      all-popup="allPopup"
+      theme="themeMap"
+      focus-curve="focusCurve"
+      get-curve-info-fn="self.getCurveInfoFn"
+      geo-json="self.geoJson"
+      show-contour="self.showContour"
+      control-panel="self.controlPanel"
+      deep-ocean="self.deepOcean"
+      point="self.point"
+    >
+    </map-view>
+
+    <!-- <map-view class="mapView"
     mapbox-token='pk.eyJ1IjoiazU0aHVuZ3liIiwiYSI6ImNqdGZtNDE4ODF1OXEzeW85djJ5c29nYnoifQ.-VfHeKXV9avmbia1E7BFcQ'
     wells='wellSelect' zone-map='zoneMap' focus-well='focusWell' all-popup='allPopup' theme='themeMap'
     focus-curve='focusCurve' get-curve-info-fn='self.getCurveInfoFn'
     control-panel="self.controlPanel" deep-ocean="self.deepOcean" point="self.point">
 </map-view> -->
+  </div>
+</div>

@@ -20,6 +20,8 @@
   },
   "dependencies": {
     "babel-loader": "^8.0.6",
+    "file-saver": "^2.0.2",
+    "jszip": "^3.2.2",
     "query-string": "^6.7.0",
     "url-loader": "^2.0.0"
   }

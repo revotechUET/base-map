@@ -2,6 +2,8 @@ var componentName = "baseMap";
 module.exports.name = componentName;
 require("./new-style.less");
 const queryString = require("query-string");
+const JSZip = require("jszip");
+const fileSaver = require("file-saver");
 
 let config = require("../../config/default").default;
 if (process.env.NODE_ENV === "development") {
@@ -26,6 +28,7 @@ var app = angular.module(componentName, [
   "wiToken",
   "angularResizable"
 ]);
+
 app.component(componentName, {
   template: require("./new-template.html"),
   controller: baseMapController,
@@ -121,84 +124,49 @@ function baseMapController(
     }
   };
 
-  $scope.clearSelectedContourFile = function(event) {
+  $scope.onZipFileChange = function() {
     const files = $element.find("input.file-upload")[1].files;
-    if (!files || files.length == 0) {
-      $scope.wellSelect = [];
-      $scope.curveList = [];
-
-      self.noWell = true;
-      if (!$scope.$$phase) {
-        $scope.$digest();
-      }
-    }
-  };
-  $scope.onContourFileChange = function() {
-    const files = $element.find("input.file-upload")[1].files;
+    console.log(files);
     const file = files[0];
     if (file) {
       console.log(file);
-      if (/(.json)/.exec(file.name)) {
-        console.log("contour.json file reached");
-        const reader = new FileReader();
-        reader.onload = function(event) {
-          console.log(event);
-          var data = JSON.parse(event.target.result);
-          $scope.wellSelect = data.selectWell;
-          $scope.curveList = data.selectCurve;
-          self.noWell = false;
-          if (!$scope.$$phase) {
-            $scope.$digest();
-          }
-        };
-        reader.onerror = function(event) {
-          console.error(event);
-        };
-        reader.readAsText(file);
-      } else {
-        const reader = new FileReader();
-        reader.onload = function(event) {
-          shp(event.target.result).catch(e => console.error(e));
-        };
-        reader.onerror = function(event) {
-          console.error(event);
-        };
-        reader.readAsArrayBuffer(file);
-      }
-    }
-  };
-
-  $scope.clearSelectedMapSettingFile = function(event) {
-    const files = $element.find("input.file-upload")[2].files;
-    if (!files || files.length == 0) {
-    }
-  };
-  $scope.onMapSettingFileChange = function() {
-    const files = $element.find("input.file-upload")[2].files;
-    const file = files[0];
-    if (file) {
-      console.log(file);
-      if (/(.json)/.exec(file.name)) {
-        console.log("mapsetting.json file reached");
-        const reader = new FileReader();
-        reader.onload = function(event) {
-          console.log(event);
-          var data = JSON.parse(event.target.result);
-          console.log(data);
-          $scope.themeMap = data.themeMap;
-          $scope.allPopup = data.allPopUp;
-          self.activeTheme = data.activeTheme;
-          self.controlPanel = data.controlPanel;
-          self.point = data.point;
-          self.showContour = data.showContour;
-          $scope.zoneMap = data.zoneMap;
-
-          $scope.$digest();
-        };
-        reader.onerror = function(event) {
-          console.error(event);
-        };
-        reader.readAsText(file);
+      if (/(.zip)/.exec(file.name)) {
+        console.log(".zip file upzip");
+        JSZip.loadAsync(file)
+          .then(function(zip) {
+            return {
+              contour: zip.file("contour.json").async("string"),
+              mapSetting: zip.file("mapsetting.json").async("string"),
+              blocks: zip.file("blocks.geojson").async("string")
+            };
+          })
+          .then(function(result) {
+            result.contour.then(function(data) {
+              data = JSON.parse(data);
+              $scope.wellSelect = data.selectWell;
+              $scope.curveList = data.selectCurve;
+              self.noWell = false;
+              if (!$scope.$$phase) {
+                $scope.$digest();
+              }
+            });
+            result.mapSetting.then(function(data) {
+              data = JSON.parse(data);
+              $scope.themeMap = data.themeMap;
+              $scope.allPopup = data.allPopUp;
+              self.activeTheme = data.activeTheme;
+              self.controlPanel = data.controlPanel;
+              self.point = data.point;
+              self.showContour = data.showContour;
+              $scope.zoneMap = data.zoneMap;
+              $scope.$digest();
+            });
+            result.blocks.then(function(data) {
+              data = JSON.parse(data);
+              self.geoJson = data;
+              $scope.$digest();
+            });
+          });
       } else {
         const reader = new FileReader();
         reader.onload = function(event) {
@@ -334,36 +302,22 @@ function baseMapController(
     updateCurveList();
   };
 
-  var saveData = (function() {
-    var a = document.createElement("a");
-    document.body.appendChild(a);
-    a.style = "display: none";
-    return function(data, fileName) {
-      var json = JSON.stringify(data),
-        blob = new Blob([json], { type: "octet/stream" }),
-        url = window.URL.createObjectURL(blob);
-      a.href = url;
-      a.download = fileName;
-      a.click();
-      window.URL.revokeObjectURL(url);
-    };
-  })();
-
-  this.downloadContourFile = function() {
-    console.log("file contour.json have been downloaded");
+  this.downloadZipFile = function() {
+    var zip = new JSZip();
+    console.log("file zip can download!");
+    //file contour.json
     var wellSelect = $scope.wellSelect;
     var curveSelect = $scope.curveList;
-    var data = {
+    var dataContour = {
       selectWell: wellSelect,
       selectCurve: curveSelect
     };
-    var fileName = "contour.json";
-    saveData(data, fileName);
-  };
+    var json1 = JSON.stringify(dataContour),
+      blob1 = new Blob([json1], { type: "octet/stream" });
+    zip.file("contour.json", blob1);
 
-  this.downloadMapSettingFile = function() {
-    console.log("file mapsetting.json have been downloaded");
-    var data = {
+    //file mapsetting.json
+    var dataMapSetting = {
       themeMap: $scope.themeMap,
       activeTheme: self.activeTheme,
       controlPanel: self.controlPanel,
@@ -372,15 +326,20 @@ function baseMapController(
       showContour: self.showContour,
       zoneMap: $scope.zoneMap
     };
-    var fileName = "mapsetting.json";
-    saveData(data, fileName);
-  };
+    var json2 = JSON.stringify(dataMapSetting),
+      blob2 = new Blob([json2], { type: "octet/stream" });
+    zip.file("mapsetting.json", blob2);
 
-  this.downloadGeoJsonFile = function() {
-    console.log("file blocks.geojson have been downloaded");
-    var fileName = "blocks.geojson";
-    var data = _contour.map.getSource("geojson-source")._data;
-    saveData(data, fileName);
+    //file blocks.geojson
+    var dataBlocks = _contour.map.getSource("geojson-source")._data;
+    var json3 = JSON.stringify(dataBlocks),
+      blob3 = new Blob([json3], { type: "octet/stream" });
+    zip.file("blocks.geojson", blob3);
+
+    //Compress file
+    zip.generateAsync({ type: "blob" }).then(content => {
+      fileSaver.saveAs(content, "download.zip");
+    });
   };
 
   async function prepareWellDatasets(well) {
@@ -591,46 +550,6 @@ function baseMapController(
     }
   };
 
-  this.getLabelProjectStorage = function(node) {
-    if (node && node.idStorageDatabase) {
-      return node.name;
-    } else if (node && node.idProject) {
-      return node.alias || node.name;
-    }
-  };
-  this.getIconProjectStorage = function(node) {
-    if (node && node.idStorageDatabase) return "well-16x16";
-    else if (node && node.idProject) return "project-normal-16x16";
-  };
-  this.getChildrenProjectStorage = function(node) {
-    if (node && node.idProject) {
-      return node.storage_databases;
-    }
-  };
-  this.clickFunctionProjectStorage = function($event, node) {
-    if (node.idStorageDatabase) {
-      // console.log("StorageDatabase clicked");
-    } else if (node.idProject) {
-      if (!node.timestamp || Date.now() - node.timestamp > 10 * 1000) {
-        $scope.projectFullInfo = [];
-        getProjectFullInfo(node.idProject, function(err, projects) {
-          if (err) {
-            ngDialog.open({
-              template: "templateError",
-              className: "ngdialog-theme-default",
-              scope: $scope
-            });
-            node.timestamp = Date.now();
-            return console.log(err);
-          }
-          $scope.projectFullInfo = projects;
-          node.storage_databases = projects.storage_databases;
-          console.log(projects);
-        });
-      }
-    }
-  };
-
   this.getCurveTree = getCurveTree;
   const BASE_URL = WI_BACKEND_HOST;
 
@@ -657,27 +576,6 @@ function baseMapController(
       function(response) {
         let projects = response.data.content;
         cb(null, projects, treeConfig);
-      },
-      function(err) {
-        cb(err);
-      }
-    );
-  }
-
-  function getProjectFullInfo(projectId, cb) {
-    $http({
-      method: "POST",
-      url: BASE_URL + "/project/fullinfo",
-      data: {
-        idProject: projectId
-      },
-      headers: {
-        Authorization: wiToken.getToken()
-      }
-    }).then(
-      function(response) {
-        let projects = response.data.content;
-        cb(null, projects);
       },
       function(err) {
         cb(err);
@@ -777,29 +675,5 @@ function baseMapController(
     );
   }
 
-  function getFile(cb) {
-    $http({
-      method: "POST",
-      url: BASE_URL + "/file-explorer/shallow",
-      data: {
-        storage_databases: {
-          directory: "f497c57664196df0c9e65f4a92f5d05c885cac81",
-          name: "ESS-hungnk",
-          company: "ESS"
-        }
-      },
-      headers: {
-        Authorization: wiToken.getToken()
-      }
-    }).then(
-      function(response) {
-        console.log(response);
-        cb(null, response.data.content);
-      },
-      function(err) {
-        cb(err);
-      }
-    );
-  }
-  getFile();
+  $scope.storageDatabase = {};
 }
