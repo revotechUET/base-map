@@ -124,6 +124,27 @@ function baseMapController(
     }
   };
 
+  $scope.clearSelectedContourFile = function(event) {
+    const files = $element.find("input.file-upload")[1].files;
+    if (!files || files.length == 0) {
+      $scope.wellSelect = [];
+      $scope.curveList = [];
+      self.geoJson = geoJsonDefault;
+      $scope.themeMap = 6;
+      $scope.allPopup = false;
+      self.activeTheme = "Custom theme";
+      self.controlPanel = true;
+      self.point = false;
+      self.showContour = false;
+      getZoneList();
+
+      self.noWell = true;
+      if (!$scope.$$phase) {
+        $scope.$digest();
+      }
+    }
+  };
+
   $scope.onZipFileChange = function() {
     const files = $element.find("input.file-upload")[1].files;
     console.log(files);
