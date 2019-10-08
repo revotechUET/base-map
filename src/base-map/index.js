@@ -74,8 +74,48 @@ function baseMapController(
     features: []
   };
 
+  $('#map-upfile-1-btn').bind("click", function () {
+    $('#map-upfile-1').click();
+  });
+  $scope.GetFileSizeNameAndType = function () {
+    let fi = document.getElementById('map-upfile-1');
+    let totalFileSize = 0;
+    if (fi.files.length > 0) {
+      document.getElementById('fp').innerHTML = ''
+      for (let i = 0; i <= fi.files.length - 1; i++) {
+        let fsize = fi.files.item(i).size;
+        totalFileSize = totalFileSize + fsize;
+        document.getElementById('fp').innerHTML =
+          document.getElementById('fp').innerHTML
+          + '<b>File Name: </b>' + fi.files.item(i).name + '</br>'
+          + '<b>File Size: </b>' + Math.round((fsize / 1024)) + 'KB </br>'
+          + '<b>File Type: </b>' + fi.files.item(i).type + "</br>";
+      }
+    }
+  }
+  $('#map-upfile-2-btn').bind("click", function () {
+    $('#map-upfile-2').click();
+  });
+  $scope.GetFileSizeNameAndType2 = function () {
+    let fi = document.getElementById('map-upfile-2');
+    let totalFileSize = 0;
+    if (fi.files.length > 0) {
+      document.getElementById('fp2').innerHTML = ''
+      for (let i = 0; i <= fi.files.length - 1; i++) {
+        let fsize = fi.files.item(i).size;
+        totalFileSize = totalFileSize + fsize;
+        document.getElementById('fp2').innerHTML =
+          document.getElementById('fp2').innerHTML
+          + '<b>File Name: </b>' + fi.files.item(i).name + '</br>'
+          + '<b>File Size: </b>' + Math.round((fsize / 1024)) + 'KB </br>'
+          + '<b>File Type: </b>' + fi.files.item(i).type + "</br>";
+      }
+    }
+  }
+
+
   self.geoJson = geoJsonDefault;
-  $scope.clearSelectedFile = function(event) {
+  $scope.clearSelectedFile = function (event) {
     const files = $element.find("input.file-upload")[0].files;
     if (!files || files.length == 0) {
       self.geoJson = geoJsonDefault;
@@ -90,7 +130,7 @@ function baseMapController(
   // wiApiService.getProject(data, function(response) {
   //   console.log(response);
   // });
-  $scope.onFileChange = function() {
+  $scope.onFileChange = function () {
     const files = $element.find("input.file-upload")[0].files;
     const file = files[0];
     if (file) {
@@ -98,18 +138,18 @@ function baseMapController(
       if (/(.geojson|.json)/.exec(file.name)) {
         console.log("geojson file reached");
         const reader = new FileReader();
-        reader.onload = function(event) {
+        reader.onload = function (event) {
           console.log(event);
           self.geoJson = JSON.parse(event.target.result);
           $scope.$digest();
         };
-        reader.onerror = function(event) {
+        reader.onerror = function (event) {
           console.error(event);
         };
         reader.readAsText(file);
       } else {
         const reader = new FileReader();
-        reader.onload = function(event) {
+        reader.onload = function (event) {
           shp(event.target.result)
             .then(geojson => {
               self.geoJson = geojson;
@@ -117,7 +157,7 @@ function baseMapController(
             })
             .catch(e => console.error(e));
         };
-        reader.onerror = function(event) {
+        reader.onerror = function (event) {
           console.error(event);
         };
         reader.readAsArrayBuffer(file);
@@ -125,7 +165,7 @@ function baseMapController(
     }
   };
 
-  $scope.clearSelectedContourFile = function(event) {
+  $scope.clearSelectedContourFile = function (event) {
     const files = $element.find("input.file-upload")[1].files;
     if (!files || files.length == 0) {
       $scope.wellSelect = [];
@@ -146,7 +186,7 @@ function baseMapController(
     }
   };
 
-  $scope.onZipFileChange = function() {
+  $scope.onZipFileChange = function () {
     const files = $element.find("input.file-upload")[1].files;
     console.log(files);
     const file = files[0];
@@ -155,15 +195,15 @@ function baseMapController(
       if (/(.zip)/.exec(file.name)) {
         console.log(".zip file upzip");
         JSZip.loadAsync(file)
-          .then(function(zip) {
+          .then(function (zip) {
             return {
               contour: zip.file("contour.json").async("string"),
               mapSetting: zip.file("mapsetting.json").async("string"),
               blocks: zip.file("blocks.geojson").async("string")
             };
           })
-          .then(function(result) {
-            result.contour.then(function(data) {
+          .then(function (result) {
+            result.contour.then(function (data) {
               data = JSON.parse(data);
               $scope.wellSelect = data.selectWell;
               $scope.curveList = data.selectCurve;
@@ -172,7 +212,7 @@ function baseMapController(
                 $scope.$digest();
               }
             });
-            result.mapSetting.then(function(data) {
+            result.mapSetting.then(function (data) {
               data = JSON.parse(data);
               $scope.themeMap = data.themeMap;
               $scope.allPopup = data.allPopup;
@@ -183,7 +223,7 @@ function baseMapController(
               $scope.zoneMap = data.zoneMap;
               $scope.$digest();
             });
-            result.blocks.then(function(data) {
+            result.blocks.then(function (data) {
               data = JSON.parse(data);
               self.geoJson = data;
               $scope.$digest();
@@ -191,22 +231,24 @@ function baseMapController(
           });
       } else {
         const reader = new FileReader();
-        reader.onload = function(event) {
+        reader.onload = function (event) {
           shp(event.target.result).catch(e => console.error(e));
         };
-        reader.onerror = function(event) {
+        reader.onerror = function (event) {
           console.error(event);
         };
         reader.readAsArrayBuffer(file);
       }
     }
   };
-
-  this.toggleContour = function() {
+  this.changeTheme = function () {
+    document.getElementById("main").classList.toggle("dark-mode");
+  }
+  this.toggleContour = function () {
     self.showContour = !self.showContour;
   };
 
-  this.$onInit = function() {
+  this.$onInit = function () {
     self.showDialog = false;
     self.baseUrl = $location.search().baseUrl || self.baseUrl;
     // self.getLoginUrl = `${WI_AUTH_HOST}/login`;
@@ -228,20 +270,20 @@ function baseMapController(
         },
         headers: {}
       }).then(
-        function(response) {
+        function (response) {
           wiToken.setToken(response.data.content.token);
           wiToken.saveToken(response.data.content);
         },
-        function(errorResponse) {
+        function (errorResponse) {
           console.error(errorResponse);
         }
       );
     }
     $scope.$watch(
-      function() {
+      function () {
         return localStorage.getItem("token");
       },
-      function(newValue, oldValue) {
+      function (newValue, oldValue) {
         // console.log(newValue, oldValue);
         if (localStorage.getItem("token") !== null) {
           getZoneList();
@@ -250,11 +292,11 @@ function baseMapController(
       }
     );
   };
-  $scope.tab = 1;
-  $scope.setTab = function(newTab) {
+  $scope.tab = 3;
+  $scope.setTab = function (newTab) {
     $scope.tab = newTab;
   };
-  $scope.isSet = function(tabNum) {
+  $scope.isSet = function (tabNum) {
     return $scope.tab === tabNum;
   };
   // $timeout(() => {
@@ -269,10 +311,10 @@ function baseMapController(
       data: {},
       headers: {}
     }).then(
-      function(response) {
+      function (response) {
         $scope.zoneFieldTable = response.data;
         // Show display value
-        $scope.zoneSelected = $scope.zoneFieldTable.find(function(zone) {
+        $scope.zoneSelected = $scope.zoneFieldTable.find(function (zone) {
           return zone.Name === self.zoneDefault;
         });
         // Get value default
@@ -280,23 +322,23 @@ function baseMapController(
           $scope.zoneMap = $scope.zoneSelected.output;
         }
         // Change value
-        $scope.hasChanged = function(item) {
+        $scope.hasChanged = function (item) {
           $scope.zoneMap = item.output;
         };
       },
-      function(errorResponse) {
+      function (errorResponse) {
         console.error(errorResponse);
       }
     );
   }
-  this.allPopup = function() {
+  this.allPopup = function () {
     $scope.allPopup = !$scope.allPopup;
   };
-  this.changeStyleMap = function(theme) {
+  this.changeStyleMap = function (theme) {
     $scope.themeMap = theme;
   };
 
-  this.refesh = function() {
+  this.refesh = function () {
     getZoneList();
     getCurveTree();
     $scope.wellSelect = [];
@@ -304,14 +346,14 @@ function baseMapController(
     self.noWell = true;
   };
 
-  this.cleanMap = function() {
+  this.cleanMap = function () {
     $scope.wellSelect = [];
     $scope.curveList.length = 0;
     $scope.focusCurve = null;
     self.noWell = true;
   };
 
-  this.deleteWell = function() {
+  this.deleteWell = function () {
     console.log("delete selected wells");
     let deleteNodes = Object.values(self.selectedIdsHash).map(
       item => item.data
@@ -324,7 +366,7 @@ function baseMapController(
     updateCurveList();
   };
 
-  this.downloadZipFile = function() {
+  this.downloadZipFile = function () {
     var zip = new JSZip();
     console.log("file zip can download!");
     //file contour.json
@@ -367,7 +409,7 @@ function baseMapController(
   async function prepareWellDatasets(well) {
     if (!well.datasets) {
       const wellInfo = await new Promise((resolve, reject) => {
-        getWellInfo(well.idWell, function(err, wellInfo) {
+        getWellInfo(well.idWell, function (err, wellInfo) {
           if (err) return reject(err);
           resolve(wellInfo);
         });
@@ -428,11 +470,11 @@ function baseMapController(
   function addNode(event, helper, node) {
     if (node.idWell) {
       let wellId = node.idWell;
-      let foundWell = $scope.wellSelect.find(function(item) {
+      let foundWell = $scope.wellSelect.find(function (item) {
         return item.idWell === wellId;
       });
       if (!foundWell) {
-        $timeout(function() {
+        $timeout(function () {
           $scope.wellSelect.push(node);
           self.noWell = false;
 
@@ -442,15 +484,15 @@ function baseMapController(
         });
       }
     } else if (node.idProject) {
-      getWells(node.idProject, node, function(err, wells) {
+      getWells(node.idProject, node, function (err, wells) {
         let countWell = 0;
         for (let index = 0; index < wells.length; index++) {
           let wellId = wells[index].idWell;
-          let foundWell = $scope.wellSelect.find(function(item) {
+          let foundWell = $scope.wellSelect.find(function (item) {
             return item.idWell === wellId;
           });
           if (!foundWell) {
-            $timeout(function() {
+            $timeout(function () {
               $scope.wellSelect.push(wells[index]);
               self.noWell = false;
 
@@ -463,7 +505,7 @@ function baseMapController(
       });
     }
   }
-  this.dropFn = function(event, helper, nodeArray) {
+  this.dropFn = function (event, helper, nodeArray) {
     for (let node of nodeArray) {
       addNode(event, helper, node);
     }
@@ -480,16 +522,16 @@ function baseMapController(
         Authorization: wiToken.getToken()
       }
     }).then(
-      function(response) {
+      function (response) {
         cb(null, response.data.content, projectNodeChildren);
       },
-      function(err) {
+      function (err) {
         cb(err);
       }
     );
   }
 
-  this.getLabel = function(node) {
+  this.getLabel = function (node) {
     if (node && node.idWell) {
       return node.name;
     } else if (node && node.idProject) {
@@ -498,38 +540,38 @@ function baseMapController(
       return node.name;
     }
   };
-  this.getIcon = function(node) {
+  this.getIcon = function (node) {
     if (node && node.idWell) return "well-16x16";
     else if (node && node.idProject) return "project-normal-16x16";
     else if (node && node.idCurve) return "curve-16x16";
   };
-  this.getChildren = function(node) {
+  this.getChildren = function (node) {
     if (node && node.idProject) {
       return node.wells;
     }
   };
-  this.runMatch = function(node, criteria) {
+  this.runMatch = function (node, criteria) {
     let keySearch = criteria.toLowerCase();
     let searchArray = node.alias.toLowerCase();
     return searchArray.includes(keySearch);
   };
-  this.runMatchWell = function(node, criteria) {
+  this.runMatchWell = function (node, criteria) {
     let keySearch = criteria.toLowerCase();
     let searchArray = node.name.toLowerCase();
     return searchArray.includes(keySearch);
   };
-  this.runMatchCurve = function(node, criteria) {
+  this.runMatchCurve = function (node, criteria) {
     let keySearch = criteria.toLowerCase();
     let searchArray = node.name.toLowerCase();
     return searchArray.includes(keySearch);
   };
-  this.clickWellFunction = function($event, node) {
+  this.clickWellFunction = function ($event, node) {
     $scope.focusWell = node;
   };
-  this.clickCurveFunction = function($event, node) {
+  this.clickCurveFunction = function ($event, node) {
     $scope.focusCurve = node;
   };
-  this.clickFunction = function($event, node) {
+  this.clickFunction = function ($event, node) {
     if (node.idCurve) {
       // console.log("Curve clicked");
     } else if (node.idDataset) {
@@ -538,7 +580,7 @@ function baseMapController(
       // console.log("Well clicked");
     } else if (node.idProject) {
       if (!node.timestamp || Date.now() - node.timestamp > 10 * 1000) {
-        getWells(node.idProject, node, function(err, wells) {
+        getWells(node.idProject, node, function (err, wells) {
           if (err) {
             ngDialog.open({
               template: "templateError",
@@ -551,8 +593,8 @@ function baseMapController(
           node.wells = wells;
           async.eachOf(
             node.wells,
-            function(well, idx, cb) {
-              getDatasets(well.idWell, well, function(err, datasets) {
+            function (well, idx, cb) {
+              getDatasets(well.idWell, well, function (err, datasets) {
                 if (err) {
                   return cb(err);
                 }
@@ -560,7 +602,7 @@ function baseMapController(
                 cb();
               });
             },
-            function(err) {
+            function (err) {
               if (err) {
                 return console.log(err);
               }
@@ -577,7 +619,7 @@ function baseMapController(
 
   function getCurveTree() {
     $scope.treeConfig = [];
-    getProjects($scope.treeConfig, function(err, projects) {
+    getProjects($scope.treeConfig, function (err, projects) {
       if (err) {
         return console.log(err);
       }
@@ -595,11 +637,11 @@ function baseMapController(
         Authorization: wiToken.getToken()
       }
     }).then(
-      function(response) {
+      function (response) {
         let projects = response.data.content;
         cb(null, projects, treeConfig);
       },
-      function(err) {
+      function (err) {
         cb(err);
       }
     );
@@ -616,10 +658,10 @@ function baseMapController(
         Authorization: wiToken.getToken()
       }
     }).then(
-      function(response) {
+      function (response) {
         cb(null, response.data.content, projectNodeChildren);
       },
-      function(err) {
+      function (err) {
         cb(err);
       }
     );
@@ -636,10 +678,10 @@ function baseMapController(
         Authorization: wiToken.getToken()
       }
     }).then(
-      function(response) {
+      function (response) {
         cb(null, response.data.content.datasets, wellNodeChildren);
       },
-      function(err) {
+      function (err) {
         cb(err);
       }
     );
@@ -664,14 +706,14 @@ function baseMapController(
         Authorization: wiToken.getToken()
       }
     }).then(
-      function(response) {
+      function (response) {
         cachedCurvesInfo[curveId] = {
           content: response.data.content,
           timestamp: Date.now()
         };
         cb(null, response.data.content);
       },
-      function(err) {
+      function (err) {
         cb(err);
       }
     );
@@ -688,10 +730,10 @@ function baseMapController(
         Authorization: wiToken.getToken()
       }
     }).then(
-      function(response) {
+      function (response) {
         cb(null, response.data.content);
       },
-      function(err) {
+      function (err) {
         cb(err);
       }
     );
