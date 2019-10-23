@@ -58,7 +58,7 @@
         <div class="tab-fn-name ti-paint-roller" ng-click="self.cleanMap()"></div>
       </div>
     </div>
-    <div style="flex-basis: 200px;" resizable r-directions="['top']" r-flex="true">
+    <div style="flex-basis: 200px; overflow: hidden;" resizable r-directions="['top']" r-flex="true">
       <wi-tree-view ng-show="!self.noWell" tree-root="curveList" get-label="self.getLabel" get-icon="self.getIcon"
         get-children="self.getChildren" run-match="self.runMatchCurve" hide-unmatched="true"
         selected-ids="self.selectedIdsHash" click-fn="self.clickCurveFunction">
