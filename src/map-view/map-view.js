@@ -5,7 +5,7 @@ const zoneName = require("./zone-name.json");
 const zoneLine = require("./zone-line.json");
 const Contour = require("../contour");
 
-var app = angular.module(componentName, []);
+var app = angular.module(componentName, ["ngDialog"]);
 
 app.component(componentName, {
   template: require("./map-view.html"),
@@ -29,34 +29,35 @@ app.component(componentName, {
   transclude: true
 });
 
-function mapViewController($scope, $timeout) {
+function mapViewController($scope, $timeout, ngDialog) {
   let self = this;
   let map;
   let draw;
   // let changeStyle = 0;
-  let markers = [];
+  // let markers = [];
+  let markerHash = {};
   let popups = [];
 
-  this.$onInit = function() {
-    $timeout(function() {
+  this.$onInit = function () {
+    $timeout(function () {
       drawMap();
       initContours();
       // console.log('Draw map')
     }, 10);
     $scope.$watch(
-      function() {
+      function () {
         return [self.controlPanel];
       },
-      function() {
+      function () {
         showControl();
       },
       true
     );
     $scope.$watch(
-      function() {
+      function () {
         return [self.point];
       },
-      function() {
+      function () {
         showPointLocation();
       },
       true
@@ -67,10 +68,10 @@ function mapViewController($scope, $timeout) {
     //   drawMap();
     // }, true);
     $scope.$watch(
-      function() {
+      function () {
         return [self.wells, self.theme];
       },
-      function() {
+      function () {
         changeStyleMap(self.theme);
         drawMarkers();
         drawContours();
@@ -90,29 +91,28 @@ function mapViewController($scope, $timeout) {
       }
     );
     $scope.$watch(
-      function() {
+      function () {
         return [self.mapboxToken, self.zoneMap];
       },
-      function() {
+      function () {
         drawMarkersDebounced();
         drawContours();
       },
       true
     );
     $scope.$watch(
-      function() {
-        return [self.focusWell];
+      function () {
+        return self.focusWell;
       },
-      function() {
+      function () {
         focusWell();
-      },
-      true
+      }
     );
     $scope.$watch(
-      function() {
+      function () {
         return [self.allPopup];
       },
-      function() {
+      function () {
         showAllPopup(self.allPopup);
       },
       true
@@ -162,13 +162,13 @@ function mapViewController($scope, $timeout) {
 
     //Deep ocean
     if (self.deepOcean) {
-      map.on("load", function() {
+      map.on("load", function () {
         map.addSource("10m-bathymetry-81bsvj", {
           type: "vector",
           url: "mapbox://mapbox.9tm8dx88"
         });
       });
-      map.on("load", function() {
+      map.on("load", function () {
         map.addLayer(
           {
             id: "10m-bathymetry-81bsvj",
@@ -264,14 +264,14 @@ function mapViewController($scope, $timeout) {
     });
 
     // show point
-    map.on("mousemove", function(e) {
+    map.on("mousemove", function (e) {
       document.getElementById("latPoint").innerHTML = e.lngLat.lat.toFixed(3);
       document.getElementById("lngPoint").innerHTML = e.lngLat.lng.toFixed(3);
       document.getElementById("displayX").innerHTML = e.point.x;
       document.getElementById("displayY").innerHTML = e.point.y;
     });
 
-    map.on("styledata", function() {
+    map.on("styledata", function () {
       if (map.getSource("geojson-source")) return;
       map.addSource("geojson-source", geojsonSource);
       map.addLayer({
@@ -368,6 +368,7 @@ function mapViewController($scope, $timeout) {
     for (let index = 0; index < popups.length; index++) {
       popups[index].remove();
     }
+    // console.log(markerHash);
     let firstProjection = self.zoneMap;
     let secondProjection =
       "+proj=longlat +ellps=WGS84 +datum=WGS84 +units=degrees";
@@ -384,34 +385,55 @@ function mapViewController($scope, $timeout) {
         map.flyTo({
           center: [long - 0.006, lat],
           zoom: 15,
-          pitch: 60
+          // pitch: 60
         });
-        popups.push(
-          new mapboxgl.Popup({
-            closeOnClick: true,
-            offset: 25,
-            closeButton: false
-          })
-            .setLngLat([long, lat])
-            .setText(String(self.focusWell.name))
-            .addTo(map)
-        );
-      } else if (checkCoordinate(lat, long, x, y) === false) {
+
+        // popups.push(
+        //   new mapboxgl.Popup({
+        //     closeOnClick: true,
+        //     offset: 25,
+        //     closeButton: false
+        //   })
+        //     .setLngLat([long, lat])
+        //     .setText(String(self.focusWell.name))
+        //     .addTo(map)
+        // );
+      }
+      else if (checkCoordinate(lat, long, x, y) === false) {
         map.flyTo({
           center: [lngY - 0.006, latX],
           zoom: 15,
-          pitch: 60
+          // pitch: 60
         });
-        popups.push(
-          new mapboxgl.Popup({
-            closeOnClick: true,
-            offset: 25,
-            closeButton: false
-          })
-            .setLngLat([lngY, latX])
-            .setText(String(self.focusWell.name))
-            .addTo(map)
-        );
+        // popups.push(
+        //   new mapboxgl.Popup({
+        //     closeOnClick: true,
+        //     offset: 25,
+        //     closeButton: false
+        //   })
+        //     .setLngLat([lngY, latX])
+        //     .setText(String(self.focusWell.name))
+        //     .addTo(map)
+        // );
+      } 
+      let marker = markerHash["" + self.focusWell.idWell];
+      if (marker) {
+        let popup = marker.getPopup();
+        if (popup) popup.addTo(map);
+        else {
+          ngDialog.open({
+            template: "templateError",
+            className: "ngdialog-theme-default",
+            scope: $scope
+          });
+        }
+      }
+      else {
+        ngDialog.open({
+          template: "templateError",
+          className: "ngdialog-theme-default",
+          scope: $scope
+        });
       }
     } else {
       // console.log(self.zoneMap);
@@ -432,7 +454,7 @@ function mapViewController($scope, $timeout) {
     }
     if (!curve) return 0;
     const curveInfo = await new Promise((resolve, reject) => {
-      self.getCurveInfoFn(curve.idCurve, function(err, curveInfo) {
+      self.getCurveInfoFn(curve.idCurve, function (err, curveInfo) {
         if (err) {
           console.error(err);
           reject(err);
@@ -484,7 +506,7 @@ function mapViewController($scope, $timeout) {
   let contour = null;
   function initContours() {
     contour = new Contour("#contour-map-container", map, []);
-    map.on("render", function(e) {
+    map.on("render", function (e) {
       contour.drawContourDebounced();
     });
     window._contour = contour;
@@ -509,12 +531,16 @@ function mapViewController($scope, $timeout) {
     for (let index = 0; index < popups.length; index++) {
       popups[index].remove();
     }
-    for (let index = 0; index < markers.length; index++) {
-      markers[index].remove();
+    // for (let index = 0; index < markers.length; index++) {
+    //   markers[index].remove();
+    // }
+    for (let marker of Object.values(markerHash)) {
+      marker.remove();
     }
 
     if (self.zoneMap) {
-      markers.length = 0;
+      // markers.length = 0;
+      markerHash = {};
       popups.length = 0;
       if (!(self.wells || []).length) return 0;
       for (let index = 0; index < self.wells.length; index++) {
@@ -529,29 +555,29 @@ function mapViewController($scope, $timeout) {
           offset: 25,
           closeButton: false
         }).setText(self.wells[index].name);
+        let aMarker;
         if (checkCoordinate(lat, long, x, y) === true) {
-          markers.push(
-            new mapboxgl.Marker()
-              .setLngLat([long, lat])
-              .setPopup(popup)
-              .addTo(map)
-          );
-          map.flyTo({
-            center: [long - 4, lat],
-            zoom: 5
-          });
-        } else if (checkCoordinate(lat, long, x, y) === false) {
-          markers.push(
-            new mapboxgl.Marker()
-              .setLngLat([lngY, latX])
-              .setPopup(popup)
-              .addTo(map)
-          );
-          map.flyTo({
-            center: [lngY - 4, latX],
-            zoom: 5
-          });
+          aMarker = new mapboxgl.Marker()
+            .setLngLat([long, lat])
+            .setPopup(popup)
+            .addTo(map);
+          // map.flyTo({
+          //   center: [long - 4, lat],
+          //   zoom: 5
+          // });
         }
+        else if (checkCoordinate(lat, long, x, y) === false) {
+          aMarker = new mapboxgl.Marker()
+            .setLngLat([lngY, latX])
+            .setPopup(popup)
+            .addTo(map);
+          // map.flyTo({
+          //   center: [lngY - 4, latX],
+          //   zoom: 5
+          // });
+        }
+        // if (aMarker) markers.push(aMarker);
+        if (aMarker) markerHash[self.wells[index].idWell] = aMarker;
       }
     } else {
       // console.log(self.zoneMap);

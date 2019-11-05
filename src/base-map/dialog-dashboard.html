@@ -1,0 +1,38 @@
+<div class="display-dialog slim-scroller">
+    <div class="header-dialog">
+        <div style="display: flex;">
+            <div style=" color: #4085ff; font-size: 17px; margin-right: 20px;" class="ti ti-pie-chart"> </div>
+            <div class="title-dialog">Dashboard ({{self.selectedNode.name}})</div>
+        </div>
+        <div style="display: flex;">
+            <div ng-click="self.addDashboard()"
+                style=" color: #99a3ba; font-size: 12px; cursor: pointer; margin-left: 20px;" class=" ti ti-plus">
+            </div>
+            <div ng-click="self.openDashboard()"
+                style=" color: #99a3ba; font-size: 12px; cursor: pointer; margin-left: 20px;" class=" ti ti-reload">
+            </div>
+            <div ng-click="self.showDashboard = !self.showDashboard"
+                style=" color: #99a3ba; font-size: 12px; cursor: pointer; margin-left: 20px;" class=" ti ti-close">
+            </div>
+        </div>
+    </div>
+    <div ng-show="self.showLoadingDashboard" class="loading">
+        <div class="loading-bar">
+            <span class="bar-animation"></span>
+        </div>
+    </div>
+    <div class="main-dialog hide-scroller">
+        <div style="height: 100%;width:100%;">
+            <manager-dashboard dashboard-content='self.dashboardContent' dashboard-columns="self.dashboardColumns">
+            </manager-dashboard>
+        </div>
+        <!-- <div class="item-dashdoard">
+            <div class="setting-icon" ng-class="{'filling': self.showSetting}"
+                ng-click="self.showSetting = !self.showSetting">
+                <div class="setting">
+                </div>
+            </div>
+            
+        </div> -->
+    </div>
+</div>

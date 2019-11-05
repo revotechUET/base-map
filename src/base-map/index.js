@@ -1,6 +1,6 @@
 var componentName = "baseMap";
 module.exports.name = componentName;
-require("./new-style.less");
+require("./style.less");
 const queryString = require("query-string");
 const JSZip = require("jszip");
 const fileSaver = require("file-saver");
@@ -22,15 +22,19 @@ var app = angular.module(componentName, [
   "mapView",
   "sideBar",
   "wiTreeView",
-  "wiDroppable",
+  "wiTreeViewVirtual",
+
+  // "wiDroppable",
   "wiLogin",
   "ngDialog",
   "wiToken",
-  "angularResizable"
+  "angularResizable",
+  'managerDashboard',
+  'wiApi'
 ]);
 
 app.component(componentName, {
-  template: require("./new-template.html"),
+  template: require("./template.html"),
   controller: baseMapController,
   controllerAs: "self",
   bindings: {
@@ -52,7 +56,8 @@ function baseMapController(
   wiToken,
   $timeout,
   $location,
-  ngDialog
+  ngDialog,
+  wiApi
 ) {
   let self = this;
   window._basemap = self;
@@ -66,9 +71,12 @@ function baseMapController(
   self.point = false;
   self.showContour = false;
   self.selectedIdsHash = {};
+  self.selectedNode = null;
+  self.showLoading = false;
+  self.showLoadingDashboard = false;
   $scope.curveList = [];
   $scope.focusCurve = null;
-
+  self.dashboardColumns = 3;
   const geoJsonDefault = {
     type: "FeatureCollection",
     features: []
@@ -241,6 +249,94 @@ function baseMapController(
       }
     }
   };
+  this.openDashboard = function () {
+    self.showLoadingDashboard = true;
+    wiApi.getFullInfoPromise(self.selectedNode.idProject, self.selectedNode.owner, self.selectedNode.owner ? self.selectedNode.name : null).then((prjTree) => {
+      projectTree = prjTree;
+      buildDashboard(projectTree);
+    }).catch((e) => {
+      console.error(e);
+    }).finally(() => {
+      self.showLoadingDashboard = false;
+    });
+  }
+  function buildDashboard(prjTree) {
+    let result = groupWells(prjTree);
+    let wTypeWidgetConfig = {
+      name: "Well Type",
+      config: {
+        type: 'bar',
+        data: getData(result.wTypes),
+        labelFn: function (config, datum, idx) {
+          return Object.keys(result.wTypes)[idx];
+        },
+        colorFn: function (config, datum, idx) {
+          let palette = wiApi.getPalette("RandomColor");
+          return `rgba(${palette[idx].red},${palette[idx].green},${palette[idx].blue},${palette[idx].alpha})`;
+        }
+      }
+    }
+    let fieldWidgetConfig = {
+      name: "Fields",
+      config: {
+        type: 'bar',
+        data: getData(result.fields),
+        labelFn: function (config, datum, idx) {
+          return Object.keys(result.fields)[idx];
+        },
+        colorFn: function (config, datum, idx) {
+          return 'rgba(64,64,200,0.7)';
+        }
+      }
+    }
+    let operatorWidgetConfig = {
+      name: "Operators",
+      config: {
+        type: 'bar',
+        data: getData(result.operators),
+        labelFn: function (config, datum, idx) {
+          return Object.keys(result.operators)[idx];
+        },
+        colorFn: function (config, datum, idx) {
+          return 'rgba(64,200,64,0.7)';
+        }
+      }
+    }
+    $timeout(() => {
+      self.dashboardContent = [wTypeWidgetConfig, fieldWidgetConfig, operatorWidgetConfig];
+      // self.dashboardContent = [wTypeWidgetConfig];
+
+    });
+  }
+  function getData(resultObj) {
+    return Object.values(resultObj).map(item => item.length);
+  }
+  function groupWells(prjTree) {
+    let wTypes = {};
+    let fields = {};
+    let operators = {};
+    let wells = prjTree.wells;
+    for (let well of wells) {
+      const wellHeaders = well.wellheaders;
+      for (let wh of wellHeaders) {
+        let value = (!wh.value || !wh.value.length) ? "Unknown" : wh.value;
+        if (wh.header === "WTYPE") {
+          wTypes[value] = wTypes[value] || [];
+          wTypes[value].push(well);
+        }
+        else if (wh.header === "FLD") {
+          fields[value] = fields[value] || [];
+          fields[value].push(well);
+        }
+        else if (wh.header === "OPERATOR") {
+          operators[value] = operators[value] || [];
+          operators[value].push(well);
+        }
+      }
+    }
+
+    return { wTypes, fields, operators };
+  }
   this.changeTheme = function () {
     document.getElementById("main").classList.toggle("dark-mode");
   }
@@ -292,7 +388,7 @@ function baseMapController(
       }
     );
   };
-  $scope.tab = 3;
+  $scope.tab = 1;
   $scope.setTab = function (newTab) {
     $scope.tab = newTab;
   };
@@ -349,20 +445,24 @@ function baseMapController(
   this.cleanMap = function () {
     $scope.wellSelect = [];
     $scope.curveList.length = 0;
+    $scope.focusWell.length = 0;
     $scope.focusCurve = null;
     self.noWell = true;
   };
 
   this.deleteWell = function () {
+    node = self.selectedWellNode;
     console.log("delete selected wells");
-    let deleteNodes = Object.values(self.selectedIdsHash).map(
-      item => item.data
-    );
+    let deleteNodes = Object.values(self.selectedIdsHash);
     for (let deleteNode of deleteNodes) {
       let idx = $scope.wellSelect.findIndex(node => node === deleteNode);
       $scope.wellSelect.splice(idx, 1);
     }
-    self.selectedIdsHash = {};
+    $timeout(() => {
+      self.selectedIdsHash = {};
+      $scope.focusWell.length = 0;
+    })
+
     updateCurveList();
   };
 
@@ -418,52 +518,114 @@ function baseMapController(
     }
     return well;
   }
-  console.log($scope);
   async function updateCurveList() {
     const _curves = $scope.curveList;
     const _wells = $scope.wellSelect;
-    if (!_wells.length) return;
+    if (_wells.length === undefined || _wells.length === null) return;
     for (let i = 0; i < _wells.length; ++i) {
       await prepareWellDatasets(_wells[i]);
     }
-    _curves.length = 0;
-    const firstWell = _wells[0];
-    firstWell.datasets.forEach(ds => {
-      ds.curves.forEach(c => {
-        _curves.push({
-          name: `${ds.name}.${c.name}`,
-          idCurve: c.idCurve
-        });
-      });
-    });
-    for (let i = 1; i < _wells.length; ++i) {
-      const _well = _wells[i];
-      const __curves = [];
-      _well.datasets.forEach(ds => {
-        ds.curves.forEach(c => {
-          __curves.push({
-            name: `${ds.name}.${c.name}`,
-            idCurve: c.idCurve
+    $timeout(() => {
+
+      _curves.length = 0;
+      if (_wells.length) {
+        const firstWell = _wells[0];
+        firstWell.datasets.forEach(ds => {
+          ds.curves.forEach(c => {
+            _curves.push({
+              name: `${ds.name}.${c.name}`,
+              idCurve: c.idCurve
+            });
           });
         });
-      });
-      const _disjoinIndexes = [];
-      for (let ci = 0; ci < _curves.length; ++ci) {
-        if (!__curves.find(_c => _c.name == _curves[ci].name)) {
-          _disjoinIndexes.push(ci);
+        for (let i = 1; i < _wells.length; ++i) {
+          const _well = _wells[i];
+          const __curves = [];
+          _well.datasets.forEach(ds => {
+            ds.curves.forEach(c => {
+              __curves.push({
+                name: `${ds.name}.${c.name}`,
+                idCurve: c.idCurve
+              });
+            });
+          });
+          const _disjoinIndexes = [];
+          for (let ci = 0; ci < _curves.length; ++ci) {
+            if (!__curves.find(_c => _c.name == _curves[ci].name)) {
+              _disjoinIndexes.push(ci);
+            }
+          }
+          _disjoinIndexes
+            .sort()
+            .reverse()
+            .forEach(ci => _curves.splice(ci, 1));
         }
       }
-      _disjoinIndexes
-        .sort()
-        .reverse()
-        .forEach(ci => _curves.splice(ci, 1));
+      if ($scope.focusCurve) {
+        if (!_curves.find(c => c.name == $scope.focusCurve.name))
+          $scope.focusCurve = null;
+      }
+    })
+    // if (!$scope.$$phase) {
+    //   $scope.$digest();
+    // }
+  }
+  this.moveWell = function (event, helper, node) {
+    node = self.selectedNode;
+    console.log(node);
+    self.showLoading = true;
+    if (node.idWell) {
+      let wellId = node.idWell;
+      let foundWell = $scope.wellSelect.find(function (item) {
+        return item.idWell === wellId;
+      });
+      if (!foundWell) {
+        $timeout(function () {
+          let cloneNode = angular.copy(node);
+          cloneNode._selected = false;
+          $scope.wellSelect.push(cloneNode);
+          // self.selectedNode.length = 0;
+          self.selectedNode = null;
+          $timeout(() => {
+            updateCurveList();
+            self.showLoading = false;
+
+          });
+        });
+      }
+      else {
+        $timeout(() => {
+          self.showLoading = false;
+        })
+      }
     }
-    if ($scope.focusCurve) {
-      if (!_curves.find(c => c.name == $scope.focusCurve.name))
-        $scope.focusCurve = null;
+    else if (node.idProject) {
+      getWells(node.idProject, node, function (err, wells) {
+        let countWell = 0;
+        for (let index = 0; index < wells.length; index++) {
+          let wellId = wells[index].idWell;
+          let foundWell = $scope.wellSelect.find(function (item) {
+            return item.idWell === wellId;
+          });
+          if (!foundWell) {
+            $timeout(function () {
+              $scope.wellSelect.push(wells[index]);
+              // self.selectedNode.length = 0
+              self.selectedNode = null;
+
+              $timeout(() => {
+                updateCurveList();
+                self.showLoading = false;
+              });
+            });
+          }
+        }
+      });
     }
-    if (!$scope.$$phase) {
-      $scope.$digest();
+    else {
+      $timeout(() => {
+        self.showLoading = false;
+      });
     }
   }
 
@@ -477,7 +639,7 @@ function baseMapController(
         $timeout(function () {
           $scope.wellSelect.push(node);
           self.noWell = false;
-
+          console.log(node)
           $timeout(() => {
             updateCurveList();
           });
@@ -566,12 +728,20 @@ function baseMapController(
     return searchArray.includes(keySearch);
   };
   this.clickWellFunction = function ($event, node) {
+    if (!$event.shiftKey && !$event.ctrlKey && !$event.metaKey) {
+      self.selectedIdsHash = {};
+      self.selectedWellNode = null;
+    }
+    self.selectedWellNode = node;
+    self.selectedIdsHash[node.idWell] = node;
     $scope.focusWell = node;
   };
   this.clickCurveFunction = function ($event, node) {
     $scope.focusCurve = node;
   };
   this.clickFunction = function ($event, node) {
+    self.selectedNode = node;
+    console.log(node)
     if (node.idCurve) {
       // console.log("Curve clicked");
     } else if (node.idDataset) {
@@ -579,6 +749,7 @@ function baseMapController(
     } else if (node.idWell) {
       // console.log("Well clicked");
     } else if (node.idProject) {
+      self.showLoading = true;
       if (!node.timestamp || Date.now() - node.timestamp > 10 * 1000) {
         getWells(node.idProject, node, function (err, wells) {
           if (err) {
@@ -587,28 +758,13 @@ function baseMapController(
               className: "ngdialog-theme-default",
               scope: $scope
             });
+            self.showLoading = false;
             return console.log(err);
           }
-          // node.wells = wells.sort((w1, w2) => (w1.name.localeCompare(w2.name)));
-          node.wells = wells;
-          async.eachOf(
-            node.wells,
-            function (well, idx, cb) {
-              getDatasets(well.idWell, well, function (err, datasets) {
-                if (err) {
-                  return cb(err);
-                }
-                well.datasets = datasets;
-                cb();
-              });
-            },
-            function (err) {
-              if (err) {
-                return console.log(err);
-              }
-              node.timestamp = Date.now();
-            }
-          );
+          $timeout(() => {
+            node.wells = wells;
+            self.showLoading = false;
+          })
         });
       }
     }
@@ -667,25 +823,6 @@ function baseMapController(
     );
   }
 
-  function getDatasets(wellId, wellNodeChildren, cb) {
-    $http({
-      method: "POST",
-      url: BASE_URL + "/project/well/info",
-      data: {
-        idWell: wellId
-      },
-      headers: {
-        Authorization: wiToken.getToken()
-      }
-    }).then(
-      function (response) {
-        cb(null, response.data.content.datasets, wellNodeChildren);
-      },
-      function (err) {
-        cb(err);
-      }
-    );
-  }
 
   this.getCurveInfoFn = getCurveInfo;
   const cachedCurvesInfo = {};
