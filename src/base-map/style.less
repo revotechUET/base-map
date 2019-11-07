@@ -121,23 +121,23 @@ base-map {
                 transition   : all ease-in 0.3s;
                 position     : relative;
                 display      : flex;
-                align-items: center;
+                align-items  : center;
 
                 .tab-badge {
                     background-color: #2096f3;
                     font-size       : 70%;
-                    display: flex;
-                    align-items: center;
-                    height        : 17px;
-                    padding       : 5px;
-                    font-weight   : 700;
-                    line-height   : 1;
-                    color         : #fff;
-                    text-align    : center;
-                    white-space   : nowrap;
-                    vertical-align: middle;
-                    border-radius : 29px;
-                    margin-left   : 5px;
+                    display         : flex;
+                    align-items     : center;
+                    height          : 17px;
+                    padding         : 5px;
+                    font-weight     : 700;
+                    line-height     : 1;
+                    color           : #fff;
+                    text-align      : center;
+                    white-space     : nowrap;
+                    vertical-align  : middle;
+                    border-radius   : 29px;
+                    margin-left     : 5px;
                 }
 
                 &.active {
@@ -230,7 +230,7 @@ base-map {
             }
 
             .export {
-                position       : absolute;
+                // position       : absolute;
                 background     : #3f85ff;
                 border-radius  : 3px;
                 color          : #fff;
@@ -239,7 +239,7 @@ base-map {
                 justify-content: center;
                 font-weight    : bold;
                 padding        : 15px;
-                width          : calc(100% - 30px);
+                // width          : calc(100% - 30px);
                 bottom         : 15px;
                 cursor         : pointer;
             }
@@ -380,15 +380,39 @@ base-map {
                         min-width    : 80px;
                     }
                 }
+
                 .setting-sub-title {
                     font-style: italic;
-                    color: black;
+                    color     : black;
                 }
+
                 .complex-setting {
-                    background-color: #eee;
-                    padding: 12px;
-                    margin-bottom: 5px;
+                    // background-color: #eee;
+                    // padding         : 12px;
+                    // border-radius   : 2px;
+
+                    wi-tree-view-virtual div input {
+                        margin       : 0;
+                        max-width    : 100%;
+                        background   : transparent;
+                        border-bottom: 1px solid #c4c4c4;
+                        border-radius: 0;
+                        padding-left : 0 !important;
+                        margin-bottom: 10px;
+                    }
+
+                    wi-tree-node-virtual .node-caret {
+                        display: none;
+                    }
+
+                    wi-tree-node-virtual .node-content,
+                    base-map wi-tree-node-virtual .node-content::after {
+                        padding-left: 0 !important;
+                        margin-left : 0;
+
+                    }
                 }
+
                 .zone-btn {
                     padding      : 5px 20px;
                     background   : #4085ff;
@@ -668,23 +692,23 @@ base-map {
                 //         align-items    : center;
                 //         justify-content: center;
                 //         border-bottom  : 1px solid #f4f4f4;
-                        
+
                 //     }
 
                 //     .setting-icon {
-                //         position: absolute;
-                //         cursor  : pointer;
-                //         z-index: 1;
-                //         border-top: 20px solid #efefef;
+                //         position    : absolute;
+                //         cursor      : pointer;
+                //         z-index     : 1;
+                //         border-top  : 20px solid #efefef;
                 //         border-right: 20px solid transparent;
 
 
                 //         &.filling {
-                //             animation : circle 1s;
-                //             background: #efefef;
-                //             clip-path : ellipse(1000px 1000px at 50% 50%);
-                //             height    : 100%;
-                //             width     : 100%;
+                //             animation    : circle 1s;
+                //             background   : #efefef;
+                //             clip-path    : ellipse(1000px 1000px at 50% 50%);
+                //             height       : 100%;
+                //             width        : 100%;
                 //             border-radius: 3px;
                 //         }
 
@@ -747,11 +771,11 @@ base-map {
     //SWITCH BUTTON
 
     .switch {
-        position   : relative;
-        display    : inline-block;
-        min-width  : 31px;
-        height     : 16px;
-        margin-left: 20px;
+        position     : relative;
+        display      : inline-block;
+        min-width    : 31px;
+        height       : 16px;
+        margin-left  : 20px;
         margin-bottom: 0px;
     }
 
