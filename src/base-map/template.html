@@ -12,12 +12,17 @@
         Wells
         <span ng-if="wellSelect.length" class="tab-badge">{{wellSelect.length?wellSelect.length:''}}</span>
       </div>
+      <!--
       <div class="tab-name" ng-class="{'active' : isSet(4)}" ng-click="setTab(4)">
         Curves
         <span ng-if="curveList.length" class="tab-badge">{{curveList.length?curveList.length:''}}</span>
       </div>
+      -->
       <div class="tab-name" ng-class="{'active' : isSet(2)}" ng-click="setTab(2)">
-        Setting
+        Map
+      </div>
+      <div class="tab-name" ng-class="{'active' : isSet(5)}" ng-click="setTab(5)">
+        Settings
       </div>
     </div>
     <div style="display: flex;">
@@ -97,10 +102,107 @@
       selected-ids="self.selectedIdsHash" click-fn="self.clickWellFunction" no-drag="true">
     </wi-tree-view-virtual>
   </div>
+  <!--
   <div ng-show="isSet(4) && !self.hideMain" class="content">
     <wi-tree-view-virtual tree-root="curveList" get-label="self.getLabel" get-icon="self.getIcon"
       get-children="self.getChildren" run-match="self.runMatchCurve" hide-unmatched="true" no-drag="true">
     </wi-tree-view-virtual>
+  </div>
+  -->
+  <div ng-show="isSet(5) && !self.hideMain" class="content">
+    <div style="flex: 1; margin: 15px; user-select: none; overflow: hidden ;display: flex; flex-direction: column;"
+      onmouseover=this.style.overflow='overlay' onmouseout=this.style.overflow='hidden'>
+      <div class="setting">
+        <div class="setting-title">Zonesets & Markersets</div>
+          <div class="complex-setting">
+            <div class="setting-content">
+              <span class="setting-sub-title">{{self.showZonesets?"Select a zonation to display":"Display well positions a zonal depth"}}</span>
+              <label class="switch">
+                <input type="checkbox" ng-checked="self.showZonesets" ng-click="self.showZonesets = !self.showZonesets" />
+                <span class="slider round"></span>
+              </label>
+            </div>
+            <div ng-if="self.showZonesets" class="setting-content" style="margin-top:12px;">
+              <wi-tree-view-virtual tree-root="zoneList" get-label="self.getLabel" get-icon="self.getIcon" click-fn="self.clickZoneFunction"
+                get-children="self.getChildren" run-match="self.runMatchZonesets" hide-unmatched="true" no-drag="true">
+              </wi-tree-view-virtual>
+            </div>
+          </div>
+
+          <div class="complex-setting">
+            <div class="setting-content">
+              <span class="setting-sub-title">{{self.showMarkersets?"Select a marker to display":"Display well positions a marker depth"}}</span>
+              <label class="switch">
+                <input type="checkbox" ng-checked="self.showMarkersets" ng-click="self.showMarkersets = !self.showMarkersets" />
+                <span class="slider round"></span>
+              </label>
+            </div>
+            <div ng-if="self.showMarkersets" class="setting-content" style="margin-top:12px;">
+              <wi-tree-view-virtual tree-root="markerList" get-label="self.getLabel" get-icon="self.getIcon" click-fn="self.clickMarkerFunction"
+                get-children="self.getChildren" run-match="self.runMatchMarkersets" hide-unmatched="true" no-drag="true">
+              </wi-tree-view-virtual>
+            </div>
+          </div>
+      </div>
+
+      <div class="setting">
+        <div class="setting-title">Show Contour</div>
+        <div class="complex-setting">
+          <div class="setting-content">
+            <span class="setting-sub-title">{{self.showContour?"Pick a curve for contour rendering":"Displays contour layer"}}</span>
+            <label class="switch">
+              <input type="checkbox" ng-checked="self.showContour" ng-click="self.toggleContour()" />
+              <span class="slider round"></span>
+            </label>
+          </div>
+          <div ng-if="self.showContour" class="setting-content" style="margin-top: 12px;">
+            <wi-tree-view-virtual tree-root="curveList" get-label="self.getLabel" get-icon="self.getIcon" click-fn="self.clickCurveFunction"
+              get-children="self.getChildren" run-match="self.runMatchCurve" hide-unmatched="true" no-drag="true">
+            </wi-tree-view-virtual>
+          </div>
+        </div>
+      </div>
+      <div class="upload">
+        <div class="upload-header">
+          <div>
+            <div style="font-weight: bold;">Upload boundary file </div>
+            <span>File type ESRI shape file (zip), geojson. </span>
+          </div>
+          <div class="btn-add" id="map-upfile-1-btn">
+            <span class="ti ti-plus"></span>
+          </div>
+        </div>
+        <div class="upload-content">
+          <p>
+            <input type="file" id="map-upfile-1" class="file-upload" accept=".geojson,application/zip"
+              placeholder="choose a file" onblur="angular.element(this).scope().clearSelectedFile()"
+              onchange="angular.element(this).scope().onFileChange(), angular.element(this).scope().GetFileSizeNameAndType()" />
+          </p>
+          <div id="fp" style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis; margin-top: 15px;">
+          </div>
+        </div>
+      </div>
+      <div class="upload">
+        <div class="upload-header">
+          <div>
+            <div style="font-weight: bold;">Import your config</div>
+            <span>Upload a zip file.</span>
+          </div>
+          <div class="btn-add" id="map-upfile-2-btn">
+            <span class="ti ti-plus"></span>
+          </div>
+        </div>
+        <div class="upload-content">
+          <p>
+            <input type="file" id="map-upfile-2" class="file-upload" accept=".zip" placeholder="choose a file .zip"
+              onblur="angular.element(this).scope().clearSelectedContourFile()"
+              onchange="angular.element(this).scope().onZipFileChange(), angular.element(this).scope().GetFileSizeNameAndType2()" />
+          </p>
+          <div id="fp2" style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis; margin-top: 15px;">
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
   <div ng-show="isSet(2) && !self.hideMain" class="content">
     <div style="flex: 1; margin: 15px; user-select: none; overflow: hidden ;display: flex; flex-direction: column;"
@@ -172,16 +274,6 @@
         </div>
       </div>
       <div class="setting">
-        <div class="setting-title">Show Contour</div>
-        <div class="setting-content">
-          <span>Displays contour layer</span>
-          <label class="switch">
-            <input type="checkbox" ng-checked="self.showContour" ng-click="self.toggleContour()" />
-            <span class="slider round"></span>
-          </label>
-        </div>
-      </div>
-      <div class="setting">
         <!-- <div>
           <div class="setting-title">Zone</div>
           <div class="setting-content" style="align-items: flex-start;">
@@ -210,46 +302,6 @@
             <span ng-show="!self.showDetailZone" class="zone-name" ng-bind="item.output"></span>
           </div>
         </div> -->
-        <div class="upload">
-          <div class="upload-header">
-            <div>
-              <div style="font-weight: bold;">Upload boundary file </div>
-              <span>File type ESRI shape file (zip), geojson. </span>
-            </div>
-            <div class="btn-add" id="map-upfile-1-btn">
-              <span class="ti ti-plus"></span>
-            </div>
-          </div>
-          <div class="upload-content">
-            <p>
-              <input type="file" id="map-upfile-1" class="file-upload" accept=".geojson,application/zip"
-                placeholder="choose a file" onblur="angular.element(this).scope().clearSelectedFile()"
-                onchange="angular.element(this).scope().onFileChange(), angular.element(this).scope().GetFileSizeNameAndType()" />
-            </p>
-            <div id="fp" style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis; margin-top: 15px;">
-            </div>
-          </div>
-        </div>
-        <div class="upload">
-          <div class="upload-header">
-            <div>
-              <div style="font-weight: bold;">Import your config</div>
-              <span>Upload a zip file.</span>
-            </div>
-            <div class="btn-add" id="map-upfile-2-btn">
-              <span class="ti ti-plus"></span>
-            </div>
-          </div>
-          <div class="upload-content">
-            <p>
-              <input type="file" id="map-upfile-2" class="file-upload" accept=".zip" placeholder="choose a file .zip"
-                onblur="angular.element(this).scope().clearSelectedContourFile()"
-                onchange="angular.element(this).scope().onZipFileChange(), angular.element(this).scope().GetFileSizeNameAndType2()" />
-            </p>
-            <div id="fp2" style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis; margin-top: 15px;">
-            </div>
-          </div>
-        </div>
         <div class="export" ng-click="self.downloadZipFile()">
           Export Config
         </div>
@@ -257,6 +309,20 @@
     </div>
   </div>
 </div>
+
+<!--
+<div style="position: absolute; right: 0; top: 0; height: 40vh; width: 25vw; border: 1px solid black; display: flex; flex-direction: column;">
+  <wi-tree-view-virtual tree-root="curveList" get-label="self.getLabel" get-icon="self.getIcon" click-fn="self.clickCurveFunction"
+    get-children="self.getChildren" run-match="self.runMatchCurve" hide-unmatched="true" no-drag="true">
+  </wi-tree-view-virtual>
+</div>
+
+<div style="position: absolute; right: 0; top: 45vh; height: 40vh; width: 25vw; border: 1px solid black; display: flex; flex-direction: column;">
+  <wi-tree-view-virtual tree-root="zoneList" get-label="self.getLabel" get-icon="self.getIcon" click-fn="self.clickZoneFunction"
+    get-children="self.getChildren" run-match="self.runMatchZonation" hide-unmatched="true" no-drag="true">
+  </wi-tree-view-virtual>
+</div>
+-->
 
 <!-- <map-view class="mapView"
   mapbox-token="pk.eyJ1IjoicmV2b3RlY2giLCJhIjoiY2swZGJobWg3MDY2NzNtbnVwaDEyYmttMCJ9.39KL2GsNCiew9XmiLVsTDQ"

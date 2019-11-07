@@ -75,6 +75,8 @@ function baseMapController(
   self.showLoading = false;
   self.showLoadingDashboard = false;
   $scope.curveList = [];
+  $scope.zoneList = [];
+  $scope.markerList = [];
   $scope.focusCurve = null;
   self.dashboardColumns = 3;
   const geoJsonDefault = {
@@ -178,6 +180,8 @@ function baseMapController(
     if (!files || files.length == 0) {
       $scope.wellSelect = [];
       $scope.curveList = [];
+      $scope.zoneList = [];
+      $scope.markerList = [];
       self.geoJson = geoJsonDefault;
       $scope.themeMap = 6;
       $scope.allPopup = false;
@@ -215,6 +219,8 @@ function baseMapController(
               data = JSON.parse(data);
               $scope.wellSelect = data.selectWell;
               $scope.curveList = data.selectCurve;
+              $scope.zoneList = data.selectedZone;
+              $scope.markerList = data.selectedMarker;
               self.noWell = false;
               if (!$scope.$$phase) {
                 $scope.$digest();
@@ -439,12 +445,16 @@ function baseMapController(
     getCurveTree();
     $scope.wellSelect = [];
     $scope.curveList = [];
+    $scope.zoneList = [];
+    $scope.markerList = [];
     self.noWell = true;
   };
 
   this.cleanMap = function () {
     $scope.wellSelect = [];
     $scope.curveList.length = 0;
+    $scope.zoneList.length = 0;
+    $scope.markerList.length = 0;
     $scope.focusWell.length = 0;
     $scope.focusCurve = null;
     self.noWell = true;
@@ -463,7 +473,9 @@ function baseMapController(
       $scope.focusWell.length = 0;
     })
 
-    updateCurveList();
+    updateCurveList()
+      .then(updateZoneList)
+      .then(updateMarkerList);
   };
 
   this.downloadZipFile = function () {
@@ -506,8 +518,8 @@ function baseMapController(
     });
   };
 
-  async function prepareWellDatasets(well) {
-    if (!well.datasets) {
+  async function prepareWellInfos(well) {
+    if (!well.datasets || !well.zone_sets || !well.marker_sets) {
       const wellInfo = await new Promise((resolve, reject) => {
         getWellInfo(well.idWell, function (err, wellInfo) {
           if (err) return reject(err);
@@ -518,15 +530,126 @@ function baseMapController(
     }
     return well;
   }
+  
+  function getUniqZones(zoneset) {
+    const _clonedZones = angular.copy(zoneset.zones);
+    return _(_clonedZones)
+      .uniqBy(z => z.idZoneTemplate)
+      // create zone node
+      .map(z => ({
+        name: z.zone_template.name,
+        idZone: z.idZone,
+        idZoneTemplate: z.idZoneTemplate
+      }))
+      .value();
+  }
+  function createZoneSetNode(zoneset) {
+    return {
+      name: zoneset.name,
+      idZoneSet: zoneset.idZoneSet,
+      zones: getUniqZones(zoneset)
+    }
+  }
+  async function updateZoneList() {
+    const _zonesets = $scope.zoneList; 
+    const _wells = $scope.wellSelect;
+    if (_wells.length === undefined || _wells.length === null) return;
+    for (let i = 0; i < _wells.length; ++i) {
+      await prepareWellInfos(_wells[i]);
+    }
+    $timeout(() => {
+      _zonesets.length = 0;
+      if (!_wells.length) return;
+      const firstWell = _wells[0];
+      firstWell.zone_sets.forEach(zs => { _zonesets.push(createZoneSetNode(zs)); })
+      for (let i = 1; i < _wells.length; ++i) {
+        const _well = _wells[i];
+        const __zonesets = [];
+
+        _well.zone_sets.forEach(zs => { __zonesets.push(createZoneSetNode(zs)); })
+
+        const _disjoinIndexes = [];
+        for (let zsi = 0; zsi < _zonesets.length; ++zsi) {
+          const __joinZoneset = __zonesets.find(_zs => _zs.name == _zonesets[zsi].name);
+          if (!__joinZoneset) {
+            _disjoinIndexes.push(zsi);
+          } else {
+            _(_zonesets[zsi].zones)
+              .concat(__joinZoneset.zones)
+              .uniqBy(z => z.idZoneTemplate);
+          }
+        }
+        _disjoinIndexes
+          .sort()
+          .reverse()
+          .forEach(zsi => _zonesets.splice(zsi, 1));
+      }
+    })
+  }
+
+  function getUniqMarkers(markerset) {
+    const _clonedMarkers = angular.copy(markerset.markers);
+    return _(_clonedMarkers)
+      .uniqBy(m => m.idMarkerTemplate)
+      // create marker node
+      .map(m => ({
+        name: m.marker_template.name,
+        idMarker: m.idMarker,
+        idMarkerTemplate: m.idMarkerTemplate
+      }))
+      .value();
+  }
+  function createMarkerSetNode(markerset) {
+    return {
+      name: markerset.name,
+      idMarkerSet: markerset.idMarkerSet,
+      markers: getUniqMarkers(markerset)
+    }
+  }
+  async function updateMarkerList() {
+    const _markersets = $scope.markerList; 
+    const _wells = $scope.wellSelect;
+    if (_wells.length === undefined || _wells.length === null) return;
+    for (let i = 0; i < _wells.length; ++i) {
+      await prepareWellInfos(_wells[i]);
+    }
+    $timeout(() => {
+      _markersets.length = 0;
+      if (!_wells.length) return;
+      const firstWell = _wells[0];
+      firstWell.marker_sets.forEach(ms => { _markersets.push(createMarkerSetNode(ms)); })
+      for (let i = 1; i < _wells.length; ++i) {
+        const _well = _wells[i];
+        const __markersets = [];
+
+        _well.marker_sets.forEach(ms => { __markersets.push(createMarkerSetNode(ms)); })
+
+        const _disjoinIndexes = [];
+        for (let msi = 0; msi < _markersets.length; ++msi) {
+          const __joinMarkerset = __markersets.find(_ms => _ms.name == _markersets[msi].name);
+          if (!__joinMarkerset) {
+            _disjoinIndexes.push(msi);
+          } else {
+            _(_markersets[msi].markers)
+              .concat(__joinMarkerset.markers)
+              .uniqBy(m => m.idMarkerTemplate);
+          }
+        }
+        _disjoinIndexes
+          .sort()
+          .reverse()
+          .forEach(msi => _markersets.splice(msi, 1));
+      }
+    })
+  }
   async function updateCurveList() {
     const _curves = $scope.curveList;
     const _wells = $scope.wellSelect;
     if (_wells.length === undefined || _wells.length === null) return;
     for (let i = 0; i < _wells.length; ++i) {
-      await prepareWellDatasets(_wells[i]);
+      await prepareWellInfos(_wells[i]);
     }
     $timeout(() => {
-
       _curves.length = 0;
       if (_wells.length) {
         const firstWell = _wells[0];
@@ -586,8 +709,10 @@ function baseMapController(
           $scope.wellSelect.push(cloneNode);
           // self.selectedNode.length = 0;
           self.selectedNode = null;
-          $timeout(() => {
-            updateCurveList();
+          $timeout(async () => {
+            await updateCurveList();
+            await updateZoneList();
+            await updateMarkerList();
             self.showLoading = false;
 
           });
@@ -613,8 +738,10 @@ function baseMapController(
               // self.selectedNode.length = 0
               self.selectedNode = null;
 
-              $timeout(() => {
-                updateCurveList();
+              $timeout(async () => {
+                await updateCurveList();
+                await updateZoneList();
+                await updateMarkerList();
                 self.showLoading = false;
               });
             });
@@ -640,8 +767,10 @@ function baseMapController(
           $scope.wellSelect.push(node);
           self.noWell = false;
           console.log(node)
-          $timeout(() => {
-            updateCurveList();
+          $timeout(async () => {
+            await updateCurveList();
+            await updateZoneList();
+            await updateMarkerList();
           });
         });
       }
@@ -658,8 +787,10 @@ function baseMapController(
               $scope.wellSelect.push(wells[index]);
               self.noWell = false;
 
-              $timeout(() => {
-                updateCurveList();
+              $timeout(async () => {
+                await updateCurveList();
+                await updateZoneList();
+                await updateMarkerList();
               });
             });
           }
@@ -700,16 +831,32 @@ function baseMapController(
       return node.alias || node.name;
     } else if (node && node.idCurve) {
       return node.name;
+    } else if (node && node.idZone) {
+      return node.name;
+    } else if (node && node.idZoneSet) {
+      return node.name;
+    } else if (node && node.idMarker) {
+      return node.name;
+    } else if (node && node.idMarkerSet) {
+      return node.name;
     }
   };
   this.getIcon = function (node) {
     if (node && node.idWell) return "well-16x16";
     else if (node && node.idProject) return "project-normal-16x16";
     else if (node && node.idCurve) return "curve-16x16";
+    else if (node && node.idZone) return "zone-16x16";
+    else if (node && node.idZoneSet) return "user-define-16x16";
+    else if (node && node.idMarker) return "marker-16x16";
+    else if (node && node.idMarkerSet) return "marker-set-16x16";
   };
   this.getChildren = function (node) {
     if (node && node.idProject) {
       return node.wells;
+    } else if (node && node.idZoneSet) {
+      return node.zones;
+    } else if (node && node.idMarkerSet) {
+      return node.markers;
     }
   };
   this.runMatch = function (node, criteria) {
@@ -727,6 +874,16 @@ function baseMapController(
     let searchArray = node.name.toLowerCase();
     return searchArray.includes(keySearch);
   };
+  this.runMatchZonesets = function (node, criteria) {
+    let keySearch = criteria.toLowerCase();
+    let searchArray = node.name.toLowerCase();
+    return searchArray.includes(keySearch);
+  };
+  this.runMatchMarkersets = function (node, criteria) {
+    let keySearch = criteria.toLowerCase();
+    let searchArray = node.name.toLowerCase();
+    return searchArray.includes(keySearch);
+  };
   this.clickWellFunction = function ($event, node) {
     if (!$event.shiftKey && !$event.ctrlKey && !$event.metaKey) {
       self.selectedIdsHash = {};
@@ -739,6 +896,12 @@ function baseMapController(
   this.clickCurveFunction = function ($event, node) {
     $scope.focusCurve = node;
   };
+  this.clickZoneFunction = function ($event, node) {
+    // console.log("Zone click function", $event, node);
+  }
+  this.clickMarkerFunction = function ($event, node) {
+    // console.log("Marker click function", $event, node);
+  }
   this.clickFunction = function ($event, node) {
     self.selectedNode = node;
     console.log(node)
