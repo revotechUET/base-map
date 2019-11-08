@@ -17,6 +17,7 @@ app.component(componentName, {
     focusWell: "<",
     focusCurve: "<",
     getCurveInfoFn: "<",
+    getCurveRawDataFn: "<",
     geoJson: "<",
     showContour: "<",
     zoneMap: "<",
@@ -24,7 +25,8 @@ app.component(componentName, {
     theme: "<",
     controlPanel: "<",
     deepOcean: "<",
-    point: "<"
+    point: "<",
+    focusMarkerOrZone: "<"
   },
   transclude: true
 });
@@ -37,6 +39,124 @@ function mapViewController($scope, $timeout, ngDialog) {
   // let markers = [];
   let markerHash = {};
   let popups = [];
+
+  let coordinateHash = {};
+
+  async function getCoordFromCurve(well) {
+    const focusedMZ = self.focusMarkerOrZone;
+    if (!focusedMZ) {
+      return;
+    }
+    let depth = null;
+    if (focusedMZ.idZone) {
+      const matchZoneset = well.zone_sets.find(zs => zs.name == focusedMZ.zonesetName);
+      if (matchZoneset) {
+        const matchZone = matchZoneset.zones.find(z => z.zone_template.name == focusedMZ.name);
+        if (matchZone)
+          depth = matchZone.startDepth;
+      }
+    } else if (focusedMZ.idMarker) {
+      const matchMarkerset = well.marker_sets.find(ms => ms.name == focusedMZ.markersetName);
+      if (matchMarkerset) {
+        const matchMarker = matchMarkerset.markers.find(m => m.marker_template.name == focusedMZ.name);
+        if (matchMarker)
+          depth = matchMarker.depth;
+      }
+    }
+    let x, y;
+    let lat, lng;
+    if (_.isFinite(depth)) {
+      const indexDataset = well.datasets.find(ds => ds.name == "INDEX");
+      if (indexDataset) {
+        const xOffsetCurve = indexDataset.curves.find(c => c.idFamily == 762)
+        const yOffsetCurve = indexDataset.curves.find(c => c.idFamily == 764)
+
+        if (xOffsetCurve && yOffsetCurve) {
+          const top = Number(indexDataset.top);
+          const step = Number(indexDataset.step);
+          const xOffsetData = await new Promise((res) => {
+            self.getCurveRawDataFn(xOffsetCurve.idCurve, (err, data) => {
+              res(data.map(d => Object.assign(d, {depth: top + step * d.y})));
+            });
+          });
+          const yOffsetData =  await new Promise((res) => {
+            self.getCurveRawDataFn(yOffsetCurve.idCurve, (err, data) => {
+              res(data.map(d => Object.assign(d, {depth: top + step * d.y})));
+            });
+          });
+
+          if (xOffsetData.length && yOffsetData.length) {
+            const firstProjection = self.zoneMap;
+            const secondProjection = "+proj=longlat +ellps=WGS84 +datum=WGS84 +units=degrees";
+
+            const _lat = getLat(well.well_headers, true);
+            const _lng = getLong(well.well_headers, true);
+            const _x = getX(well.well_headers, true);
+            const _y = getY(well.well_headers, true);
+
+            const xUpperBoundIdx = xOffsetData.findIndex(datum => datum.depth >= depth);
+            const xUpperBound = xOffsetData[xUpperBoundIdx];
+            const xLowerBound = xOffsetData[xUpperBoundIdx - 1];
+
+            // calculate x, y offsets
+            let _xOffset, _yOffset;
+            if (xLowerBound) 
+              _xOffset = d3.scaleLinear().domain([xLowerBound.depth, xUpperBound.depth]).range([xLowerBound.x, xUpperBound.x])(depth);
+            else
+              _xOffset = xUpperBound.x;
+
+            const yUpperBoundIdx = yOffsetData.findIndex(datum => datum.depth  >=depth);
+            const yUpperBound = yOffsetData[yUpperBoundIdx];
+            const yLowerBound = yOffsetData[yUpperBoundIdx - 1];
+
+            if (yLowerBound)
+              _yOffset = d3.scaleLinear().domain([yLowerBound.depth, yUpperBound.depth]).range([yLowerBound.x, yUpperBound.x])(depth);
+            else
+              _yOffset = yUpperBound.x;
+
+
+            const _checkCoordResult = checkCoordinate(_lat, _lng, _x, _y);
+            if (_checkCoordResult== true) {
+              // calculate new lat/lng, x/y from x, y offset
+              const zeroProject = proj4(firstProjection, secondProjection, [0, 0]);
+              const offsetProject = proj4(firstProjection, secondProjection, [_xOffset, _yOffset]);
+              lat = _lat + (offsetProject[1] - zeroProject[1]);
+              lng = _lng + (offsetProject[0] - zeroProject[0]);
+              const revertPrj = proj4(secondProjection, firstProjection, [lng, lat]);
+              x = revertPrj[0];
+              y = revertPrj[1];
+            } else if (_checkCoordResult == false) {
+              // calculate new lat/lng from new x, y
+              x = _x + _xOffset;
+              y = _y + _yOffset;
+              const prjResult = proj4(firstProjection, secondProjection, [x, y]);
+              lat = prjResult[1];
+              lng = prjResult[0];
+
+            }
+          }
+        }
+      }
+    }
+    return { x, y, lat, lng };
+  }
+  function updateCoordinateTable() {
+    async.eachSeries(self.wells, (well, next) => {
+      getCoordFromCurve(well)
+        .then(coord => {
+          coordinateHash[well.idWell] = coord;
+          console.log(coord);
+          next();
+        })
+    }, () => {
+      drawMarkersDebounced();
+    })
+    /*
+    self.wells.forEach(async well => {
+      coordinateHash[well.idWell] = await getCoordFromCurve(well);
+    });
+    */
+  }
 
   this.$onInit = function () {
     $timeout(function () {
@@ -90,6 +210,14 @@ function mapViewController($scope, $timeout, ngDialog) {
         drawContours();
       }
     );
+
+    $scope.$watch(
+      () => self.focusMarkerOrZone,
+      () => {
+        updateCoordinateTable();
+      }
+    )
+  
     $scope.$watch(
       function () {
         return [self.mapboxToken, self.zoneMap];
@@ -585,7 +713,6 @@ function mapViewController($scope, $timeout, ngDialog) {
     }
     showAllPopup(self.allPopup);
   }
-}
 
 function checkCoordinate(lat, long, x, y) {
   if ((!lat || !long) && (x && y)) {
@@ -596,7 +723,14 @@ function checkCoordinate(lat, long, x, y) {
   return true;
 }
 
-function getLat(wellIndex) {
+function getLat(wellIndex, forceFromHeader=false) {
+  const wellInfo = wellIndex.find(wellHeader => wellHeader.header == "WELL");
+  if (!forceFromHeader && self.focusMarkerOrZone) {
+    if (wellInfo && coordinateHash[wellInfo.idWell] && coordinateHash[wellInfo.idWell].lat)
+      return coordinateHash[wellInfo.idWell].lat;
+    else return null;
+  }
+
   if (!(wellIndex || []).length) return 0;
   for (let index = 0; index < wellIndex.length; index++) {
     if (wellIndex[index].header === "LATI") {
@@ -609,7 +743,14 @@ function getLat(wellIndex) {
   return 0;
 }
 
-function getLong(wellIndex) {
+function getLong(wellIndex, forceFromHeader=false) {
+  const wellInfo = wellIndex.find(wellHeader => wellHeader.header == "WELL");
+  if (!forceFromHeader && self.focusMarkerOrZone) {
+    if (wellInfo && coordinateHash[wellInfo.idWell] && coordinateHash[wellInfo.idWell].lng)
+      return coordinateHash[wellInfo.idWell].lng;
+    else return null;
+  }
+
   if (!(wellIndex || []).length) return 0;
   for (let index = 0; index < wellIndex.length; index++) {
     if (wellIndex[index].header === "LONG") {
@@ -622,7 +763,14 @@ function getLong(wellIndex) {
   return 0;
 }
 
-function getX(wellIndex) {
+function getX(wellIndex, forceFromHeader=false) {
+  const wellInfo = wellIndex.find(wellHeader => wellHeader.header == "WELL");
+  if (!forceFromHeader && self.focusMarkerOrZone) {
+    if (wellInfo && coordinateHash[wellInfo.idWell] && coordinateHash[wellInfo.idWell].x)
+      return coordinateHash[wellInfo.idWell].x;
+    else return -1;
+  }
+
   if (!(wellIndex || []).length) return 0;
   for (let index = 0; index < wellIndex.length; index++) {
     if (wellIndex[index].header === "X") {
@@ -632,7 +780,14 @@ function getX(wellIndex) {
   return 0;
 }
 
-function getY(wellIndex) {
+function getY(wellIndex, forceFromHeader=false) {
+  const wellInfo = wellIndex.find(wellHeader => wellHeader.header == "WELL");
+  if (!forceFromHeader && self.focusMarkerOrZone) {
+    if (wellInfo && coordinateHash[wellInfo.idWell] && coordinateHash[wellInfo.idWell].y)
+      return coordinateHash[wellInfo.idWell].y;
+    else return -1;
+  }
+
   if (!(wellIndex || []).length) return 0;
   for (let index = 0; index < wellIndex.length; index++) {
     if (wellIndex[index].header === "Y") {
@@ -640,6 +795,7 @@ function getY(wellIndex) {
     }
   }
   return 0;
+}
 }
 
 function ConvertDMSToDD(input) {

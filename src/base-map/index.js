@@ -350,6 +350,51 @@ function baseMapController(
     self.showContour = !self.showContour;
   };
 
+  function clearTreeState(treeName) {
+    switch(treeName) {
+      case 'zoneList':
+        $scope.zoneList.forEach(zs => {
+          zs._selected = false;
+          zs.zones.forEach(z => z._selected = false);
+        })
+        break;
+      case 'markerList':
+        $scope.markerList.forEach(ms => {
+          ms._selected = false;
+          ms.markers.forEach(m => m._selected = false);
+        })
+        break;
+    }
+  }
+  this.toggleZonesets = function() {
+    self.showZonesets = !self.showZonesets;
+    if (self.showZonesets && self.showMarkersets) {
+      // clear previous marker set state 
+      delete $scope.focusMZ;
+      clearTreeState('markerList');
+
+      self.showMarkersets = false; 
+    } else if (!self.showZonesets) {
+      // clear previous zone set state
+      delete $scope.focusMZ;
+      clearTreeState('zoneList');
+    }
+  }
+  this.toggleMarkersets = function() {
+    self.showMarkersets = !self.showMarkersets;
+    if (self.showMarkersets && self.showZonesets) {
+      // clear previous zone set state
+      delete $scope.focusMZ;
+      clearTreeState('zoneList');
+
+      self.showZonesets = false; 
+    } else if (!self.showMarkersets) {
+      // clear previous marker set state 
+      delete $scope.focusMZ;
+      clearTreeState('markerList');
+    }
+  }
+
   this.$onInit = function () {
     self.showDialog = false;
     self.baseUrl = $location.search().baseUrl || self.baseUrl;
@@ -539,7 +584,8 @@ function baseMapController(
       .map(z => ({
         name: z.zone_template.name,
         idZone: z.idZone,
-        idZoneTemplate: z.idZoneTemplate
+        idZoneTemplate: z.idZoneTemplate,
+        zonesetName: zoneset.name 
       }))
       .value();
   }
@@ -595,6 +641,7 @@ function baseMapController(
       .map(m => ({
         name: m.marker_template.name,
         idMarker: m.idMarker,
+        markersetName: markerset.name,
         idMarkerTemplate: m.idMarkerTemplate
       }))
       .value();
@@ -898,9 +945,13 @@ function baseMapController(
   };
   this.clickZoneFunction = function ($event, node) {
     // console.log("Zone click function", $event, node);
+    if (node.idZone)
+      $scope.focusMZ = node;
   }
   this.clickMarkerFunction = function ($event, node) {
     // console.log("Marker click function", $event, node);
+    if (node.idMarker)
+      $scope.focusMZ = node;
   }
   this.clickFunction = function ($event, node) {
     self.selectedNode = node;
@@ -989,13 +1040,13 @@ function baseMapController(
 
   this.getCurveInfoFn = getCurveInfo;
   const cachedCurvesInfo = {};
-  CURVE_CACHING_TIMEOUT = 5000; //ms
+  const CURVE_CACHING_TIMEOUT = 5000; //ms
   function getCurveInfo(curveId, cb) {
     if (
       cachedCurvesInfo[curveId] &&
-      cachedCurvesInfo.timestamp - Date.now() < CURVE_CACHING_TIMEOUT
+      cachedCurvesInfo[curveId].timestamp - Date.now() < CURVE_CACHING_TIMEOUT
     )
-      return cb(null, cachedCurvesInfo.content);
+      return cb(null, cachedCurvesInfo[curveId].content);
     $http({
       method: "POST",
       url: BASE_URL + "/project/well/dataset/curve/info",
@@ -1008,6 +1059,38 @@ function baseMapController(
     }).then(
       function (response) {
         cachedCurvesInfo[curveId] = {
+          content: response.data.content,
+          timestamp: Date.now()
+        };
+        cb(null, response.data.content);
+      },
+      function (err) {
+        cb(err);
+      }
+    );
+  }
+
+  this.getCurveRawDataFn = getCurveRawData;
+  const cachedCurvesData = {};
+  const CURVE_DATA_CACHING_TIMEOUT = 10000; //ms
+  function getCurveRawData(curveId, cb) {
+    if (
+      cachedCurvesData[curveId] &&
+      cachedCurvesData[curveId].timestamp - Date.now() < CURVE_DATA_CACHING_TIMEOUT
+    )
+      return cb(null, cachedCurvesData[curveId].content);
+    $http({
+      method: "POST",
+      url: BASE_URL + "/project/well/dataset/curve/getRawData",
+      data: {
+        idCurve: curveId
+      },
+      headers: {
+        Authorization: wiToken.getToken()
+      }
+    }).then(
+      function (response) {
+        cachedCurvesData[curveId] = {
           content: response.data.content,
           timestamp: Date.now()
         };

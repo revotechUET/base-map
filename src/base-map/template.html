@@ -118,7 +118,7 @@
             <div class="setting-content">
               <span class="setting-sub-title">{{self.showZonesets?"Select a zonation to display":"Display well positions a zonal depth"}}</span>
               <label class="switch">
-                <input type="checkbox" ng-checked="self.showZonesets" ng-click="self.showZonesets = !self.showZonesets" />
+                <input type="checkbox" ng-checked="self.showZonesets" ng-click="self.toggleZonesets()" />
                 <span class="slider round"></span>
               </label>
             </div>
@@ -133,7 +133,7 @@
             <div class="setting-content">
               <span class="setting-sub-title">{{self.showMarkersets?"Select a marker to display":"Display well positions a marker depth"}}</span>
               <label class="switch">
-                <input type="checkbox" ng-checked="self.showMarkersets" ng-click="self.showMarkersets = !self.showMarkersets" />
+                <input type="checkbox" ng-checked="self.showMarkersets" ng-click="self.toggleMarkersets()" />
                 <span class="slider round"></span>
               </label>
             </div>
@@ -324,9 +324,10 @@
 </div>
 -->
 
-<!-- <map-view class="mapView"
+<map-view class="mapView"
   mapbox-token="pk.eyJ1IjoicmV2b3RlY2giLCJhIjoiY2swZGJobWg3MDY2NzNtbnVwaDEyYmttMCJ9.39KL2GsNCiew9XmiLVsTDQ"
   wells="wellSelect" zone-map="zoneMap" focus-well='focusWell' all-popup="allPopup" theme="themeMap"
-  focus-curve="focusCurve" get-curve-info-fn="self.getCurveInfoFn" geo-json="self.geoJson"
+  focus-curve="focusCurve" geo-json="self.geoJson" focus-marker-or-zone="focusMZ"
+  get-curve-info-fn="self.getCurveInfoFn" get-curve-raw-data-fn="self.getCurveRawDataFn"
   show-contour="self.showContour" control-panel="self.controlPanel" deep-ocean="self.deepOcean" point="self.point">
-</map-view> -->
+</map-view>
