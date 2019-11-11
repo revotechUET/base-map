@@ -22,7 +22,7 @@
         Map
       </div>
       <div class="tab-name" ng-class="{'active' : isSet(5)}" ng-click="setTab(5)">
-        Settings
+        Configs
       </div>
     </div>
     <div style="display: flex;">
@@ -50,7 +50,7 @@
   </div>
   <div class="tab" style="justify-content: flex-start; padding-left: 5px; border-bottom: none;">
     <div class="tab-fn" ng-class="{'on': self.showDashboard}"
-    ng-click="self.showDashboard = !self.showDashboard; self.openDashboard()"><i class="ti ti-pie-chart"></i></div>
+      ng-click="self.showDashboard = !self.showDashboard; self.openDashboard()"><i class="ti ti-pie-chart"></i></div>
     <div class="tab-fn" ng-click="self.moveWell()" ng-class="{'inactive' : !isSet(1) || !self.selectedNode}">
       <i class="ti ti-arrow-right"></i>
     </div>
@@ -113,51 +113,56 @@
     <div style="flex: 1; margin: 15px; user-select: none; overflow: hidden ;display: flex; flex-direction: column;"
       onmouseover=this.style.overflow='overlay' onmouseout=this.style.overflow='hidden'>
       <div class="setting">
-        <div class="setting-title">Zonesets & Markersets</div>
-          <div class="complex-setting">
-            <div class="setting-content">
-              <span class="setting-sub-title">{{self.showZonesets?"Select a zonation to display":"Display well positions a zonal depth"}}</span>
-              <label class="switch">
-                <input type="checkbox" ng-checked="self.showZonesets" ng-click="self.toggleZonesets()" />
-                <span class="slider round"></span>
-              </label>
-            </div>
-            <div ng-if="self.showZonesets" class="setting-content" style="margin-top:12px;">
-              <wi-tree-view-virtual tree-root="zoneList" get-label="self.getLabel" get-icon="self.getIcon" click-fn="self.clickZoneFunction"
-                get-children="self.getChildren" run-match="self.runMatchZonesets" hide-unmatched="true" no-drag="true">
-              </wi-tree-view-virtual>
-            </div>
+        <div class="setting-title" style="margin-bottom: 10px;">Zonesets & Markersets</div>
+        <div class="complex-setting" style="margin-bottom: 10px">
+          <div class="setting-content">
+            <span
+              class="setting-sub-title">{{self.showZonesets?"Select a zonation to display":"Display well positions a zonal depth"}}</span>
+            <label class="switch">
+              <input type="checkbox" ng-checked="self.showZonesets" ng-click="self.showZonesets = !self.showZonesets" />
+              <span class="slider round"></span>
+            </label>
           </div>
-
-          <div class="complex-setting">
-            <div class="setting-content">
-              <span class="setting-sub-title">{{self.showMarkersets?"Select a marker to display":"Display well positions a marker depth"}}</span>
-              <label class="switch">
-                <input type="checkbox" ng-checked="self.showMarkersets" ng-click="self.toggleMarkersets()" />
-                <span class="slider round"></span>
-              </label>
-            </div>
-            <div ng-if="self.showMarkersets" class="setting-content" style="margin-top:12px;">
-              <wi-tree-view-virtual tree-root="markerList" get-label="self.getLabel" get-icon="self.getIcon" click-fn="self.clickMarkerFunction"
-                get-children="self.getChildren" run-match="self.runMatchMarkersets" hide-unmatched="true" no-drag="true">
-              </wi-tree-view-virtual>
-            </div>
+          <div ng-if="self.showZonesets" class="setting-content" style="margin-top:12px;">
+            <wi-tree-view-virtual tree-root="zoneList" get-label="self.getLabel" get-icon="self.getIcon"
+              click-fn="self.clickZoneFunction" get-children="self.getChildren" run-match="self.runMatchZonesets"
+              hide-unmatched="true" no-drag="true">
+            </wi-tree-view-virtual>
           </div>
-      </div>
-
-      <div class="setting">
-        <div class="setting-title">Show Contour</div>
+        </div>
         <div class="complex-setting">
           <div class="setting-content">
-            <span class="setting-sub-title">{{self.showContour?"Pick a curve for contour rendering":"Displays contour layer"}}</span>
+            <span
+              class="setting-sub-title">{{self.showMarkersets?"Select a marker to display":"Display well positions a marker depth"}}</span>
+            <label class="switch">
+              <input type="checkbox" ng-checked="self.showMarkersets"
+                ng-click="self.showMarkersets = !self.showMarkersets" />
+              <span class="slider round"></span>
+            </label>
+          </div>
+          <div ng-if="self.showMarkersets" class="setting-content" style="margin-top:12px;">
+            <wi-tree-view-virtual tree-root="markerList" get-label="self.getLabel" get-icon="self.getIcon"
+              click-fn="self.clickMarkerFunction" get-children="self.getChildren" run-match="self.runMatchMarkersets"
+              hide-unmatched="true" no-drag="true">
+            </wi-tree-view-virtual>
+          </div>
+        </div>
+      </div>
+      <div class="setting">
+        <div class="setting-title" style="margin-bottom: 10px;">Show Contour</div>
+        <div class="complex-setting">
+          <div class="setting-content">
+            <span
+              class="setting-sub-title">{{self.showContour?"Pick a curve for contour rendering":"Displays contour layer"}}</span>
             <label class="switch">
               <input type="checkbox" ng-checked="self.showContour" ng-click="self.toggleContour()" />
               <span class="slider round"></span>
             </label>
           </div>
           <div ng-if="self.showContour" class="setting-content" style="margin-top: 12px;">
-            <wi-tree-view-virtual tree-root="curveList" get-label="self.getLabel" get-icon="self.getIcon" click-fn="self.clickCurveFunction"
-              get-children="self.getChildren" run-match="self.runMatchCurve" hide-unmatched="true" no-drag="true">
+            <wi-tree-view-virtual tree-root="curveList" get-label="self.getLabel" get-icon="self.getIcon"
+              click-fn="self.clickCurveFunction" get-children="self.getChildren" run-match="self.runMatchCurve"
+              hide-unmatched="true" no-drag="true">
             </wi-tree-view-virtual>
           </div>
         </div>
@@ -201,6 +206,9 @@
           <div id="fp2" style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis; margin-top: 15px;">
           </div>
         </div>
+      </div>
+      <div class="export" ng-click="self.downloadZipFile()">
+        Export Config
       </div>
     </div>
   </div>
@@ -302,9 +310,7 @@
             <span ng-show="!self.showDetailZone" class="zone-name" ng-bind="item.output"></span>
           </div>
         </div> -->
-        <div class="export" ng-click="self.downloadZipFile()">
-          Export Config
-        </div>
+
       </div>
     </div>
   </div>
