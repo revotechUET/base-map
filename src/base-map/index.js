@@ -33,6 +33,9 @@ var app = angular.module(componentName, [
   'wiApi'
 ]);
 
+function getData(resultObj) {
+  return Object.values(resultObj).map(item => item.length);
+}
 app.value('chartSettings', {
   chartTypeOpt: {
     type: 'select',
@@ -56,10 +59,22 @@ app.value('chartSettings', {
       { data: { label: "Well By Field" }, properties: { value: "well-by-field" } },
       { data: { label: "Well By Operator" }, properties: { value: "well-by-operator" } },
       { data: { label: "Well By Tag" }, properties: { value: "well-by-tag" } },
+      { data: { label: "Curve By Tag" }, properties: { value: "curve-by-tag" } },
     ],
     setValue: function (selectedProps, widgetConfig) {
-      if (selectedProps)
-        widgetConfig.dataSource = selectedProps.value;
+      const DTSRC_MAP = {
+        'well-by-type': 'wTypes',
+        'well-by-field': 'fields',
+        'well-by-operator': 'operators',
+        'well-by-tag': 'tags',
+        'curve-by-tag': 'curveTags'
+      }
+      if (selectedProps) {
+        widgetConfig.data = getData(widgetConfig.dataSources[DTSRC_MAP[selectedProps.value]]);
+        widgetConfig.labelFn = function (config, datum, idx) {
+          return Object.keys(widgetConfig.dataSources[DTSRC_MAP[selectedProps.value]])[idx];
+        }
+      }
     }
   },
   tickOpt: {
@@ -323,6 +338,7 @@ function baseMapController(
       config: {
         type: 'bar',
         data: getData(result.wTypes),
+        dataSources: result,
         labelFn: function (config, datum, idx) {
           return Object.keys(result.wTypes)[idx];
         },
@@ -348,6 +364,7 @@ function baseMapController(
       config: {
         type: 'bar',
         data: getData(result.fields),
+        dataSources: result,
         labelFn: function (config, datum, idx) {
           return Object.keys(result.fields)[idx];
         },
@@ -362,6 +379,7 @@ function baseMapController(
       config: {
         type: 'bar',
         data: getData(result.operators),
+        dataSources: result, 
         labelFn: function (config, datum, idx) {
           return Object.keys(result.operators)[idx];
         },
@@ -370,19 +388,49 @@ function baseMapController(
         }
       }
     }
+    let tagWidgetConfig = {
+      name: "Tags",
+      config: {
+        type: 'bar',
+        data: getData(result.tags),
+        dataSources: result,
+        labelFn: function (config, datum, idx) {
+          return Object.keys(result.tags)[idx];
+        },
+        colorFn: function (config, datum, idx) {
+          let palette = wiApi.getPalette("RandomColor");
+          return `rgba(${palette[idx].red},${palette[idx].green},${palette[idx].blue},${palette[idx].alpha})`;
+        }
+      }
+    }
+    let curveTagWidgetConfig = {
+      name: "Curve Tags",
+      config: {
+        type: 'bar',
+        data: getData(result.curveTags),
+        dataSources: result,
+        labelFn: function (config, datum, idx) {
+          return Object.keys(result.curveTags)[idx];
+        },
+        colorFn: function (config, datum, idx) {
+          let palette = wiApi.getPalette("RandomColor");
+          return `rgba(${palette[idx].red},${palette[idx].green},${palette[idx].blue},${palette[idx].alpha})`;
+        }
+      }
+    }
     $timeout(() => {
-      self.dashboardContent = [wTypeWidgetConfig, fieldWidgetConfig, operatorWidgetConfig];
+      self.dashboardContent = [wTypeWidgetConfig, fieldWidgetConfig, operatorWidgetConfig, tagWidgetConfig, curveTagWidgetConfig];
       // self.dashboardContent = [wTypeWidgetConfig];
 
     });
-  }
-  function getData(resultObj) {
-    return Object.values(resultObj).map(item => item.length);
   }
   function groupWells(prjTree) {
     let wTypes = {};
     let fields = {};
     let operators = {};
+    let tags = {};
+    let curveTags = {};
+
     let wells = prjTree.wells;
     for (let well of wells) {
       const wellHeaders = well.wellheaders;
@@ -401,9 +449,28 @@ function baseMapController(
           operators[value].push(well);
         }
       }
+
+      if (well.relatedTo && well.relatedTo.tags && well.relatedTo.tags.length) {
+        for (let tag of well.relatedTo.tags) {
+          tags[tag] = tags[tag] || [];
+          tags[tag].push(well);
+        }
+      }
+      if (well.datasets.length) {
+        well.datasets.forEach(dts => {
+          dts.curves.forEach(curve => {
+            if (curve.relatedTo && curve.relatedTo.tags && curve.relatedTo.tags.length) {
+              for (let tag of curve.relatedTo.tags) {
+                curveTags[tag] = curveTags[tag] || [];
+                curveTags[tag].push(curve);
+              }
+            }
+          })
+        })
+      }
     }
 
-    return { wTypes, fields, operators };
+    return { wTypes, fields, operators, tags, curveTags};
   }
   this.changeTheme = function () {
     document.getElementById("main").classList.toggle("dark-mode");
