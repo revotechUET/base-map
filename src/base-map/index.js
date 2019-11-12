@@ -33,6 +33,56 @@ var app = angular.module(componentName, [
   'wiApi'
 ]);
 
+app.value('chartSettings', {
+  chartTypeOpt: {
+    type: 'select',
+    label: "Chart Type",
+    options: [
+      { data: { label: "Bar" }, properties: { value: "bar" } },
+      { data: { label: "Horizontal Bar" }, properties: { value: "horizontal-bar" } },
+      { data: { label: "Pie" }, properties: { value: "pie" } },
+      { data: { label: "Doughnut" }, properties: { value: "doughnut" } }
+    ],
+    setValue: function (selectedProps, widgetConfig) {
+      if (selectedProps)
+        widgetConfig.type = selectedProps.value;
+    }
+  },
+  dataSourceOpt: {
+    type: 'select',
+    label: "Data Source",
+    options: [
+      { data: { label: "Well By Type" }, properties: { value: "well-by-type" } },
+      { data: { label: "Well By Field" }, properties: { value: "well-by-field" } },
+      { data: { label: "Well By Operator" }, properties: { value: "well-by-operator" } },
+      { data: { label: "Well By Tag" }, properties: { value: "well-by-tag" } },
+    ],
+    setValue: function (selectedProps, widgetConfig) {
+      if (selectedProps)
+        widgetConfig.dataSource = selectedProps.value;
+    }
+  },
+  tickOpt: {
+    type: 'number',
+    label: "Ticks",
+    getValue: function (widgetConfig, /* editable param */) {
+      return _.get(widgetConfig, 'options.scales.yAxes[0].ticks.maxTicksLimit', '[empty]');
+    },
+    setValue: function (widgetConfig /*editable param*/, newVal) {
+      return _.set(widgetConfig, 'options.scales.yAxes[0].ticks.maxTicksLimit', Math.round(Number(newVal)) || 11);
+    }
+  },
+  chartLabelOpt: {
+    type: 'text',
+    label: "Label",
+    getValue: function (widgetConfig, /* editable param */) {
+      return widgetConfig.title || "[empty]";
+    },
+    setValue: function (widgetConfig /*editable param*/, newVal) {
+      widgetConfig.title = newVal;
+    }
+  },
+});
 app.component(componentName, {
   template: require("./template.html"),
   controller: baseMapController,
@@ -279,6 +329,17 @@ function baseMapController(
         colorFn: function (config, datum, idx) {
           let palette = wiApi.getPalette("RandomColor");
           return `rgba(${palette[idx].red},${palette[idx].green},${palette[idx].blue},${palette[idx].alpha})`;
+        },
+        title: 'Well Type',
+        options: {
+          scales: {
+            yAxes: [{
+              ticks: {
+                // stepSize: 1.0
+                maxTicksLimit: 10
+              }
+            }]
+          }
         }
       }
     }
@@ -292,7 +353,8 @@ function baseMapController(
         },
         colorFn: function (config, datum, idx) {
           return 'rgba(64,64,200,0.7)';
-        }
+        },
+        title: 'Fields'
       }
     }
     let operatorWidgetConfig = {
