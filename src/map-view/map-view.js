@@ -26,11 +26,16 @@ app.component(componentName, {
     controlPanel: "<",
     deepOcean: "<",
     point: "<",
-    focusMarkerOrZone: "<"
+    focusMarkerOrZone: "<",
+    zoneDepthSpec: '<'
   },
   transclude: true
 });
 
+const ZONE_DEPTH_SPEC_MAP = {
+  'zone-top': 'startDepth',
+  'zone-bottom': 'endDepth'
+}
 function mapViewController($scope, $timeout, ngDialog) {
   let self = this;
   let map;
@@ -53,7 +58,11 @@ function mapViewController($scope, $timeout, ngDialog) {
       if (matchZoneset) {
         const matchZone = matchZoneset.zones.find(z => z.zone_template.name == focusedMZ.name);
         if (matchZone)
-          depth = matchZone.startDepth;
+          if(self.zoneDepthSpec == 'zone-middle') {
+            depth = (matchZone.startDepth + matchZone.endDepth) / 2;
+          } else {
+            depth = matchZone[ZONE_DEPTH_SPEC_MAP[self.zoneDepthSpec || 'zone-top']];
+          }
       }
     } else if (focusedMZ.idMarker) {
       const matchMarkerset = well.marker_sets.find(ms => ms.name == focusedMZ.markersetName);
@@ -76,12 +85,12 @@ function mapViewController($scope, $timeout, ngDialog) {
           const step = Number(indexDataset.step);
           const xOffsetData = await new Promise((res) => {
             self.getCurveRawDataFn(xOffsetCurve.idCurve, (err, data) => {
-              res(data.map(d => Object.assign(d, {depth: top + step * d.y})));
+              res(data.map(d => Object.assign(d, {depth: top + step * d.y})).filter(d => _.isFinite(d.x)));
             });
           });
           const yOffsetData =  await new Promise((res) => {
             self.getCurveRawDataFn(yOffsetCurve.idCurve, (err, data) => {
-              res(data.map(d => Object.assign(d, {depth: top + step * d.y})));
+              res(data.map(d => Object.assign(d, {depth: top + step * d.y})).filter(d => _.isFinite(d.x)));
             });
           });
 
@@ -103,7 +112,7 @@ function mapViewController($scope, $timeout, ngDialog) {
             if (xLowerBound) 
               _xOffset = d3.scaleLinear().domain([xLowerBound.depth, xUpperBound.depth]).range([xLowerBound.x, xUpperBound.x])(depth);
             else
-              _xOffset = xUpperBound.x;
+              _xOffset = (xUpperBound || xOffsetData[xOffsetData.length - 1]).x;
 
             const yUpperBoundIdx = yOffsetData.findIndex(datum => datum.depth  >=depth);
             const yUpperBound = yOffsetData[yUpperBoundIdx];
@@ -112,7 +121,7 @@ function mapViewController($scope, $timeout, ngDialog) {
             if (yLowerBound)
               _yOffset = d3.scaleLinear().domain([yLowerBound.depth, yUpperBound.depth]).range([yLowerBound.x, yUpperBound.x])(depth);
             else
-              _yOffset = yUpperBound.x;
+              _yOffset = (yUpperBound || yOffsetData[yOffsetData.length - 1]).x;
 
 
             const _checkCoordResult = checkCoordinate(_lat, _lng, _x, _y);
@@ -135,7 +144,11 @@ function mapViewController($scope, $timeout, ngDialog) {
 
             }
           }
+        } else {
+          console.warn(`Cannot find XOFFSET or YOFFSET curve in INDEX dataset of well ${well.name}`);
         }
+      } else {
+        console.warn(`Cannot find INDEX dataset in well ${well.name}`);
       }
     }
     return { x, y, lat, lng };
@@ -213,6 +226,13 @@ function mapViewController($scope, $timeout, ngDialog) {
 
     $scope.$watch(
       () => self.focusMarkerOrZone,
+      () => {
+        updateCoordinateTable();
+      }
+    )
+
+    $scope.$watch(
+      () => self.zoneDepthSpec,
       () => {
         updateCoordinateTable();
       }

@@ -139,6 +139,12 @@ function baseMapController(
   self.selectedNode = null;
   self.showLoading = false;
   self.showLoadingDashboard = false;
+  $scope.zoneDepthSpecs = [
+    {label: 'Zone Top', value: 'zone-top'},
+    {label: 'Zone Middle', value: 'zone-middle'},
+    {label: 'Zone Bottom', value: 'zone-bottom'},
+  ];
+  self.zoneDepthSpec = $scope.zoneDepthSpecs[0].value;
   $scope.curveList = [];
   $scope.zoneList = [];
   $scope.markerList = [];
