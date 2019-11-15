@@ -1129,7 +1129,8 @@ function baseMapController(
         return console.log(err);
       }
       // $scope.treeConfig = projects.sort((w1, w2) => (w1.alias.localeCompare(w2.alias)));
-      $scope.treeConfig = projects;
+      // $scope.treeConfig = projects.sort();
+      $scope.treeConfig = _.sortBy(projects, o => o.name)
     });
   }
 
