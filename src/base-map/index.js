@@ -139,7 +139,7 @@ function baseMapController(
   self.selectedNode = null;
   self.showLoading = false;
   self.showLoadingDashboard = false;
-  self.showMap = false;
+  self.showMap = true;
   $scope.zoneDepthSpecs = [
     { label: 'Zone Top', value: 'zone-top' },
     { label: 'Zone Middle', value: 'zone-middle' },
@@ -327,6 +327,13 @@ function baseMapController(
       }
     }
   };
+  this.changeLayout = function () {
+    if(!self.showDashboard) {
+      self.showDashboard = !self.showDashboard;
+    }
+    $(".main").toggleClass("change-layout");
+    $(".dialog").toggleClass("change-layout-dialog");
+  }
   this.addDashboard = function () {
     self.showLoadingDashboard = true;
     wiApi.getFullInfoPromise(self.selectedNode.idProject, self.selectedNode.owner, self.selectedNode.owner ? self.selectedNode.name : null).then((prjTree) => {
