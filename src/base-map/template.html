@@ -27,7 +27,7 @@
     </div>
     <div style="display: flex;">
 
-      <div style="display: flex; align-items: center;">
+      <div style="display: flex; align-items: center;" ng-show="self.showMap">
         <div ng-show="self.hideMain" class="tab-name ti ti-arrow-circle-down" style="color: #4085ff; font-size: 12px;"
           ng-click="self.hideMain = !self.hideMain"></div>
         <div ng-show="!self.hideMain" class="tab-name ti ti-arrow-circle-up" style="color: #99a3ba; font-size: 12px;"
@@ -49,8 +49,10 @@
     </div>
   </div>
   <div class="tab" style="justify-content: flex-start; padding-left: 5px; border-bottom: none;">
-    <div class="tab-fn" ng-class="{'on': self.showDashboard}"
-      ng-click="self.showDashboard = !self.showDashboard; self.openDashboard()"><i class="ti ti-pie-chart"></i></div>
+    <div class="tab-fn" ng-class="{'on': self.showDashboard}" ng-show="self.showMap"
+      ng-click="self.showDashboard = !self.showDashboard; self.openDashboard()">
+      <i class="ti ti-pie-chart"></i>
+    </div>
     <div class="tab-fn" ng-click="self.moveWell()" ng-class="{'inactive' : !isSet(1) || !self.selectedNode}">
       <i class="ti ti-arrow-right"></i>
     </div>
@@ -113,9 +115,9 @@
     <div style="flex: 1; margin: 15px; user-select: none; overflow: hidden ;display: flex; flex-direction: column;"
       onmouseover=this.style.overflow='overlay' onmouseout=this.style.overflow='hidden'>
       <div class="setting">
-        <div class="setting-title">Hide map view</div>
+        <div class="setting-title">Show only dashboard</div>
         <div class="setting-content">
-          <span>Hide map may be increase performance</span>
+          <span>Hide map to increase performance</span>
           <label class="switch">
             <input type="checkbox" ng-checked="allPopup" ng-click="self.showMap = !self.showMap; self.changeLayout();" />
             <span class="slider round"></span>
