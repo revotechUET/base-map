@@ -139,17 +139,18 @@ function baseMapController(
   self.selectedNode = null;
   self.showLoading = false;
   self.showLoadingDashboard = false;
+  self.showMap = false;
   $scope.zoneDepthSpecs = [
-    {label: 'Zone Top', value: 'zone-top'},
-    {label: 'Zone Middle', value: 'zone-middle'},
-    {label: 'Zone Bottom', value: 'zone-bottom'},
+    { label: 'Zone Top', value: 'zone-top' },
+    { label: 'Zone Middle', value: 'zone-middle' },
+    { label: 'Zone Bottom', value: 'zone-bottom' },
   ];
   self.zoneDepthSpec = $scope.zoneDepthSpecs[0].value;
   $scope.curveList = [];
   $scope.zoneList = [];
   $scope.markerList = [];
   $scope.focusCurve = null;
-  self.dashboardColumns = 3;
+  self.dashboardColumns = 2;
   const geoJsonDefault = {
     type: "FeatureCollection",
     features: []
@@ -326,6 +327,49 @@ function baseMapController(
       }
     }
   };
+  this.addDashboard = function () {
+    self.showLoadingDashboard = true;
+    wiApi.getFullInfoPromise(self.selectedNode.idProject, self.selectedNode.owner, self.selectedNode.owner ? self.selectedNode.name : null).then((prjTree) => {
+      projectTree = prjTree;
+      let result = groupWells(projectTree);
+      let WidgetConfig = {
+        name: "New Dashboard",
+        config: {
+          type: 'bar',
+          data: getData(result.wTypes),
+          dataSources: result,
+          labelFn: function (config, datum, idx) {
+            return Object.keys(result.wTypes)[idx];
+          },
+          colorFn: function (config, datum, idx) {
+            let palette = wiApi.getPalette("RandomColor");
+            return `rgba(${palette[idx].red},${palette[idx].green},${palette[idx].blue},${palette[idx].alpha})`;
+          },
+          title: 'New Dashboard',
+          options: {
+            scales: {
+              yAxes: [{
+                ticks: {
+                  // stepSize: 1.0
+                  maxTicksLimit: 10
+                }
+              }]
+            }
+          }
+        },
+        setting: true
+      }
+      $timeout(() => {
+        self.dashboardContent.push(WidgetConfig);
+      });
+    }).catch((e) => {
+      console.error(e);
+    }).finally(() => {
+      self.showLoadingDashboard = false;
+    });
+
+
+  }
   this.openDashboard = function () {
     self.showLoadingDashboard = true;
     wiApi.getFullInfoPromise(self.selectedNode.idProject, self.selectedNode.owner, self.selectedNode.owner ? self.selectedNode.name : null).then((prjTree) => {
@@ -385,7 +429,7 @@ function baseMapController(
       config: {
         type: 'bar',
         data: getData(result.operators),
-        dataSources: result, 
+        dataSources: result,
         labelFn: function (config, datum, idx) {
           return Object.keys(result.operators)[idx];
         },
@@ -476,7 +520,7 @@ function baseMapController(
       }
     }
 
-    return { wTypes, fields, operators, tags, curveTags};
+    return { wTypes, fields, operators, tags, curveTags };
   }
   this.changeTheme = function () {
     document.getElementById("main").classList.toggle("dark-mode");
@@ -486,7 +530,7 @@ function baseMapController(
   };
 
   function clearTreeState(treeName) {
-    switch(treeName) {
+    switch (treeName) {
       case 'zoneList':
         $scope.zoneList.forEach(zs => {
           zs._selected = false;
@@ -501,28 +545,28 @@ function baseMapController(
         break;
     }
   }
-  this.toggleZonesets = function() {
+  this.toggleZonesets = function () {
     self.showZonesets = !self.showZonesets;
     if (self.showZonesets && self.showMarkersets) {
       // clear previous marker set state 
       delete $scope.focusMZ;
       clearTreeState('markerList');
 
-      self.showMarkersets = false; 
+      self.showMarkersets = false;
     } else if (!self.showZonesets) {
       // clear previous zone set state
       delete $scope.focusMZ;
       clearTreeState('zoneList');
     }
   }
-  this.toggleMarkersets = function() {
+  this.toggleMarkersets = function () {
     self.showMarkersets = !self.showMarkersets;
     if (self.showMarkersets && self.showZonesets) {
       // clear previous zone set state
       delete $scope.focusMZ;
       clearTreeState('zoneList');
 
-      self.showZonesets = false; 
+      self.showZonesets = false;
     } else if (!self.showMarkersets) {
       // clear previous marker set state 
       delete $scope.focusMZ;
@@ -710,7 +754,7 @@ function baseMapController(
     }
     return well;
   }
-  
+
   function getUniqZones(zoneset) {
     const _clonedZones = angular.copy(zoneset.zones);
     return _(_clonedZones)
@@ -720,7 +764,7 @@ function baseMapController(
         name: z.zone_template.name,
         idZone: z.idZone,
         idZoneTemplate: z.idZoneTemplate,
-        zonesetName: zoneset.name 
+        zonesetName: zoneset.name
       }))
       .value();
   }
@@ -732,7 +776,7 @@ function baseMapController(
     }
   }
   async function updateZoneList() {
-    const _zonesets = $scope.zoneList; 
+    const _zonesets = $scope.zoneList;
     const _wells = $scope.wellSelect;
     if (_wells.length === undefined || _wells.length === null) return;
     for (let i = 0; i < _wells.length; ++i) {
@@ -789,7 +833,7 @@ function baseMapController(
     }
   }
   async function updateMarkerList() {
-    const _markersets = $scope.markerList; 
+    const _markersets = $scope.markerList;
     const _wells = $scope.wellSelect;
     if (_wells.length === undefined || _wells.length === null) return;
     for (let i = 0; i < _wells.length; ++i) {

@@ -18,7 +18,7 @@
         <span ng-if="curveList.length" class="tab-badge">{{curveList.length?curveList.length:''}}</span>
       </div>
       -->
-      <div class="tab-name" ng-class="{'active' : isSet(2)}" ng-click="setTab(2)">
+      <div class="tab-name" ng-class="{'active' : isSet(2)}" ng-click="setTab(2)" ng-show="self.showMap">
         Map
       </div>
       <div class="tab-name" ng-class="{'active' : isSet(5)}" ng-click="setTab(5)">
@@ -112,6 +112,17 @@
   <div ng-show="isSet(5) && !self.hideMain" class="content">
     <div style="flex: 1; margin: 15px; user-select: none; overflow: hidden ;display: flex; flex-direction: column;"
       onmouseover=this.style.overflow='overlay' onmouseout=this.style.overflow='hidden'>
+      <div class="setting">
+        <div class="setting-title">Hide map view</div>
+        <div class="setting-content">
+          <span>Hide map may be increase performance</span>
+          <label class="switch">
+            <input type="checkbox" ng-checked="allPopup" ng-click="self.showMap = !self.showMap" />
+            <span class="slider round"></span>
+          </label>
+        </div>
+      </div>
+      
       <div class="setting">
         <div class="setting-title" style="margin-bottom: 10px;">Zonesets & Markersets</div>
         <div class="complex-setting" style="margin-bottom: 10px">
@@ -335,7 +346,9 @@
 </div>
 -->
 
-<map-view class="mapView"
+<map-view 
+  ng-show="self.showMap"
+  class="mapView"
   mapbox-token="pk.eyJ1IjoicmV2b3RlY2giLCJhIjoiY2swZGJobWg3MDY2NzNtbnVwaDEyYmttMCJ9.39KL2GsNCiew9XmiLVsTDQ"
   wells="wellSelect" zone-map="zoneMap" focus-well='focusWell' all-popup="allPopup" theme="themeMap"
   focus-curve="focusCurve" geo-json="self.geoJson" focus-marker-or-zone="focusMZ" zone-depth-spec="self.zoneDepthSpec"
