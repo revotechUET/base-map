@@ -146,13 +146,22 @@ function mapViewController($scope, $timeout, ngDialog) {
           }
         } else {
           console.warn(`Cannot find XOFFSET or YOFFSET curve in INDEX dataset of well ${well.name}`);
+        alertDebounce(`Cannot find XOFFSET or YOFFSET curve in INDEX dataset of well ${well.name}`);
         }
       } else {
         console.warn(`Cannot find INDEX dataset in well ${well.name}`);
+        alertDebounce(`Cannot find INDEX dataset in well ${well.name}`);
       }
     }
     return { x, y, lat, lng };
   }
+  const alertDebounce = _.debounce(function(message) {
+    ngDialog.open({
+      template: "templateError",
+      className: "ngdialog-theme-default",
+      scope: Object.assign($scope.$new(), { message: message})
+    })
+  }, 1000)
   function updateCoordinateTable() {
     async.eachSeries(self.wells, (well, next) => {
       getCoordFromCurve(well)
