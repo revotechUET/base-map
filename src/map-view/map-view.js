@@ -748,7 +748,7 @@ function getLat(wellIndex, forceFromHeader=false) {
   if (!forceFromHeader && self.focusMarkerOrZone) {
     if (wellInfo && coordinateHash[wellInfo.idWell] && coordinateHash[wellInfo.idWell].lat)
       return coordinateHash[wellInfo.idWell].lat;
-    else return null;
+    // else return null;
   }
 
   if (!(wellIndex || []).length) return 0;
@@ -768,7 +768,7 @@ function getLong(wellIndex, forceFromHeader=false) {
   if (!forceFromHeader && self.focusMarkerOrZone) {
     if (wellInfo && coordinateHash[wellInfo.idWell] && coordinateHash[wellInfo.idWell].lng)
       return coordinateHash[wellInfo.idWell].lng;
-    else return null;
+    // else return null;
   }
 
   if (!(wellIndex || []).length) return 0;
@@ -788,7 +788,7 @@ function getX(wellIndex, forceFromHeader=false) {
   if (!forceFromHeader && self.focusMarkerOrZone) {
     if (wellInfo && coordinateHash[wellInfo.idWell] && coordinateHash[wellInfo.idWell].x)
       return coordinateHash[wellInfo.idWell].x;
-    else return -1;
+    // else return -1;
   }
 
   if (!(wellIndex || []).length) return 0;
@@ -805,7 +805,7 @@ function getY(wellIndex, forceFromHeader=false) {
   if (!forceFromHeader && self.focusMarkerOrZone) {
     if (wellInfo && coordinateHash[wellInfo.idWell] && coordinateHash[wellInfo.idWell].y)
       return coordinateHash[wellInfo.idWell].y;
-    else return -1;
+    // else return -1;
   }
 
   if (!(wellIndex || []).length) return 0;
