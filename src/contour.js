@@ -255,7 +255,7 @@ function Contour(container, map, data) {
         if (!lats.length || !lngs.length) return;
         const maxLat = d3.max(lats);
         const minLng = d3.min(lngs);
-        if (!maxLat || !minLng) return;
+        if (!_.isFinite(maxLat) || !_.isFinite(minLng)) return;
         const transformToPx = ({ type, value, coordinates }) => {
             return {
                 type, value, coordinates: coordinates.map(rings => {
