@@ -348,7 +348,7 @@
 </div>
 -->
 
-<map-view 
+<!-- <map-view 
   ng-show="self.showMap"
   class="mapView"
   mapbox-token="pk.eyJ1IjoicmV2b3RlY2giLCJhIjoiY2swZGJobWg3MDY2NzNtbnVwaDEyYmttMCJ9.39KL2GsNCiew9XmiLVsTDQ"
@@ -356,4 +356,10 @@
   focus-curve="focusCurve" geo-json="self.geoJson" focus-marker-or-zone="focusMZ" zone-depth-spec="self.zoneDepthSpec"
   get-curve-info-fn="self.getCurveInfoFn" get-curve-raw-data-fn="self.getCurveRawDataFn"
   show-contour="self.showContour" control-panel="self.controlPanel" deep-ocean="self.deepOcean" point="self.point">
-</map-view>
+</map-view> -->
+<google-map-view 
+  ng-show="self.showMap"
+  class="mapView"
+  wells="wellSelect"
+  zone-map="zoneMap">
+</google-map-view>

@@ -20,6 +20,7 @@ const WI_BACKEND_HOST = config.wi_backend;
 
 var app = angular.module(componentName, [
   "mapView",
+  "googleMapView",
   "sideBar",
   "wiTreeView",
   "wiTreeViewVirtual",
