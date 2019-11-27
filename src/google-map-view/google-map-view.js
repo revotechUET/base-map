@@ -18,7 +18,7 @@ app.component(componentName, {
 function googleMapViewController($scope, $timeout, ngDialog) {
   let self = this;
   let map;
-  let markerHash = {};
+  let markers = [];
 
 
   this.$onInit = function () {
@@ -32,6 +32,7 @@ function googleMapViewController($scope, $timeout, ngDialog) {
       },
       function () {
         drawMarkers();
+        console.log(self.wells)
       },
       true
     );
@@ -40,7 +41,6 @@ function googleMapViewController($scope, $timeout, ngDialog) {
  
   // SHOW MAP
   function drawMap() {
-    mapboxgl.accessToken = self.mapboxToken;
     map = new google.maps.Map(document.getElementById('map'), {zoom: 4, center: {lat: 21.344, lng: 107.036}});
   }
 
@@ -48,6 +48,7 @@ function googleMapViewController($scope, $timeout, ngDialog) {
   function drawMarkers() {
     let firstProjection = self.zoneMap;
     let secondProjection = "+proj=longlat +ellps=WGS84 +datum=WGS84 +units=degrees";
+    console.log(self.wells)
     if (self.zoneMap) {
       // markers.length = 0;
       if (!(self.wells || []).length) return 0;
