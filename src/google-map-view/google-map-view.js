@@ -3,6 +3,7 @@ module.exports.name = componentName;
 require("./google-map-view.less");
 
 var app = angular.module(componentName, ["ngDialog"]);
+const Contour = require("../contour");
 
 app.component(componentName, {
   template: require("./google-map-view.html"),
@@ -10,7 +11,10 @@ app.component(componentName, {
   controllerAs: "self",
   bindings: {
     wells: "<",
-    zoneMap: "<"
+    zoneMap: "<",
+    focusCurve: "<",
+    getCurveInfoFn: "<",
+    showContour: "<",
   },
   transclude: true
 });
@@ -20,10 +24,10 @@ function googleMapViewController($scope, $timeout, ngDialog) {
   let map;
   let markers = [];
 
-
   this.$onInit = function () {
     $timeout(function () {
       drawMap();
+      initContours();
       console.log('Draw map')
     }, 10);
     $scope.$watch(
@@ -36,12 +40,25 @@ function googleMapViewController($scope, $timeout, ngDialog) {
       },
       true
     );
+    $scope.$watch(
+      () => self.focusCurve,
+      () => {
+        updateContours();
+      }
+    );
+    $scope.$watch(
+      () => self.showContour,
+      () => {
+        updateContours();
+      }
+    );
   };
 
  
   // SHOW MAP
   function drawMap() {
     map = new google.maps.Map(document.getElementById('map'), {zoom: 4, center: {lat: 21.344, lng: 107.036}});
+    window.mapView = map;
   }
 
   // SHOW MARKER
@@ -68,6 +85,88 @@ function googleMapViewController($scope, $timeout, ngDialog) {
         }
       }
     }
+  }
+
+  let contour = null;
+  function initContours() {
+    contour = new Contour("#contour-map-container", map, []);
+    google.maps.event.addListener(map, 'bounds_changed', function() {
+      contour.drawContourDebounced();
+    }) 
+    window._contour = contour;
+  }
+  const updateContours = _.debounce(_updateContours, 100);
+  async function _updateContours() {
+    if (!map) return;
+    if (!self.showContour) {
+      contour.data = [];
+      return;
+    }
+    if (contour) {
+      contour.data = await genContourData();
+    }
+  }
+  const data = [];
+  async function genContourData() {
+    const _data = [];
+    let firstProjection = self.zoneMap;
+    let secondProjection =
+      "+proj=longlat +ellps=WGS84 +datum=WGS84 +units=degrees";
+    if (self.zoneMap) {
+      if ((self.wells || []).length) {
+        for (let index = 0; index < self.wells.length; index++) {
+          let lat = getLat(self.wells[index].well_headers);
+          let long = getLong(self.wells[index].well_headers);
+          let x = getX(self.wells[index].well_headers);
+          let y = getY(self.wells[index].well_headers);
+          let latX = proj4(firstProjection, secondProjection, [x, y])[1];
+          let lngY = proj4(firstProjection, secondProjection, [x, y])[0];
+          if (checkCoordinate(lat, long, x, y) === true) {
+            // use long, lat
+            _data.push({
+              lng: long,
+              lat,
+              value: await getWellDataForContour(self.wells[index])
+            });
+          } else if (checkCoordinate(lat, long, x, y) === false) {
+            // use lngY, latX
+            _data.push({
+              lng: lngY,
+              lat: latX,
+              value: await getWellDataForContour(self.wells[index])
+            });
+          }
+        }
+      }
+      data.length = 0;
+      _data.forEach(d => data.push(d));
+    }
+    return data;
+  }
+  async function getWellDataForContour(well) {
+    if (!self.focusCurve) return 0;
+    let curve = null;
+    for (let dsi = 0; dsi < well.datasets.length; ++dsi) {
+      const _ds = well.datasets[dsi];
+      curve = _ds.curves.find(
+        c => `${_ds.name}.${c.name}` == self.focusCurve.name
+      );
+      if (curve) break;
+    }
+    if (!curve) return 0;
+    const curveInfo = await new Promise((resolve, reject) => {
+      self.getCurveInfoFn(curve.idCurve, function (err, curveInfo) {
+        if (err) {
+          console.error(err);
+          reject(err);
+        } else {
+          resolve(curveInfo);
+        }
+      });
+    });
+    if (!self.focusCurve) return 0;
+    if (!curveInfo || !curveInfo.DataStatistic) return 0;
+    return curveInfo.DataStatistic.meanValue;
   }
 
 function checkCoordinate(lat, long, x, y) {
