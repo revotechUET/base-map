@@ -144,6 +144,7 @@ function googleMapViewController($scope, $timeout, ngDialog) {
       strokeOpacity: 0.5,
       fillOpacity: 0.5
     })
+    /*
     map.data.setStyle(feature => {
       console.log(feature);
       return {
@@ -154,6 +155,7 @@ function googleMapViewController($scope, $timeout, ngDialog) {
         fillOpacity: 0.5
        };
     })
+    */
     map.data.addGeoJson(geojson);
   }
 
