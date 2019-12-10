@@ -19,7 +19,9 @@ app.component(componentName, {
     // view by marker or zone
     getCurveRawDataFn: "<",
     focusMarkerOrZone: "<",
-    zoneDepthSpec: '<'
+    zoneDepthSpec: '<',
+    // draw geojson objects
+    geoJson: '<',
   },
   transclude: true
 });
@@ -78,6 +80,14 @@ function googleMapViewController($scope, $timeout, ngDialog) {
         updateCoordinateTable();
       }
     )
+    
+    //DRAW GEOJSON OBJECT
+    $scope.$watch(
+      () => self.geoJson,
+      () => {
+        drawGeoJson(self.geoJson);
+      }
+    );
   };
 
  
@@ -121,6 +131,30 @@ function googleMapViewController($scope, $timeout, ngDialog) {
         }
       }
     }
+  }
+  // ================== DRAWING GEOJSON DATA ===================
+  function drawGeoJson(geojson) {
+    // remove previous geojson data
+    map.data.forEach(feature => {
+      map.data.remove(feature);
+    })
+    map.data.setStyle({
+      fillColor: 'green',
+      strokeWeight: 1,
+      strokeOpacity: 0.5,
+      fillOpacity: 0.5
+    })
+    map.data.setStyle(feature => {
+      console.log(feature);
+      return {
+        title: 'abc',
+        fillColor: 'green',
+        strokeWeight: 1,
+        strokeOpacity: 0.5,
+        fillOpacity: 0.5
+       };
+    })
+    map.data.addGeoJson(geojson);
   }
 
   // ===================== DRAWING BY ZONE AND MARKER SET ===================
