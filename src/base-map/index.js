@@ -156,6 +156,9 @@ function baseMapController(
     type: "FeatureCollection",
     features: []
   };
+  $scope.checkGoogleApi = function () {
+    return window.google;
+  }
 
   $('#map-upfile-1-btn').bind("click", function () {
     $('#map-upfile-1').click();
@@ -637,7 +640,6 @@ function baseMapController(
   //     var elem = document.getElementById('loading');
   //     elem.parentNode.removeChild(elem);
   // }, 5000)
-
   function getZoneList() {
     $http({
       method: "POST",

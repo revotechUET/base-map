@@ -334,21 +334,7 @@
   </div>
 </div>
 
-<!--
-<div style="position: absolute; right: 0; top: 0; height: 40vh; width: 25vw; border: 1px solid black; display: flex; flex-direction: column;">
-  <wi-tree-view-virtual tree-root="curveList" get-label="self.getLabel" get-icon="self.getIcon" click-fn="self.clickCurveFunction"
-    get-children="self.getChildren" run-match="self.runMatchCurve" hide-unmatched="true" no-drag="true">
-  </wi-tree-view-virtual>
-</div>
-
-<div style="position: absolute; right: 0; top: 45vh; height: 40vh; width: 25vw; border: 1px solid black; display: flex; flex-direction: column;">
-  <wi-tree-view-virtual tree-root="zoneList" get-label="self.getLabel" get-icon="self.getIcon" click-fn="self.clickZoneFunction"
-    get-children="self.getChildren" run-match="self.runMatchZonation" hide-unmatched="true" no-drag="true">
-  </wi-tree-view-virtual>
-</div>
--->
-
-<map-view 
+<!-- <map-view 
   ng-show="self.showMap"
   class="mapView"
   mapbox-token="pk.eyJ1IjoicmV2b3RlY2giLCJhIjoiY2swZGJobWg3MDY2NzNtbnVwaDEyYmttMCJ9.39KL2GsNCiew9XmiLVsTDQ"
@@ -358,8 +344,9 @@
   get-curve-info-fn="self.getCurveInfoFn" get-curve-raw-data-fn="self.getCurveRawDataFn"
   show-contour="self.showContour" control-panel="self.controlPanel" deep-ocean="self.deepOcean" point="self.point">
 </map-view>
-<!--
+-->
 <google-map-view 
+  ng-if="checkGoogleApi()"
   ng-show="self.showMap"
   class="mapView"
   wells="wellSelect"
@@ -377,4 +364,3 @@
 
   zone-map="zoneMap">
 </google-map-view>
--->

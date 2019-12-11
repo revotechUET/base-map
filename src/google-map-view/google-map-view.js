@@ -94,6 +94,8 @@ function googleMapViewController($scope, $timeout, ngDialog) {
   // SHOW MAP
   function drawMap() {
     map = new google.maps.Map(document.getElementById('map'), {zoom: 4, center: {lat: 21.344, lng: 107.036}});
+    map.setOptions({ minZoom: 3 });
+
     window.mapView = map;
   }
 
@@ -101,7 +103,6 @@ function googleMapViewController($scope, $timeout, ngDialog) {
   function drawMarkers() {
     let firstProjection = self.zoneMap;
     let secondProjection = "+proj=longlat +ellps=WGS84 +datum=WGS84 +units=degrees";
-    console.log(self.wells)
 
     // remove all previous markers
     for (let marker of Object.values(markers)) {
@@ -122,6 +123,14 @@ function googleMapViewController($scope, $timeout, ngDialog) {
         let aMarker;
         if (checkCoordinate(lat, long, x, y) === true) {
           aMarker = new google.maps.Marker({position: {lat: lat, lng: long}, map: map});
+          let markername = '<div id="firstHeading" class="firstHeading">'+ self.wells[index].name +'</div>';
+          let infowindow = new google.maps.InfoWindow({
+            content: markername
+          });
+          aMarker.addListener('click', function() {
+            infowindow.open(map, aMarker);
+          });
+  
         }
         else if (checkCoordinate(lat, long, x, y) === false) {
           aMarker = new google.maps.Marker({position: {lat: latX, lng: lngY}, map: map});

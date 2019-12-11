@@ -22,8 +22,6 @@
     <script src="https://d3js.org/d3-contour.v1.min.js"></script>
     <script src="https://d3js.org/d3-hsv.v0.1.min.js"></script>
     <script src="https://unpkg.com/shpjs@latest/dist/shp.js"></script> -->
-  <script async defer
-    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDIi0ivcUa0QUFjci1NBxd02xqFH2AVfyc&callback=initMap"></script>
 
   <script src="./bower_components/d3/d3.min.js"></script>
   <script src="./bower_components/d3-contour.v1.min/index.js"></script>
@@ -65,18 +63,44 @@
   <script src="./dist/map-view.bundle.js"></script>
 </head>
 
-<body ng-app="myApp" style="font-size: 12px;">
+<body ng-app="myApp" ng-controller="myController" style="font-size: 12px;">
   <div style="width: 100vw; height: 100vh; min-width: 100vw; min-height: 100vh; position: relative;">
-    <!-- <div id="loading">
-            <wi-map-loading></wi-map-loading>
-        </div> -->
     <base-map zone-default="WGS_1984_UTM_Zone_49N" has-wi-login="true" project-id="" has-project-list="true">
     </base-map>
   </div>
   <script>
-    angular.module("myApp", ["baseMap", "wiMapLoading"]).run(function(wiApi) {
-      wiApi.setBaseUrl('https://api-1.i2g.cloud');
-    });
+    angular
+      .module("myApp", ["baseMap", "wiMapLoading", "wiToken"])
+      .run(function (wiApi) {
+        wiApi.setBaseUrl('https://api-1.i2g.cloud');
+      })
+      .controller('myController', function ($scope, $http, wiToken) {
+        // $("<script>").attr({src: $scope.apikey}).appendTo("body");
+        $http({
+          method: "POST",
+          url: `https://users.i2g.cloud/keys/gcp-key`,
+          data: {},
+          headers: {
+            Authorization: wiToken.getToken()
+          }
+        }).then(
+          function (response) {
+            $scope.apikey = String('https://maps.googleapis.com/maps/api/js?key=' + response.data.content.key);
+            console.log($scope.apikey)
+            var script = document.createElement('script');
+            script.onload = function () {
+                //do stuff with the script
+            };
+            script.src = $scope.apikey;
+            document.body.appendChild(script); //or something of the likes
+
+          },
+          function (errorResponse) {
+            console.error(errorResponse);
+          }
+        );
+        
+      });
   </script>
 </body>
 
