@@ -18,8 +18,8 @@
         <span ng-if="curveList.length" class="tab-badge">{{curveList.length?curveList.length:''}}</span>
       </div>
       -->
-      <div class="tab-name" ng-class="{'active' : isSet(2)}" ng-click="setTab(2)" ng-show="self.showMap">
-        Map
+      <div class="tab-name" ng-class="{'active' : isSet(2)}" ng-click="setTab(2)">
+        Appearance
       </div>
       <div class="tab-name" ng-class="{'active' : isSet(5)}" ng-click="setTab(5)">
         Configs
@@ -27,12 +27,6 @@
     </div>
     <div style="display: flex;">
 
-      <div style="display: flex; align-items: center;" ng-show="self.showMap">
-        <div ng-show="self.hideMain" class="tab-name ti ti-arrow-circle-down" style="color: #4085ff; font-size: 12px;"
-          ng-click="self.hideMain = !self.hideMain"></div>
-        <div ng-show="!self.hideMain" class="tab-name ti ti-arrow-circle-up" style="color: #99a3ba; font-size: 12px;"
-          ng-click="self.hideMain = !self.hideMain"></div>
-      </div>
       <div class="tab-name fa fa-user-circle-o" style="color: #4085ff; font-size: 13px; position: relative; z-index: 1;"
         ng-click="self.showUser = !self.showUser">
         <div ng-show="self.showUser" class="user">
@@ -65,6 +59,18 @@
     <div class="tab-fn" ng-click="self.refesh()">
       <i class="ti ti-reload"></i>
     </div>
+    <div ng-show="!self.hideMain && self.showMap" class="tab-fn" ng-click="self.hideMain = !self.hideMain">
+      <i class="ti ti-angle-up"></i>
+    </div>
+    <div ng-show="self.hideMain && self.showMap" class="tab-fn" ng-click="self.hideMain = !self.hideMain">
+      <i class="ti ti-angle-down"></i>
+    </div>
+    <!-- <div style="display: flex; align-items: center;" ng-show="self.showMap">
+      <div ng-show="self.hideMain" class="tab-name ti ti-arrow-circle-down" style="color: #4085ff; font-size: 12px;"
+        ng-click="self.hideMain = !self.hideMain"></div>
+      <div ng-show="!self.hideMain" class="tab-name ti ti-arrow-circle-up" style="color: #99a3ba; font-size: 12px;"
+        ng-click="self.hideMain = !self.hideMain"></div>
+    </div> -->
 
   </div>
   <div ng-show="isSet(1) && !self.hideMain" class="content">
@@ -114,17 +120,7 @@
   <div ng-show="isSet(5) && !self.hideMain" class="content">
     <div style="flex: 1; margin: 15px; user-select: none; overflow: hidden ;display: flex; flex-direction: column;"
       onmouseover=this.style.overflow='overlay' onmouseout=this.style.overflow='hidden'>
-      <div class="setting">
-        <div class="setting-title">Show only dashboard</div>
-        <div class="setting-content">
-          <span>Hide map to increase performance</span>
-          <label class="switch">
-            <input type="checkbox" ng-checked="allPopup" ng-click="self.showMap = !self.showMap; self.changeLayout();" />
-            <span class="slider round"></span>
-          </label>
-        </div>
-      </div>
-      
+
       <div class="setting">
         <div class="setting-title" style="margin-bottom: 10px;">Zonesets & Markersets</div>
         <div class="complex-setting" style="margin-bottom: 10px">
@@ -136,7 +132,8 @@
               <span class="slider round"></span>
             </label>
           </div>
-          <div ng-if="self.showZonesets" class="setting-content" style="margin-top:12px; flex-direction: column; align-items: unset;">
+          <div ng-if="self.showZonesets" class="setting-content"
+            style="margin-top:12px; flex-direction: column; align-items: unset;">
             <div style="flex-basis: 1.5em; display: flex; justify-content: space-around;">
               <label ng-repeat="_zoneDepthSpec in zoneDepthSpecs">
                 <input type="radio" ng-model="self.zoneDepthSpec" value="{{_zoneDepthSpec.value}}">
@@ -205,7 +202,7 @@
           </div>
         </div>
       </div>
-      <div class="upload">
+      <!-- <div class="upload">
         <div class="upload-header">
           <div>
             <div style="font-weight: bold;">Import your config</div>
@@ -224,62 +221,52 @@
           <div id="fp2" style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis; margin-top: 15px;">
           </div>
         </div>
-      </div>
+      </div> -->
       <div class="export" ng-click="self.downloadZipFile()">
-        Export Config
+        Save Configuration
       </div>
     </div>
   </div>
   <div ng-show="isSet(2) && !self.hideMain" class="content">
     <div style="flex: 1; margin: 15px; user-select: none; overflow: hidden ;display: flex; flex-direction: column;"
       onmouseover=this.style.overflow='overlay' onmouseout=this.style.overflow='hidden'>
-      <div class="setting">
-        <div class="setting-title">Appearance</div>
+      <div class="setting" ng-class="{'disable': !self.showMap}">
+        <div class="setting-title">Themes</div>
         <div class="setting-content">
           <span>Theme actived: {{ self.activeTheme }} </span>
         </div>
         <div style="display: flex; margin-top: 10px;justify-content: space-between;">
-          <div ng-class="{'active fa fa-check': self.activeTheme === 'Gray'}"
-            ng-click="self.changeStyleMap(1); self.activeTheme = 'Gray'" class="theme" style="background: #afafaf">
-          </div>
-          <div ng-class="{'active fa fa-check': self.activeTheme === 'Satellite'}"
-            ng-click="self.changeStyleMap(2); self.activeTheme = 'Satellite'" class="theme" style="background: #4CAF50">
-          </div>
-          <div ng-class="{'active fa fa-check': self.activeTheme === 'Streets'}"
-            ng-click="self.changeStyleMap(3); self.activeTheme = 'Streets'" class="theme" style="background:  #2196F3">
-          </div>
           <div ng-class="{'active fa fa-check': self.activeTheme === 'Dark'}"
-            ng-click="self.changeStyleMap(4); self.activeTheme = 'Dark'" class="theme" style="background: #575757">
+            ng-click="self.changeStyleMap(1); self.activeTheme = 'Dark'" class="theme" style="background: #353535">
           </div>
-          <div ng-class="{'active fa fa-check': self.activeTheme === 'Ocean'}"
-            ng-click="self.changeStyleMap(5); self.activeTheme = 'Ocean'" class="theme" style="background: #45b1e2">
+          <div ng-class="{'active fa fa-check': self.activeTheme === 'Standard'}"
+            ng-click="self.changeStyleMap(2); self.activeTheme = 'Standard'" class="theme" style="background: #4CAF50">
           </div>
-          <div ng-class="{'active fa fa-check': self.activeTheme === 'Custom theme'}"
-            ng-click="self.changeStyleMap(6); self.activeTheme = 'Custom theme'" class="theme"
-            style="background: #544996;margin-right: 0;"></div>
+          <div ng-class="{'active fa fa-check': self.activeTheme === 'Retro'}"
+            ng-click="self.changeStyleMap(3); self.activeTheme = 'Retro'" class="theme" style="background:  #e0d5b3">
+          </div>
+          <div ng-class="{'active fa fa-check': self.activeTheme === 'Night'}"
+            ng-click="self.changeStyleMap(4); self.activeTheme = 'Night'" class="theme" style="background: #12448c">
+          </div>
+          <div ng-class="{'active fa fa-check': self.activeTheme === 'Aubergine'}"
+            ng-click="self.changeStyleMap(5); self.activeTheme = 'Aubergine'" class="theme" style="background: #1ea2d8">
+          </div>
+          <div ng-class="{'active fa fa-check': self.activeTheme === 'Silver'}"
+            ng-click="self.changeStyleMap(6); self.activeTheme = 'Silver'" class="theme"
+            style="background: #cccccc;margin-right: 0;"></div>
         </div>
       </div>
-      <div class="setting">
+      <div class="setting" ng-class="{'disable': !self.showMap}">
         <div class="setting-title">Control panel</div>
         <div class="setting-content">
-          <span>Zoom, Location and draw </span>
+          <span>Show or hide map control button </span>
           <label class="switch">
             <input type="checkbox" ng-checked="self.controlPanel" ng-click="self.controlPanel = !self.controlPanel" />
             <span class="slider round"></span>
           </label>
         </div>
       </div>
-      <div class="setting">
-        <div class="setting-title">Dark menu</div>
-        <div class="setting-content">
-          <span>Dark mode for menu window </span>
-          <label class="switch">
-            <input type="checkbox" ng-click="self.changeTheme()" />
-            <span class="slider round"></span>
-          </label>
-        </div>
-      </div>
-      <div class="setting">
+      <div class="setting" ng-class="{'disable': !self.showMap}">
         <div class="setting-title">Popup</div>
         <div class="setting-content">
           <span>Display all names well on the popup</span>
@@ -289,7 +276,7 @@
           </label>
         </div>
       </div>
-      <div class="setting">
+      <div class="setting" ng-class="{'disable': !self.showMap}">
         <div class="setting-title">Point location</div>
         <div class="setting-content">
           <span>Displays coordinates information location of point mouse</span>
@@ -297,6 +284,47 @@
             <input type="checkbox" ng-checked="self.point" ng-click="self.point = !self.point" />
             <span class="slider round"></span>
           </label>
+        </div>
+      </div>
+      <div class="setting">
+        <div class="setting-title">Show only dashboard</div>
+        <div class="setting-content">
+          <span>Hide map to increase performance</span>
+          <label class="switch">
+            <input type="checkbox" 
+              ng-click="self.showMap = !self.showMap; self.changeLayout();" />
+            <span class="slider round"></span>
+          </label>
+        </div>
+      </div>
+      <div class="setting">
+        <div class="setting-title">Dark mode</div>
+        <div class="setting-content">
+          <span>Dark mode for menu window, dashboard </span>
+          <label class="switch">
+            <input type="checkbox" ng-click="self.changeTheme(); " />
+            <span class="slider round"></span>
+          </label>
+        </div>
+      </div>
+      <div class="upload" >
+        <div class="upload-header">
+          <div>
+            <div style="font-weight: bold;">Import your config</div>
+            <span>Upload a zip file.</span>
+          </div>
+          <div class="btn-add" id="map-upfile-2-btn">
+            <span class="ti ti-plus"></span>
+          </div>
+        </div>
+        <div class="upload-content">
+          <p>
+            <input type="file" id="map-upfile-2" class="file-upload" accept=".zip" placeholder="choose a file .zip"
+              onblur="angular.element(this).scope().clearSelectedContourFile()"
+              onchange="angular.element(this).scope().onZipFileChange(), angular.element(this).scope().GetFileSizeNameAndType2()" />
+          </p>
+          <div id="fp2" style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis; margin-top: 15px;">
+          </div>
         </div>
       </div>
       <div class="setting">
@@ -346,21 +374,20 @@
 </map-view>
 -->
 <google-map-view 
-  ng-if="checkGoogleApi()"
-  ng-show="self.showMap"
-  class="mapView"
-  wells="wellSelect"
-
-  geo-json="self.geoJson"
-
-  focus-curve="focusCurve" 
-  show-contour="self.showContour" 
-
-  focus-marker-or-zone="focusMZ"
-  zone-depth-spec="self.zoneDepthSpec"
-
-  get-curve-info-fn="self.getCurveInfoFn"
-  get-curve-raw-data-fn="self.getCurveRawDataFn"
-
-  zone-map="zoneMap">
+theme="themeMap"
+ng-if="checkGoogleApi()" 
+ng-show="self.showMap" 
+all-popup="allPopup"
+class="mapView" 
+wells="wellSelect"
+geo-json="self.geoJson" 
+control-panel="self.controlPanel" 
+point="self.point" 
+focus-curve="focusCurve"
+show-contour="self.showContour" 
+focus-marker-or-zone="focusMZ" 
+zone-depth-spec="self.zoneDepthSpec"
+get-curve-info-fn="self.getCurveInfoFn" 
+get-curve-raw-data-fn="self.getCurveRawDataFn" 
+zone-map="zoneMap">
 </google-map-view>

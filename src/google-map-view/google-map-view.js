@@ -12,6 +12,10 @@ app.component(componentName, {
   bindings: {
     wells: "<",
     zoneMap: "<",
+    controlPanel: "<",
+    point: "<",
+    theme: "<",
+    allPopup: "<",
     // contour
     focusCurve: "<",
     getCurveInfoFn: "<",
@@ -44,11 +48,49 @@ function googleMapViewController($scope, $timeout, ngDialog) {
     }, 10);
     $scope.$watch(
       function () {
+        return [self.controlPanel];
+      },
+      function () {
+        showControl();
+      },
+      true
+    );
+    $scope.$watch(
+      function () {
+        return [self.theme];
+      },
+      function () {
+        changeStyleMap(self.theme);
+      },
+      true
+    );
+    $scope.$watch(
+      function () {
+        return [self.point];
+      },
+      function () {
+        showPointLocation();
+      },
+      true
+    );
+    $scope.$watch(
+      function () {
+        return [self.allPopup];
+      },
+      function () {
+        showAllPopup(self.allPopup);
+      },
+      true
+    );
+    $scope.$watch(
+      function () {
         return [self.wells];
       },
       function () {
         drawMarkers();
-        console.log(self.wells)
+        $timeout(()=>{
+          showAllPopup(self.allPopup);
+        })
       },
       true
     );
@@ -80,7 +122,7 @@ function googleMapViewController($scope, $timeout, ngDialog) {
         updateCoordinateTable();
       }
     )
-    
+
     //DRAW GEOJSON OBJECT
     $scope.$watch(
       () => self.geoJson,
@@ -90,15 +132,1016 @@ function googleMapViewController($scope, $timeout, ngDialog) {
     );
   };
 
- 
+
   // SHOW MAP
   function drawMap() {
-    map = new google.maps.Map(document.getElementById('map'), {zoom: 4, center: {lat: 21.344, lng: 107.036}});
+    map = new google.maps.Map(document.getElementById('map'), { zoom: 4, center: { lat: 21.344, lng: 107.036 },
+   });
     map.setOptions({ minZoom: 3 });
-
+  
+    // Show the lat and lng under the mouse cursor.
+    var coordsDiv = document.getElementById('coords');
+    var pointLocatinDiv = 
+    map.controls[google.maps.ControlPosition.TOP_CENTER].push(coordsDiv);
+    map.addListener('mousemove', function (event) {
+      coordsDiv.innerHTML = "<div>Latitude: <strong>" + Math.round(event.latLng.lat()) + "</strong></div><div>Longtitude: <strong>" + Math.round(event.latLng.lng()) + "</strong></div>";
+    });
     window.mapView = map;
   }
+  // CHANGE STYLE
+  function changeStyleMap(theme) {
+    if (map !== undefined) {
+      if (theme === 1) {
+        map.setOptions({styles: [
+          {
+            "elementType": "geometry",
+            "stylers": [
+              {
+                "color": "#212121"
+              }
+            ]
+          },
+          {
+            "elementType": "labels.icon",
+            "stylers": [
+              {
+                "visibility": "off"
+              }
+            ]
+          },
+          {
+            "elementType": "labels.text.fill",
+            "stylers": [
+              {
+                "color": "#757575"
+              }
+            ]
+          },
+          {
+            "elementType": "labels.text.stroke",
+            "stylers": [
+              {
+                "color": "#212121"
+              }
+            ]
+          },
+          {
+            "featureType": "administrative",
+            "elementType": "geometry",
+            "stylers": [
+              {
+                "color": "#757575"
+              }
+            ]
+          },
+          {
+            "featureType": "administrative.country",
+            "elementType": "labels.text.fill",
+            "stylers": [
+              {
+                "color": "#9e9e9e"
+              }
+            ]
+          },
+          {
+            "featureType": "administrative.land_parcel",
+            "stylers": [
+              {
+                "visibility": "off"
+              }
+            ]
+          },
+          {
+            "featureType": "administrative.locality",
+            "elementType": "labels.text.fill",
+            "stylers": [
+              {
+                "color": "#bdbdbd"
+              }
+            ]
+          },
+          {
+            "featureType": "poi",
+            "elementType": "labels.text.fill",
+            "stylers": [
+              {
+                "color": "#757575"
+              }
+            ]
+          },
+          {
+            "featureType": "poi.park",
+            "elementType": "geometry",
+            "stylers": [
+              {
+                "color": "#181818"
+              }
+            ]
+          },
+          {
+            "featureType": "poi.park",
+            "elementType": "labels.text.fill",
+            "stylers": [
+              {
+                "color": "#616161"
+              }
+            ]
+          },
+          {
+            "featureType": "poi.park",
+            "elementType": "labels.text.stroke",
+            "stylers": [
+              {
+                "color": "#1b1b1b"
+              }
+            ]
+          },
+          {
+            "featureType": "road",
+            "elementType": "geometry.fill",
+            "stylers": [
+              {
+                "color": "#2c2c2c"
+              }
+            ]
+          },
+          {
+            "featureType": "road",
+            "elementType": "labels.text.fill",
+            "stylers": [
+              {
+                "color": "#8a8a8a"
+              }
+            ]
+          },
+          {
+            "featureType": "road.arterial",
+            "elementType": "geometry",
+            "stylers": [
+              {
+                "color": "#373737"
+              }
+            ]
+          },
+          {
+            "featureType": "road.highway",
+            "elementType": "geometry",
+            "stylers": [
+              {
+                "color": "#3c3c3c"
+              }
+            ]
+          },
+          {
+            "featureType": "road.highway.controlled_access",
+            "elementType": "geometry",
+            "stylers": [
+              {
+                "color": "#4e4e4e"
+              }
+            ]
+          },
+          {
+            "featureType": "road.local",
+            "elementType": "labels.text.fill",
+            "stylers": [
+              {
+                "color": "#616161"
+              }
+            ]
+          },
+          {
+            "featureType": "transit",
+            "elementType": "labels.text.fill",
+            "stylers": [
+              {
+                "color": "#757575"
+              }
+            ]
+          },
+          {
+            "featureType": "water",
+            "elementType": "geometry",
+            "stylers": [
+              {
+                "color": "#000000"
+              }
+            ]
+          },
+          {
+            "featureType": "water",
+            "elementType": "labels.text.fill",
+            "stylers": [
+              {
+                "color": "#3d3d3d"
+              }
+            ]
+          }
+        ]});
+      } else if (theme === 2) {
+        map.setOptions({styles: []});
+      } else if (theme === 3) {
+        map.setOptions({styles: [
+          {
+            "elementType": "geometry",
+            "stylers": [
+              {
+                "color": "#ebe3cd"
+              }
+            ]
+          },
+          {
+            "elementType": "labels.text.fill",
+            "stylers": [
+              {
+                "color": "#523735"
+              }
+            ]
+          },
+          {
+            "elementType": "labels.text.stroke",
+            "stylers": [
+              {
+                "color": "#f5f1e6"
+              }
+            ]
+          },
+          {
+            "featureType": "administrative",
+            "elementType": "geometry.stroke",
+            "stylers": [
+              {
+                "color": "#c9b2a6"
+              }
+            ]
+          },
+          {
+            "featureType": "administrative.land_parcel",
+            "elementType": "geometry.stroke",
+            "stylers": [
+              {
+                "color": "#dcd2be"
+              }
+            ]
+          },
+          {
+            "featureType": "administrative.land_parcel",
+            "elementType": "labels.text.fill",
+            "stylers": [
+              {
+                "color": "#ae9e90"
+              }
+            ]
+          },
+          {
+            "featureType": "landscape.natural",
+            "elementType": "geometry",
+            "stylers": [
+              {
+                "color": "#dfd2ae"
+              }
+            ]
+          },
+          {
+            "featureType": "poi",
+            "elementType": "geometry",
+            "stylers": [
+              {
+                "color": "#dfd2ae"
+              }
+            ]
+          },
+          {
+            "featureType": "poi",
+            "elementType": "labels.text.fill",
+            "stylers": [
+              {
+                "color": "#93817c"
+              }
+            ]
+          },
+          {
+            "featureType": "poi.park",
+            "elementType": "geometry.fill",
+            "stylers": [
+              {
+                "color": "#a5b076"
+              }
+            ]
+          },
+          {
+            "featureType": "poi.park",
+            "elementType": "labels.text.fill",
+            "stylers": [
+              {
+                "color": "#447530"
+              }
+            ]
+          },
+          {
+            "featureType": "road",
+            "elementType": "geometry",
+            "stylers": [
+              {
+                "color": "#f5f1e6"
+              }
+            ]
+          },
+          {
+            "featureType": "road.arterial",
+            "elementType": "geometry",
+            "stylers": [
+              {
+                "color": "#fdfcf8"
+              }
+            ]
+          },
+          {
+            "featureType": "road.highway",
+            "elementType": "geometry",
+            "stylers": [
+              {
+                "color": "#f8c967"
+              }
+            ]
+          },
+          {
+            "featureType": "road.highway",
+            "elementType": "geometry.stroke",
+            "stylers": [
+              {
+                "color": "#e9bc62"
+              }
+            ]
+          },
+          {
+            "featureType": "road.highway.controlled_access",
+            "elementType": "geometry",
+            "stylers": [
+              {
+                "color": "#e98d58"
+              }
+            ]
+          },
+          {
+            "featureType": "road.highway.controlled_access",
+            "elementType": "geometry.stroke",
+            "stylers": [
+              {
+                "color": "#db8555"
+              }
+            ]
+          },
+          {
+            "featureType": "road.local",
+            "elementType": "labels.text.fill",
+            "stylers": [
+              {
+                "color": "#806b63"
+              }
+            ]
+          },
+          {
+            "featureType": "transit.line",
+            "elementType": "geometry",
+            "stylers": [
+              {
+                "color": "#dfd2ae"
+              }
+            ]
+          },
+          {
+            "featureType": "transit.line",
+            "elementType": "labels.text.fill",
+            "stylers": [
+              {
+                "color": "#8f7d77"
+              }
+            ]
+          },
+          {
+            "featureType": "transit.line",
+            "elementType": "labels.text.stroke",
+            "stylers": [
+              {
+                "color": "#ebe3cd"
+              }
+            ]
+          },
+          {
+            "featureType": "transit.station",
+            "elementType": "geometry",
+            "stylers": [
+              {
+                "color": "#dfd2ae"
+              }
+            ]
+          },
+          {
+            "featureType": "water",
+            "elementType": "geometry.fill",
+            "stylers": [
+              {
+                "color": "#b9d3c2"
+              }
+            ]
+          },
+          {
+            "featureType": "water",
+            "elementType": "labels.text.fill",
+            "stylers": [
+              {
+                "color": "#92998d"
+              }
+            ]
+          }
+        ]});
 
+      } else if (theme === 4) {
+        map.setOptions({styles: [
+          {
+            "elementType": "geometry",
+            "stylers": [
+              {
+                "color": "#242f3e"
+              }
+            ]
+          },
+          {
+            "elementType": "labels.text.fill",
+            "stylers": [
+              {
+                "color": "#746855"
+              }
+            ]
+          },
+          {
+            "elementType": "labels.text.stroke",
+            "stylers": [
+              {
+                "color": "#242f3e"
+              }
+            ]
+          },
+          {
+            "featureType": "administrative.locality",
+            "elementType": "labels.text.fill",
+            "stylers": [
+              {
+                "color": "#d59563"
+              }
+            ]
+          },
+          {
+            "featureType": "poi",
+            "elementType": "labels.text.fill",
+            "stylers": [
+              {
+                "color": "#d59563"
+              }
+            ]
+          },
+          {
+            "featureType": "poi.park",
+            "elementType": "geometry",
+            "stylers": [
+              {
+                "color": "#263c3f"
+              }
+            ]
+          },
+          {
+            "featureType": "poi.park",
+            "elementType": "labels.text.fill",
+            "stylers": [
+              {
+                "color": "#6b9a76"
+              }
+            ]
+          },
+          {
+            "featureType": "road",
+            "elementType": "geometry",
+            "stylers": [
+              {
+                "color": "#38414e"
+              }
+            ]
+          },
+          {
+            "featureType": "road",
+            "elementType": "geometry.stroke",
+            "stylers": [
+              {
+                "color": "#212a37"
+              }
+            ]
+          },
+          {
+            "featureType": "road",
+            "elementType": "labels.text.fill",
+            "stylers": [
+              {
+                "color": "#9ca5b3"
+              }
+            ]
+          },
+          {
+            "featureType": "road.highway",
+            "elementType": "geometry",
+            "stylers": [
+              {
+                "color": "#746855"
+              }
+            ]
+          },
+          {
+            "featureType": "road.highway",
+            "elementType": "geometry.stroke",
+            "stylers": [
+              {
+                "color": "#1f2835"
+              }
+            ]
+          },
+          {
+            "featureType": "road.highway",
+            "elementType": "labels.text.fill",
+            "stylers": [
+              {
+                "color": "#f3d19c"
+              }
+            ]
+          },
+          {
+            "featureType": "transit",
+            "elementType": "geometry",
+            "stylers": [
+              {
+                "color": "#2f3948"
+              }
+            ]
+          },
+          {
+            "featureType": "transit.station",
+            "elementType": "labels.text.fill",
+            "stylers": [
+              {
+                "color": "#d59563"
+              }
+            ]
+          },
+          {
+            "featureType": "water",
+            "elementType": "geometry",
+            "stylers": [
+              {
+                "color": "#17263c"
+              }
+            ]
+          },
+          {
+            "featureType": "water",
+            "elementType": "labels.text.fill",
+            "stylers": [
+              {
+                "color": "#515c6d"
+              }
+            ]
+          },
+          {
+            "featureType": "water",
+            "elementType": "labels.text.stroke",
+            "stylers": [
+              {
+                "color": "#17263c"
+              }
+            ]
+          }
+        ]});
+
+      } else if (theme === 5) {
+        map.setOptions({styles: [
+          {
+            "elementType": "geometry",
+            "stylers": [
+              {
+                "color": "#1d2c4d"
+              }
+            ]
+          },
+          {
+            "elementType": "labels.text.fill",
+            "stylers": [
+              {
+                "color": "#8ec3b9"
+              }
+            ]
+          },
+          {
+            "elementType": "labels.text.stroke",
+            "stylers": [
+              {
+                "color": "#1a3646"
+              }
+            ]
+          },
+          {
+            "featureType": "administrative.country",
+            "elementType": "geometry.stroke",
+            "stylers": [
+              {
+                "color": "#4b6878"
+              }
+            ]
+          },
+          {
+            "featureType": "administrative.land_parcel",
+            "elementType": "labels.text.fill",
+            "stylers": [
+              {
+                "color": "#64779e"
+              }
+            ]
+          },
+          {
+            "featureType": "administrative.province",
+            "elementType": "geometry.stroke",
+            "stylers": [
+              {
+                "color": "#4b6878"
+              }
+            ]
+          },
+          {
+            "featureType": "landscape.man_made",
+            "elementType": "geometry.stroke",
+            "stylers": [
+              {
+                "color": "#334e87"
+              }
+            ]
+          },
+          {
+            "featureType": "landscape.natural",
+            "elementType": "geometry",
+            "stylers": [
+              {
+                "color": "#023e58"
+              }
+            ]
+          },
+          {
+            "featureType": "poi",
+            "elementType": "geometry",
+            "stylers": [
+              {
+                "color": "#283d6a"
+              }
+            ]
+          },
+          {
+            "featureType": "poi",
+            "elementType": "labels.text.fill",
+            "stylers": [
+              {
+                "color": "#6f9ba5"
+              }
+            ]
+          },
+          {
+            "featureType": "poi",
+            "elementType": "labels.text.stroke",
+            "stylers": [
+              {
+                "color": "#1d2c4d"
+              }
+            ]
+          },
+          {
+            "featureType": "poi.park",
+            "elementType": "geometry.fill",
+            "stylers": [
+              {
+                "color": "#023e58"
+              }
+            ]
+          },
+          {
+            "featureType": "poi.park",
+            "elementType": "labels.text.fill",
+            "stylers": [
+              {
+                "color": "#3C7680"
+              }
+            ]
+          },
+          {
+            "featureType": "road",
+            "elementType": "geometry",
+            "stylers": [
+              {
+                "color": "#304a7d"
+              }
+            ]
+          },
+          {
+            "featureType": "road",
+            "elementType": "labels.text.fill",
+            "stylers": [
+              {
+                "color": "#98a5be"
+              }
+            ]
+          },
+          {
+            "featureType": "road",
+            "elementType": "labels.text.stroke",
+            "stylers": [
+              {
+                "color": "#1d2c4d"
+              }
+            ]
+          },
+          {
+            "featureType": "road.highway",
+            "elementType": "geometry",
+            "stylers": [
+              {
+                "color": "#2c6675"
+              }
+            ]
+          },
+          {
+            "featureType": "road.highway",
+            "elementType": "geometry.stroke",
+            "stylers": [
+              {
+                "color": "#255763"
+              }
+            ]
+          },
+          {
+            "featureType": "road.highway",
+            "elementType": "labels.text.fill",
+            "stylers": [
+              {
+                "color": "#b0d5ce"
+              }
+            ]
+          },
+          {
+            "featureType": "road.highway",
+            "elementType": "labels.text.stroke",
+            "stylers": [
+              {
+                "color": "#023e58"
+              }
+            ]
+          },
+          {
+            "featureType": "transit",
+            "elementType": "labels.text.fill",
+            "stylers": [
+              {
+                "color": "#98a5be"
+              }
+            ]
+          },
+          {
+            "featureType": "transit",
+            "elementType": "labels.text.stroke",
+            "stylers": [
+              {
+                "color": "#1d2c4d"
+              }
+            ]
+          },
+          {
+            "featureType": "transit.line",
+            "elementType": "geometry.fill",
+            "stylers": [
+              {
+                "color": "#283d6a"
+              }
+            ]
+          },
+          {
+            "featureType": "transit.station",
+            "elementType": "geometry",
+            "stylers": [
+              {
+                "color": "#3a4762"
+              }
+            ]
+          },
+          {
+            "featureType": "water",
+            "elementType": "geometry",
+            "stylers": [
+              {
+                "color": "#0e1626"
+              }
+            ]
+          },
+          {
+            "featureType": "water",
+            "elementType": "labels.text.fill",
+            "stylers": [
+              {
+                "color": "#4e6d70"
+              }
+            ]
+          }
+        ]});
+
+      } else if (theme === 6) {
+        map.setOptions({styles: [
+          {
+            "elementType": "geometry",
+            "stylers": [
+              {
+                "color": "#f5f5f5"
+              }
+            ]
+          },
+          {
+            "elementType": "labels.icon",
+            "stylers": [
+              {
+                "visibility": "off"
+              }
+            ]
+          },
+          {
+            "elementType": "labels.text.fill",
+            "stylers": [
+              {
+                "color": "#616161"
+              }
+            ]
+          },
+          {
+            "elementType": "labels.text.stroke",
+            "stylers": [
+              {
+                "color": "#f5f5f5"
+              }
+            ]
+          },
+          {
+            "featureType": "administrative.land_parcel",
+            "elementType": "labels.text.fill",
+            "stylers": [
+              {
+                "color": "#bdbdbd"
+              }
+            ]
+          },
+          {
+            "featureType": "poi",
+            "elementType": "geometry",
+            "stylers": [
+              {
+                "color": "#eeeeee"
+              }
+            ]
+          },
+          {
+            "featureType": "poi",
+            "elementType": "labels.text.fill",
+            "stylers": [
+              {
+                "color": "#757575"
+              }
+            ]
+          },
+          {
+            "featureType": "poi.park",
+            "elementType": "geometry",
+            "stylers": [
+              {
+                "color": "#e5e5e5"
+              }
+            ]
+          },
+          {
+            "featureType": "poi.park",
+            "elementType": "labels.text.fill",
+            "stylers": [
+              {
+                "color": "#9e9e9e"
+              }
+            ]
+          },
+          {
+            "featureType": "road",
+            "elementType": "geometry",
+            "stylers": [
+              {
+                "color": "#ffffff"
+              }
+            ]
+          },
+          {
+            "featureType": "road.arterial",
+            "elementType": "labels.text.fill",
+            "stylers": [
+              {
+                "color": "#757575"
+              }
+            ]
+          },
+          {
+            "featureType": "road.highway",
+            "elementType": "geometry",
+            "stylers": [
+              {
+                "color": "#dadada"
+              }
+            ]
+          },
+          {
+            "featureType": "road.highway",
+            "elementType": "labels.text.fill",
+            "stylers": [
+              {
+                "color": "#616161"
+              }
+            ]
+          },
+          {
+            "featureType": "road.local",
+            "elementType": "labels.text.fill",
+            "stylers": [
+              {
+                "color": "#9e9e9e"
+              }
+            ]
+          },
+          {
+            "featureType": "transit.line",
+            "elementType": "geometry",
+            "stylers": [
+              {
+                "color": "#e5e5e5"
+              }
+            ]
+          },
+          {
+            "featureType": "transit.station",
+            "elementType": "geometry",
+            "stylers": [
+              {
+                "color": "#eeeeee"
+              }
+            ]
+          },
+          {
+            "featureType": "water",
+            "elementType": "geometry",
+            "stylers": [
+              {
+                "color": "#c9c9c9"
+              }
+            ]
+          },
+          {
+            "featureType": "water",
+            "elementType": "labels.text.fill",
+            "stylers": [
+              {
+                "color": "#9e9e9e"
+              }
+            ]
+          }
+        ]});
+
+      }
+    }
+  }
+  //SHOW CONTROL
+  function showControl() {
+    $(".gm-fullscreen-control").toggleClass("showControl");
+    $(".gmnoprint").toggleClass("showControl");
+  }
+  //SHOW POINT LOCATION
+  function showPointLocation() {
+    var x = document.getElementById("coords");
+    if (x.style.display === "none") {
+      x.style.display = "flex";
+    } else {
+      x.style.display = "none";
+    }
+  }
+  //SHOW ALL POPUP
+  function showAllPopup(check) {
+    if (check === true) {
+      $(".gm-style-iw-a").removeClass("showControl");
+    } else if(check === false) {
+      $(".gm-style-iw-a").addClass("showControl");
+    }
+  }
   // SHOW MARKER
   function drawMarkers() {
     let firstProjection = self.zoneMap;
@@ -122,18 +1165,29 @@ function googleMapViewController($scope, $timeout, ngDialog) {
         let lngY = proj4(firstProjection, secondProjection, [x, y])[0];
         let aMarker;
         if (checkCoordinate(lat, long, x, y) === true) {
-          aMarker = new google.maps.Marker({position: {lat: lat, lng: long}, map: map});
-          let markername = '<div id="firstHeading" class="firstHeading">'+ self.wells[index].name +'</div>';
+          aMarker = new google.maps.Marker({ position: { lat: lat, lng: long }, map: map });
+          let markername = '<div id="firstHeading" class="firstHeading">' + self.wells[index].name + '</div>';
           let infowindow = new google.maps.InfoWindow({
             content: markername
           });
-          aMarker.addListener('click', function() {
+          // aMarker.addListener('click', function () {
             infowindow.open(map, aMarker);
-          });
-  
+          // });
+          // map.setCenter(lat, long);
+          map.setCenter({lat:lat, lng:long});
+
         }
         else if (checkCoordinate(lat, long, x, y) === false) {
-          aMarker = new google.maps.Marker({position: {lat: latX, lng: lngY}, map: map});
+          aMarker = new google.maps.Marker({ position: { lat: latX, lng: lngY }, map: map });
+          let markername = '<div id="firstHeading" class="firstHeading">' + self.wells[index].name + '</div>';
+          let infowindow = new google.maps.InfoWindow({
+            content: markername
+          });
+          // aMarker.addListener('click', function () {
+            infowindow.open(map, aMarker);
+          // });
+          map.setCenter(latX, lngY);
+
         }
         if (aMarker) {
           markers[self.wells[index].idWell] = aMarker;
@@ -143,6 +1197,7 @@ function googleMapViewController($scope, $timeout, ngDialog) {
   }
   // ================== DRAWING GEOJSON DATA ===================
   function drawGeoJson(geojson) {
+    if(!map) return;
     // remove previous geojson data
     map.data.forEach(feature => {
       map.data.remove(feature);
@@ -170,11 +1225,11 @@ function googleMapViewController($scope, $timeout, ngDialog) {
 
   // ===================== DRAWING BY ZONE AND MARKER SET ===================
   let coordinateHash = {};
-  const alertDebounce = _.debounce(function(message) {
+  const alertDebounce = _.debounce(function (message) {
     ngDialog.open({
       template: "templateError",
       className: "ngdialog-theme-default",
-      scope: Object.assign($scope.$new(), { message: message})
+      scope: Object.assign($scope.$new(), { message: message })
     })
   }, 1000);
   function updateCoordinateTable() {
@@ -201,7 +1256,7 @@ function googleMapViewController($scope, $timeout, ngDialog) {
       if (matchZoneset) {
         const matchZone = matchZoneset.zones.find(z => z.zone_template.name == focusedMZ.name);
         if (matchZone)
-          if(self.zoneDepthSpec == 'zone-middle') {
+          if (self.zoneDepthSpec == 'zone-middle') {
             depth = (matchZone.startDepth + matchZone.endDepth) / 2;
           } else {
             depth = matchZone[ZONE_DEPTH_SPEC_MAP[self.zoneDepthSpec || 'zone-top']];
@@ -228,12 +1283,12 @@ function googleMapViewController($scope, $timeout, ngDialog) {
           const step = Number(indexDataset.step);
           const xOffsetData = await new Promise((res) => {
             self.getCurveRawDataFn(xOffsetCurve.idCurve, (err, data) => {
-              res(data.map(d => Object.assign(d, {depth: top + step * d.y})).filter(d => _.isFinite(d.x)));
+              res(data.map(d => Object.assign(d, { depth: top + step * d.y })).filter(d => _.isFinite(d.x)));
             });
           });
-          const yOffsetData =  await new Promise((res) => {
+          const yOffsetData = await new Promise((res) => {
             self.getCurveRawDataFn(yOffsetCurve.idCurve, (err, data) => {
-              res(data.map(d => Object.assign(d, {depth: top + step * d.y})).filter(d => _.isFinite(d.x)));
+              res(data.map(d => Object.assign(d, { depth: top + step * d.y })).filter(d => _.isFinite(d.x)));
             });
           });
 
@@ -252,12 +1307,12 @@ function googleMapViewController($scope, $timeout, ngDialog) {
 
             // calculate x, y offsets
             let _xOffset, _yOffset;
-            if (xLowerBound) 
+            if (xLowerBound)
               _xOffset = d3.scaleLinear().domain([xLowerBound.depth, xUpperBound.depth]).range([xLowerBound.x, xUpperBound.x])(depth);
             else
               _xOffset = (xUpperBound || xOffsetData[xOffsetData.length - 1]).x;
 
-            const yUpperBoundIdx = yOffsetData.findIndex(datum => datum.depth  >=depth);
+            const yUpperBoundIdx = yOffsetData.findIndex(datum => datum.depth >= depth);
             const yUpperBound = yOffsetData[yUpperBoundIdx];
             const yLowerBound = yOffsetData[yUpperBoundIdx - 1];
 
@@ -268,7 +1323,7 @@ function googleMapViewController($scope, $timeout, ngDialog) {
 
 
             const _checkCoordResult = checkCoordinate(_lat, _lng, _x, _y);
-            if (_checkCoordResult== true) {
+            if (_checkCoordResult == true) {
               // calculate new lat/lng, x/y from x, y offset
               const zeroProject = proj4(firstProjection, secondProjection, [0, 0]);
               const offsetProject = proj4(firstProjection, secondProjection, [_xOffset, _yOffset]);
@@ -289,7 +1344,7 @@ function googleMapViewController($scope, $timeout, ngDialog) {
           }
         } else {
           console.warn(`Cannot find XOFFSET or YOFFSET curve in INDEX dataset of well ${well.name}`);
-        alertDebounce(`Cannot find XOFFSET or YOFFSET curve in INDEX dataset of well ${well.name}`);
+          alertDebounce(`Cannot find XOFFSET or YOFFSET curve in INDEX dataset of well ${well.name}`);
         }
       } else {
         console.warn(`Cannot find INDEX dataset in well ${well.name}`);
@@ -304,9 +1359,9 @@ function googleMapViewController($scope, $timeout, ngDialog) {
   let contour = null;
   function initContours() {
     contour = new Contour("#contour-map-container", map, []);
-    google.maps.event.addListener(map, 'bounds_changed', function() {
+    google.maps.event.addListener(map, 'bounds_changed', function () {
       contour.drawContourDebounced();
-    }) 
+    })
     window._contour = contour;
   }
   const updateContours = _.debounce(_updateContours, 100);
@@ -384,88 +1439,88 @@ function googleMapViewController($scope, $timeout, ngDialog) {
   }
   // =================== END DRAWING CONTOUR =========================
 
-function checkCoordinate(lat, long, x, y) {
-  if ((!lat || !long) && (x && y)) {
-    return false;
-  } else if ((!lat || !long) && (!x || !y)) {
-    return undefined;
-  }
-  return true;
-}
-
-function getLat(wellIndex, forceFromHeader=false) {
-  const wellInfo = wellIndex.find(wellHeader => wellHeader.header == "WELL");
-  if (!forceFromHeader && self.focusMarkerOrZone) {
-    if (wellInfo && coordinateHash[wellInfo.idWell] && coordinateHash[wellInfo.idWell].lat)
-      return coordinateHash[wellInfo.idWell].lat;
-    else return null;
+  function checkCoordinate(lat, long, x, y) {
+    if ((!lat || !long) && (x && y)) {
+      return false;
+    } else if ((!lat || !long) && (!x || !y)) {
+      return undefined;
+    }
+    return true;
   }
 
-  if (!(wellIndex || []).length) return 0;
-  for (let index = 0; index < wellIndex.length; index++) {
-    if (wellIndex[index].header === "LATI") {
-      if (isNaN(wellIndex[index].value)) {
-        return Number(ConvertDMSToDD(wellIndex[index].value));
+  function getLat(wellIndex, forceFromHeader = false) {
+    const wellInfo = wellIndex.find(wellHeader => wellHeader.header == "WELL");
+    if (!forceFromHeader && self.focusMarkerOrZone) {
+      if (wellInfo && coordinateHash[wellInfo.idWell] && coordinateHash[wellInfo.idWell].lat)
+        return coordinateHash[wellInfo.idWell].lat;
+      // else return null;
+    }
+
+    if (!(wellIndex || []).length) return 0;
+    for (let index = 0; index < wellIndex.length; index++) {
+      if (wellIndex[index].header === "LATI") {
+        if (isNaN(wellIndex[index].value)) {
+          return Number(ConvertDMSToDD(wellIndex[index].value));
+        }
+        return Number(wellIndex[index].value);
       }
-      return Number(wellIndex[index].value);
     }
-  }
-  return 0;
-}
-
-function getLong(wellIndex, forceFromHeader=false) {
-  const wellInfo = wellIndex.find(wellHeader => wellHeader.header == "WELL");
-  if (!forceFromHeader && self.focusMarkerOrZone) {
-    if (wellInfo && coordinateHash[wellInfo.idWell] && coordinateHash[wellInfo.idWell].lng)
-      return coordinateHash[wellInfo.idWell].lng;
-    else return null;
+    return 0;
   }
 
-  if (!(wellIndex || []).length) return 0;
-  for (let index = 0; index < wellIndex.length; index++) {
-    if (wellIndex[index].header === "LONG") {
-      if (isNaN(wellIndex[index].value)) {
-        return Number(ConvertDMSToDD(wellIndex[index].value));
+  function getLong(wellIndex, forceFromHeader = false) {
+    const wellInfo = wellIndex.find(wellHeader => wellHeader.header == "WELL");
+    if (!forceFromHeader && self.focusMarkerOrZone) {
+      if (wellInfo && coordinateHash[wellInfo.idWell] && coordinateHash[wellInfo.idWell].lng)
+        return coordinateHash[wellInfo.idWell].lng;
+      // else return null;
+    }
+
+    if (!(wellIndex || []).length) return 0;
+    for (let index = 0; index < wellIndex.length; index++) {
+      if (wellIndex[index].header === "LONG") {
+        if (isNaN(wellIndex[index].value)) {
+          return Number(ConvertDMSToDD(wellIndex[index].value));
+        }
+        return Number(wellIndex[index].value);
       }
-      return Number(wellIndex[index].value);
     }
-  }
-  return 0;
-}
-
-function getX(wellIndex, forceFromHeader=false) {
-  const wellInfo = wellIndex.find(wellHeader => wellHeader.header == "WELL");
-  if (!forceFromHeader && self.focusMarkerOrZone) {
-    if (wellInfo && coordinateHash[wellInfo.idWell] && coordinateHash[wellInfo.idWell].x)
-      return coordinateHash[wellInfo.idWell].x;
-    else return -1;
+    return 0;
   }
 
-  if (!(wellIndex || []).length) return 0;
-  for (let index = 0; index < wellIndex.length; index++) {
-    if (wellIndex[index].header === "X") {
-      return Number(wellIndex[index].value);
+  function getX(wellIndex, forceFromHeader = false) {
+    const wellInfo = wellIndex.find(wellHeader => wellHeader.header == "WELL");
+    if (!forceFromHeader && self.focusMarkerOrZone) {
+      if (wellInfo && coordinateHash[wellInfo.idWell] && coordinateHash[wellInfo.idWell].x)
+        return coordinateHash[wellInfo.idWell].x;
+      // else return -1;
     }
-  }
-  return 0;
-}
 
-function getY(wellIndex, forceFromHeader=false) {
-  const wellInfo = wellIndex.find(wellHeader => wellHeader.header == "WELL");
-  if (!forceFromHeader && self.focusMarkerOrZone) {
-    if (wellInfo && coordinateHash[wellInfo.idWell] && coordinateHash[wellInfo.idWell].y)
-      return coordinateHash[wellInfo.idWell].y;
-    else return -1;
-  }
-
-  if (!(wellIndex || []).length) return 0;
-  for (let index = 0; index < wellIndex.length; index++) {
-    if (wellIndex[index].header === "Y") {
-      return Number(wellIndex[index].value);
+    if (!(wellIndex || []).length) return 0;
+    for (let index = 0; index < wellIndex.length; index++) {
+      if (wellIndex[index].header === "X") {
+        return Number(wellIndex[index].value);
+      }
     }
+    return 0;
   }
-  return 0;
-}
+
+  function getY(wellIndex, forceFromHeader = false) {
+    const wellInfo = wellIndex.find(wellHeader => wellHeader.header == "WELL");
+    if (!forceFromHeader && self.focusMarkerOrZone) {
+      if (wellInfo && coordinateHash[wellInfo.idWell] && coordinateHash[wellInfo.idWell].y)
+        return coordinateHash[wellInfo.idWell].y;
+      // else return -1;
+    }
+
+    if (!(wellIndex || []).length) return 0;
+    for (let index = 0; index < wellIndex.length; index++) {
+      if (wellIndex[index].header === "Y") {
+        return Number(wellIndex[index].value);
+      }
+    }
+    return 0;
+  }
 }
 
 function ConvertDMSToDD(input) {

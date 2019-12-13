@@ -130,9 +130,9 @@ function baseMapController(
   self.noWell = true;
   $scope.wellSelect = [];
   $scope.focusWell = [];
-  $scope.allPopup = false;
+  $scope.allPopup = true;
   $scope.themeMap = 6;
-  self.activeTheme = "Custom theme";
+  self.activeTheme = "Standard";
   self.controlPanel = true;
   self.point = false;
   self.showContour = false;
@@ -535,6 +535,7 @@ function baseMapController(
   }
   this.changeTheme = function () {
     document.getElementById("main").classList.toggle("dark-mode");
+    $(".dialog").toggleClass("dark-mode");
   }
   this.toggleContour = function () {
     self.showContour = !self.showContour;
@@ -1144,7 +1145,7 @@ function baseMapController(
   }
   this.clickFunction = function ($event, node) {
     self.selectedNode = node;
-    console.log(node)
+    // console.log(node)
     if (node.idCurve) {
       // console.log("Curve clicked");
     } else if (node.idDataset) {
