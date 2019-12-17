@@ -810,9 +810,14 @@ function baseMapController(
           if (!__joinZoneset) {
             _disjoinIndexes.push(zsi);
           } else {
+            /*
             _(_zonesets[zsi].zones)
               .concat(__joinZoneset.zones)
               .uniqBy(z => z.idZoneTemplate);
+            */
+            _zonesets[zsi].zones = _(_zonesets[zsi].zones)
+              .intersectionBy(__joinZoneset.zones, 'idZoneTemplate')
+              .value();
           }
         }
         _disjoinIndexes
@@ -867,9 +872,14 @@ function baseMapController(
           if (!__joinMarkerset) {
             _disjoinIndexes.push(msi);
           } else {
+            _markersets[msi].markers = _(_markersets[msi].markers)
+              .intersectionBy(__joinMarkerset.markers, 'idMarkerTemplate')
+              .value();
+            /*
             _(_markersets[msi].markers)
               .concat(__joinMarkerset.markers)
               .uniqBy(m => m.idMarkerTemplate);
+            */
           }
         }
         _disjoinIndexes
