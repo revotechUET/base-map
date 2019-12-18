@@ -1075,7 +1075,7 @@ function baseMapController(
     if (node && node.idWell) {
       return node.name;
     } else if (node && node.idProject) {
-      return node.alias || node.name;
+      return node.displayName || node.name;
     } else if (node && node.idCurve) {
       return node.name;
     } else if (node && node.idZone) {
@@ -1195,7 +1195,7 @@ function baseMapController(
       }
       // $scope.treeConfig = projects.sort((w1, w2) => (w1.alias.localeCompare(w2.alias)));
       // $scope.treeConfig = projects.sort();
-      $scope.treeConfig = _.sortBy(projects, o => o.alias)
+      $scope.treeConfig = projects;
     });
   }
 
