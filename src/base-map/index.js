@@ -956,6 +956,7 @@ function baseMapController(
             let cloneNode = angular.copy(node);
             cloneNode._selected = false;
             $scope.wellSelect.push(cloneNode);
+            ($scope.wellSelect || []).sort((a, b) => a.name.localeCompare(b.name))
             // self.selectedNode.length = 0;
             self.selectedNode = null;
             $timeout(async () => {
@@ -983,6 +984,7 @@ function baseMapController(
             if (!foundWell) {
               $timeout(function () {
                 $scope.wellSelect.push(wells[index]);
+                ($scope.wellSelect || []).sort((a, b) => a.name.localeCompare(b.name))
                 // self.selectedNode.length = 0
                 self.selectedNode = null;
                 $timeout(async () => {
@@ -1180,7 +1182,7 @@ function baseMapController(
             return console.log(err);
           }
           $timeout(() => {
-            node.wells = wells;
+            node.wells = (wells || []).sort((a, b) => a.name.localeCompare(b.name));
             self.showLoading = false;
           })
         });
