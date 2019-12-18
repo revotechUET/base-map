@@ -77,30 +77,38 @@
       })
       .controller('myController', function ($scope, $http, wiToken) {
         // $("<script>").attr({src: $scope.apikey}).appendTo("body");
-        $http({
-          method: "POST",
-          url: `https://users.i2g.cloud/keys/gcp-key`,
-          data: {},
-          headers: {
-            Authorization: wiToken.getToken()
-          }
-        }).then(
-          function (response) {
-            $scope.apikey = String('https://maps.googleapis.com/maps/api/js?key=' + response.data.content.key);
-            console.log($scope.apikey)
-            var script = document.createElement('script');
-            script.onload = function () {
-                //do stuff with the script
-            };
-            script.src = $scope.apikey;
-            document.body.appendChild(script); //or something of the likes
-
+        $scope.$watch(
+          function () {
+            return wiToken.getToken();
           },
-          function (errorResponse) {
-            console.error(errorResponse);
+          function () {
+            $http({
+              method: "POST",
+              url: `https://users.i2g.cloud/keys/gcp-key`,
+              data: {},
+              headers: {
+                Authorization: wiToken.getToken()
+              }
+            }).then(
+              function (response) {
+                $scope.apikey = String('https://maps.googleapis.com/maps/api/js?key=' + response.data.content.key);
+                // console.log($scope.apikey)
+                var script = document.createElement('script');
+                script.onload = function () {
+                  //do stuff with the script
+                };
+                script.src = $scope.apikey;
+                document.body.appendChild(script); //or something of the likes
+
+              },
+              function (errorResponse) {
+                console.error(errorResponse);
+              }
+            );
           }
         );
-        
+
+
       });
   </script>
 </body>

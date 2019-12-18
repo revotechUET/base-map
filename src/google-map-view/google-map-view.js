@@ -1,8 +1,8 @@
 var componentName = "googleMapView";
 module.exports.name = componentName;
 require("./google-map-view.less");
-
-var app = angular.module(componentName, ["ngDialog"]);
+const test_contour = require("./test.json")
+var app = angular.module(componentName, ["ngDialog","wiToken"]);
 const Contour = require("../contour");
 
 app.component(componentName, {
@@ -35,7 +35,7 @@ const ZONE_DEPTH_SPEC_MAP = {
   'zone-bottom': 'endDepth'
 }
 
-function googleMapViewController($scope, $timeout, ngDialog) {
+function googleMapViewController($scope, $timeout, ngDialog, wiToken) {
   let self = this;
   let map;
   let markers = [];
@@ -44,7 +44,7 @@ function googleMapViewController($scope, $timeout, ngDialog) {
     $timeout(function () {
       drawMap();
       initContours();
-      console.log('Draw map')
+      // console.log('Draw map')
     }, 10);
     $scope.$watch(
       function () {
@@ -144,8 +144,9 @@ function googleMapViewController($scope, $timeout, ngDialog) {
     var pointLocatinDiv = 
     map.controls[google.maps.ControlPosition.TOP_CENTER].push(coordsDiv);
     map.addListener('mousemove', function (event) {
-      coordsDiv.innerHTML = "<div>Latitude: <strong>" + Math.round(event.latLng.lat()) + "</strong></div><div>Longtitude: <strong>" + Math.round(event.latLng.lng()) + "</strong></div>";
+      coordsDiv.innerHTML = "<div>Latitude: <strong>" + (event.latLng.lat()) + "</strong></div><div>Longtitude: <strong>" + (event.latLng.lng()) + "</strong></div>";
     });
+    // map.data.addGeoJson(test_contour);
     window.mapView = map;
   }
   // CHANGE STYLE

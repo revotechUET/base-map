@@ -942,7 +942,7 @@ function baseMapController(
   }
   this.moveWell = function (event, helper, node) {
     node = self.selectedNode;
-    console.log(node);
+    // console.log(node);
     self.showLoading = true;
     if (node.idWell) {
       let wellId = node.idWell;
