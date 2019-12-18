@@ -13,10 +13,13 @@ if (process.env.NODE_ENV === "development") {
 }
 config = require("../../config/default").production;
 
+
 // console.log("config", config);
 // console.log("NODE_ENV", process.env.NODE_ENV);
 const WI_AUTH_HOST = config.wi_auth;
 const WI_BACKEND_HOST = config.wi_backend;
+
+localStorage.setItem('__BASE_URL', WI_AUTH_HOST);
 
 var app = angular.module(componentName, [
   "mapView",

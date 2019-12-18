@@ -1570,7 +1570,8 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken) {
     if (!(wellIndex || []).length) return 0;
     for (let index = 0; index < wellIndex.length; index++) {
       if (wellIndex[index].header === "X") {
-        return Number(wellIndex[index].value);
+        const value = Number(wellIndex[index].value);
+        return isNaN(value) ? 0 : value;
       }
     }
     return 0;
@@ -1587,7 +1588,8 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken) {
     if (!(wellIndex || []).length) return 0;
     for (let index = 0; index < wellIndex.length; index++) {
       if (wellIndex[index].header === "Y") {
-        return Number(wellIndex[index].value);
+        const value = Number(wellIndex[index].value);
+        return isNaN(value) ? 0 : value;
       }
     }
     return 0;
