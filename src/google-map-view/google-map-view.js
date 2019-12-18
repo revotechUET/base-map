@@ -1175,7 +1175,8 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken) {
             infowindow.open(map, aMarker);
           // });
           // map.setCenter(lat, long);
-          map.setCenter({lat:lat, lng:long});
+          // map.setCenter({lat:lat, lng:long});
+          map.setCenter(new google.maps.LatLng(lat, long));
 
         }
         else if (checkCoordinate(lat, long, x, y) === false) {
@@ -1187,7 +1188,8 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken) {
           // aMarker.addListener('click', function () {
             infowindow.open(map, aMarker);
           // });
-          map.setCenter(latX, lngY);
+          // map.setCenter(latX, lngY);
+          map.setCenter(new google.maps.LatLng(latX, lngY));
 
         }
         if (aMarker) {
