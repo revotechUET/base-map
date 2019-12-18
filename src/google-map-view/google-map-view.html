@@ -38,3 +38,27 @@
 <div id="map"></div>
 <div id="contour-map-container"></div>
 <div id="coords"></div>
+
+<script type="text/ng-template" id="templateError">
+    <style>
+            .ngdialog.ngdialog-theme-default .ngdialog-content {
+                width: 300px;
+                border-radius: 2px;
+                padding: 20px;
+            }
+            .newDialog {
+                flex-direction: column;
+            }
+            .newDialog > div {
+                
+            }
+    </style>
+    <div class="ngdialog-buttons">
+        <div class="newDialog">
+            <div style="display: flex;align-items: center;">
+                <i class="connection-error-wi-python-32x32" style="margin-right: 20px; color: #0074c5;font-size: 25px;"></i>
+            </div>
+           <div>{{ message || 'Well coordinate has problems' }}</div>
+        </div>
+    </div>
+</script>

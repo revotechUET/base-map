@@ -291,17 +291,20 @@ function baseMapController(
               blocks: zip.file("blocks.geojson").async("string")
             };
           })
-          .then(function (result) {
+          .then(async function (result) {
+            /*
             result.contour.then(function (data) {
               data = JSON.parse(data);
-              $scope.wellSelect = data.selectWell;
-              $scope.curveList = data.selectCurve;
-              $scope.zoneList = data.selectedZone;
-              $scope.markerList = data.selectedMarker;
+              $scope.wellSelect = data.selectWell || [];
+              $scope.curveList = data.selectCurve || [];
+              $scope.zoneList = data.selectedZone || [];
+              $scope.markerList = data.selectedMarker || [];
               self.noWell = false;
-              if (!$scope.$$phase) {
-                $scope.$digest();
-              }
+              $timeout(() => {
+                if (!$scope.$$phase) {
+                  $scope.$apply();
+                }
+              })
             });
             result.mapSetting.then(function (data) {
               data = JSON.parse(data);
@@ -312,7 +315,42 @@ function baseMapController(
               self.point = data.point;
               self.showContour = data.showContour;
               $scope.zoneMap = data.zoneMap;
-              $scope.$digest();
+              $timeout(() => {
+                if (!$scope.$$phase) {
+                  $scope.$apply();
+                };
+              })
+            });
+            */
+            await result.contour.then(function (data) {
+              return new Promise(res => {
+                data = JSON.parse(data);
+                $scope.wellSelect = data.selectWell || [];
+                $scope.curveList = data.selectCurve || [];
+                $scope.zoneList = data.selectedZone || [];
+                $scope.markerList = data.selectedMarker || [];
+                self.noWell = false;
+                $scope.focusCurve = $scope.curveList.find(c => c._selected);
+                if (!$scope.$$phase) {
+                  $scope.$apply();
+                  $timeout(res, 500);
+                }
+              })
+            });
+            result.mapSetting.then(function (data) {
+              data = JSON.parse(data);
+              $scope.themeMap = data.themeMap;
+              $scope.allPopup = data.allPopup;
+              self.activeTheme = data.activeTheme;
+              self.controlPanel = data.controlPanel;
+              self.point = data.point;
+              self.showContour = data.showContour;
+              $scope.zoneMap = data.zoneMap;
+              $timeout(() => {
+                if (!$scope.$$phase) {
+                  $scope.$apply();
+                };
+              })
             });
             result.blocks.then(function (data) {
               data = JSON.parse(data);
@@ -743,7 +781,7 @@ function baseMapController(
     zip.file("mapsetting.json", blob2);
 
     //file blocks.geojson
-    var dataBlocks = _contour.map.getSource("geojson-source")._data;
+    var dataBlocks = self.geoJson;
     var json3 = JSON.stringify(dataBlocks),
       blob3 = new Blob([json3], { type: "octet/stream" });
     zip.file("blocks.geojson", blob3);

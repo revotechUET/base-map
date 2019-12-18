@@ -90,6 +90,7 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken) {
         drawMarkers();
         $timeout(() => {
           showAllPopup(self.allPopup);
+          updateContours();
         })
       },
       true
