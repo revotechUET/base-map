@@ -138,6 +138,7 @@ function baseMapController(
   self.showContour = false;
   self.selectedIdsHash = {};
   self.selectedNode = null;
+  self.selectedNodes = [];
   self.showLoading = false;
   self.showLoadingDashboard = false;
   self.showMap = true;
@@ -942,64 +943,64 @@ function baseMapController(
   }
   this.moveWell = function (event, helper, node) {
     node = self.selectedNode;
-    // console.log(node);
-    self.showLoading = true;
-    if (node.idWell) {
-      let wellId = node.idWell;
-      let foundWell = $scope.wellSelect.find(function (item) {
-        return item.idWell === wellId;
-      });
-      if (!foundWell) {
-        $timeout(function () {
-          let cloneNode = angular.copy(node);
-          cloneNode._selected = false;
-          $scope.wellSelect.push(cloneNode);
-          // self.selectedNode.length = 0;
-          self.selectedNode = null;
-          $timeout(async () => {
-            await updateCurveList();
-            await updateZoneList();
-            await updateMarkerList();
-            self.showLoading = false;
-
+    for (let i=0; i < self.selectedNodes.length; i++) {
+      self.showLoading = true;
+      let node = self.selectedNodes[i];
+      if (node.idWell) {
+        let wellId = node.idWell;
+        let foundWell = $scope.wellSelect.find(function (item) {
+          return item.idWell === wellId;
+        });
+        if (!foundWell) {
+          $timeout(function () {
+            let cloneNode = angular.copy(node);
+            cloneNode._selected = false;
+            $scope.wellSelect.push(cloneNode);
+            // self.selectedNode.length = 0;
+            self.selectedNode = null;
+            $timeout(async () => {
+              await updateCurveList();
+              await updateZoneList();
+              await updateMarkerList();
+              self.showLoading = false;
+            });
           });
+        }
+        else {
+          $timeout(() => {
+            self.showLoading = false;
+          })
+        }
+      }
+      else if (node.idProject) {
+        getWells(node.idProject, node, function (err, wells) {
+          //let countWell = 0;
+          for (let index = 0; index < wells.length; index++) {
+            let wellId = wells[index].idWell;
+            let foundWell = $scope.wellSelect.find(function (item) {
+              return item.idWell === wellId;
+            });
+            if (!foundWell) {
+              $timeout(function () {
+                $scope.wellSelect.push(wells[index]);
+                // self.selectedNode.length = 0
+                self.selectedNode = null;
+                $timeout(async () => {
+                  await updateCurveList();
+                  await updateZoneList();
+                  await updateMarkerList();
+                  self.showLoading = false;
+                });
+              });
+            }
+          }
         });
       }
       else {
         $timeout(() => {
           self.showLoading = false;
-        })
+        });
       }
-    }
-    else if (node.idProject) {
-      getWells(node.idProject, node, function (err, wells) {
-        let countWell = 0;
-        for (let index = 0; index < wells.length; index++) {
-          let wellId = wells[index].idWell;
-          let foundWell = $scope.wellSelect.find(function (item) {
-            return item.idWell === wellId;
-          });
-          if (!foundWell) {
-            $timeout(function () {
-              $scope.wellSelect.push(wells[index]);
-              // self.selectedNode.length = 0
-              self.selectedNode = null;
-
-              $timeout(async () => {
-                await updateCurveList();
-                await updateZoneList();
-                await updateMarkerList();
-                self.showLoading = false;
-              });
-            });
-          }
-        }
-      });
-    }
-    else {
-      $timeout(() => {
-        self.showLoading = false;
-      });
     }
   }
 
@@ -1107,8 +1108,10 @@ function baseMapController(
     }
   };
   this.runMatch = function (node, criteria) {
+    //console.log(criteria);
+    console.log(node);
     let keySearch = criteria.toLowerCase();
-    let searchArray = node.alias.toLowerCase();
+    let searchArray = (node.alias || node.name || "").toLowerCase();
     return searchArray.includes(keySearch);
   };
   this.runMatchWell = function (node, criteria) {
@@ -1153,8 +1156,9 @@ function baseMapController(
     if (node.idMarker)
       $scope.focusMZ = node;
   }
-  this.clickFunction = function ($event, node) {
+  this.clickFunction = function ($event, node, selectedNodes) {
     self.selectedNode = node;
+    self.selectedNodes = selectedNodes.map((e)=>e.data);
     // console.log(node)
     if (node.idCurve) {
       // console.log("Curve clicked");
