@@ -1,8 +1,8 @@
 module.exports = Contour;
-const MIN_COOR = 0.04;
+const MIN_COOR = 0.001;
 const PROPAGATE_RATE = 0.5; // propagate per latlong
 const NUM_OF_CONTOURS = 10;
-const MAX_GRID_AREA = 30000;
+const MAX_GRID_AREA = 100000;
 const GRID_TOO_LARGE = { lats: [], lngs: [], maxLat: 0, minLat: 0, maxLng: 0, minLng: 0 };
 window.test = 0.5;
 
@@ -22,7 +22,7 @@ function Contour(container, map, data) {
             .append('canvas')
             .attr('width', viewWidth)
             .attr('height', viewHeight)
-            .style('background-color', 'rgba(230, 230, 230, 0.1)');
+            // .style('background-color', 'rgba(230, 230, 230, 1)');
     this.canvas = canvas.node();
 
     const DEBOUNCED_TIMEOUT = 1/MIN_COOR;
@@ -71,9 +71,15 @@ function Contour(container, map, data) {
         const minLng = Math.max(d3.min(self.data, (d => d.lng)), sw.lng);
         const maxLng = Math.min(d3.max(self.data, (d => d.lng)), ne.lng);
         if (minLat && maxLat && minLng && maxLng)
+            /*
             return {
                 _sw: { lat: Math.floor(minLat - EPSILON), lng: Math.floor(minLng - EPSILON) },
                 _ne: { lat: Math.ceil(maxLat + EPSILON), lng: Math.ceil(maxLng + EPSILON) }
+            }
+            */
+            return {
+                _sw: { lat: minLat - MIN_COOR, lng: minLng - MIN_COOR },
+                _ne: { lat: maxLat + MIN_COOR, lng: maxLng + MIN_COOR }
             }
         else
             return {
@@ -86,8 +92,18 @@ function Contour(container, map, data) {
         const bounds = getBounds();
         const sw = bounds._sw;
         const ne = bounds._ne;
+        /*
         const lats = [Math.floor(sw.lat), Math.ceil(ne.lat)];
         const lngs = [Math.floor(sw.lng), Math.ceil(ne.lng)];
+
+        // VER 2
+        const lats = [sw.lat - MIN_COOR, ne.lat + MIN_COOR];
+        const lngs = [sw.lng - MIN_COOR, ne.lng + MIN_COOR];
+        */
+
+        const lats = [sw.lat, ne.lat];
+        const lngs = [sw.lng, ne.lng];
+
         const grid = {
             lats: d3.range(d3.min(lats), d3.max(lats), MIN_COOR),
             lngs: d3.range(d3.min(lngs), d3.max(lngs), MIN_COOR)
@@ -193,6 +209,7 @@ function Contour(container, map, data) {
 
         // const _data = data.filter(d => isInSide(d, grid, {ignoreCenterPoint: true}));
         const _data = data;
+        /*
         const combinedData = _data.reduce((acc, curr) => {
             const vector = {
                 lat: (curr.lat - lat) / MIN_COOR,
@@ -204,6 +221,27 @@ function Contour(container, map, data) {
             return acc;
         }, 0);
         return combinedData;
+        */
+        const sumVerticesValue = d3.sum(_data, d => d.value);
+        const denomimator = _data.reduce((acc, curr) => {
+            const vector = {
+                lat: (curr.lat - lat) / MIN_COOR,
+                lng: (curr.lng - lng) / MIN_COOR
+            };
+            const distance = Math.sqrt(vector.lat ** 2 + vector.lng ** 2);
+            acc += 1 / distance ** 2;
+            return acc;
+        }, 0);
+        const numerator = _data.reduce((acc, curr) => {
+            const vector = {
+                lat: (curr.lat - lat) / MIN_COOR,
+                lng: (curr.lng - lng) / MIN_COOR
+            };
+            const distance = Math.sqrt(vector.lat ** 2 + vector.lng ** 2);
+            acc += (1 / distance**2) * (curr.value / sumVerticesValue);
+            return acc;
+        }, 0);
+        return numerator * sumVerticesValue / denomimator;
 
         /*
         const combinedVector = data.reduce((acc, curr) => {
