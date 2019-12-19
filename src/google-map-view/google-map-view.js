@@ -146,7 +146,10 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken) {
   // SHOW MAP
   function drawMap() {
     map = new google.maps.Map(document.getElementById('map'), {
-      zoom: 4, center: { lat: 21.344, lng: 107.036 },
+      zoom: 4, 
+      center: { lat: 21.344, lng: 107.036 },
+      scaleControl: true,
+ 
     });
     map.setOptions({ minZoom: 3 });
 
@@ -1257,7 +1260,13 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken) {
           map.setCenter({lat:latX, lng:lngY, alt:0});
           console.log(latX, lngY);
 
-      } 
+      } else {
+        ngDialog.open({
+          template: "templateError",
+          className: "ngdialog-theme-default",
+          scope: Object.assign($scope.$new(), { message: `Well's coordinate has been error ${self.focusWell.name}` })
+        })
+      }
     }
   }
   // ================== DRAWING GEOJSON DATA ===================

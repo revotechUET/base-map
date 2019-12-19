@@ -43,26 +43,26 @@
     </div>
   </div>
   <div class="tab" style="justify-content: flex-start; padding-left: 5px; border-bottom: none;">
-    <div class="tab-fn" ng-class="{'on': self.showDashboard}" ng-show="self.showMap"
+    <div title="Show/Hide dashboard" class="tab-fn" ng-class="{'on': self.showDashboard}" ng-show="self.showMap"
       ng-click="self.showDashboard = !self.showDashboard; self.openDashboard()">
       <i class="ti ti-pie-chart"></i>
     </div>
-    <div class="tab-fn" ng-click="self.moveWell()" ng-class="{'inactive' : !isSet(1) || !self.selectedNode}">
+    <div title="Show well on map" class="tab-fn" ng-click="self.moveWell()" ng-class="{'inactive' : !isSet(1) || !self.selectedNode}">
       <i class="ti ti-arrow-right"></i>
     </div>
-    <div class="tab-fn" ng-click="self.deleteWell()" ng-class="{'inactive' : !isSet(3)}">
+    <div title="Delete wells" class="tab-fn" ng-click="self.deleteWell()" ng-class="{'inactive' : !isSet(3)}">
       <i class="ti ti-trash"></i>
     </div>
-    <div class="tab-fn" ng-click="self.cleanMap()" ng-class="{'inactive' : !isSet(3)}">
+    <div title="Clear all well on map" class="tab-fn" ng-click="self.cleanMap()" ng-class="{'inactive' : !isSet(3)}">
       <i class="ti ti-paint-roller"></i>
     </div>
-    <div class="tab-fn" ng-click="self.refesh()">
+    <div title="Refesh" class="tab-fn" ng-click="self.refesh()" ng-class="{'inactive' : !isSet(1)}">
       <i class="ti ti-reload"></i>
     </div>
-    <div ng-show="!self.hideMain && self.showMap" class="tab-fn" ng-click="self.hideMain = !self.hideMain">
+    <div title="Toggle menu" ng-show="!self.hideMain && self.showMap" class="tab-fn" ng-click="self.hideMain = !self.hideMain">
       <i class="ti ti-angle-up"></i>
     </div>
-    <div ng-show="self.hideMain && self.showMap" class="tab-fn" ng-click="self.hideMain = !self.hideMain">
+    <div title="Toggle menu" ng-show="self.hideMain && self.showMap" class="tab-fn" ng-click="self.hideMain = !self.hideMain">
       <i class="ti ti-angle-down"></i>
     </div>
     <!-- <div style="display: flex; align-items: center;" ng-show="self.showMap">
@@ -308,7 +308,7 @@
       <div class="upload" >
         <div class="upload-header">
           <div>
-            <div style="font-weight: bold;">Import your config</div>
+            <div style="font-weight: bold;">Open configuration file</div>
             <span>Upload a zip file.</span>
           </div>
           <div class="btn-add" id="map-upfile-2-btn">

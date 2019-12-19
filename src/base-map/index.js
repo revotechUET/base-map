@@ -720,7 +720,7 @@ function baseMapController(
   this.refesh = function () {
     getZoneList();
     getCurveTree();
-    $scope.wellSelect = [];
+    // $scope.wellSelect = [];
     $scope.curveList = [];
     $scope.zoneList = [];
     $scope.markerList = [];
@@ -791,7 +791,7 @@ function baseMapController(
 
     //Compress file
     zip.generateAsync({ type: "blob" }).then(content => {
-      fileSaver.saveAs(content, "download.zip");
+      fileSaver.saveAs(content, "i2G_basemap_configuration.zip");
     });
   };
 
