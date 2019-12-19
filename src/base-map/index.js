@@ -65,6 +65,9 @@ app.value('chartSettings', {
       { data: { label: "Well By Tag" }, properties: { value: "well-by-tag" } },
       { data: { label: "Curve By Tag" }, properties: { value: "curve-by-tag" } },
     ],
+    getValue: function (widgetConfig) {
+      return widgetConfig.dataSourceLabel;
+    },
     setValue: function (selectedProps, widgetConfig) {
       const DTSRC_MAP = {
         'well-by-type': 'wTypes',
@@ -410,7 +413,8 @@ function baseMapController(
             }
           }
         },
-        // setting: false
+        // setting: true
+        id: getUniqChartID()
       }
       $timeout(() => {
         self.dashboardContent.push(WidgetConfig);
@@ -442,6 +446,7 @@ function baseMapController(
         type: 'bar',
         data: getData(result.wTypes),
         dataSources: result,
+        dataSourceLabel: 'Well By Type',
         labelFn: function (config, datum, idx) {
           return Object.keys(result.wTypes)[idx];
         },
@@ -459,8 +464,9 @@ function baseMapController(
               }
             }]
           }
-        }
-      }
+        },
+      },
+      id: getUniqChartID()
     }
     let fieldWidgetConfig = {
       name: "Fields",
@@ -468,14 +474,18 @@ function baseMapController(
         type: 'bar',
         data: getData(result.fields),
         dataSources: result,
+        dataSourceLabel: 'Well By Field',
         labelFn: function (config, datum, idx) {
           return Object.keys(result.fields)[idx];
         },
         colorFn: function (config, datum, idx) {
-          return 'rgba(64,64,200,0.7)';
+          // return 'rgba(64,64,200,0.7)';
+          let palette = wiApi.getPalette("RandomColor");
+          return `rgba(${palette[idx].red},${palette[idx].green},${palette[idx].blue},${palette[idx].alpha})`;
         },
         title: 'Fields'
-      }
+      },
+      id: getUniqChartID()
     }
     let operatorWidgetConfig = {
       name: "Operators",
@@ -483,13 +493,17 @@ function baseMapController(
         type: 'bar',
         data: getData(result.operators),
         dataSources: result,
+        dataSourceLabel: 'Well By Operator',
         labelFn: function (config, datum, idx) {
           return Object.keys(result.operators)[idx];
         },
         colorFn: function (config, datum, idx) {
-          return 'rgba(64,200,64,0.7)';
+          // return 'rgba(64,200,64,0.7)';
+          let palette = wiApi.getPalette("RandomColor");
+          return `rgba(${palette[idx].red},${palette[idx].green},${palette[idx].blue},${palette[idx].alpha})`;
         }
-      }
+      },
+      id: getUniqChartID()
     }
     let tagWidgetConfig = {
       name: "Tags",
@@ -497,6 +511,7 @@ function baseMapController(
         type: 'bar',
         data: getData(result.tags),
         dataSources: result,
+        dataSourceLabel: 'Well By Tag',
         labelFn: function (config, datum, idx) {
           return Object.keys(result.tags)[idx];
         },
@@ -504,7 +519,8 @@ function baseMapController(
           let palette = wiApi.getPalette("RandomColor");
           return `rgba(${palette[idx].red},${palette[idx].green},${palette[idx].blue},${palette[idx].alpha})`;
         }
-      }
+      },
+      id: getUniqChartID()
     }
     let curveTagWidgetConfig = {
       name: "Curve Tags",
@@ -512,6 +528,7 @@ function baseMapController(
         type: 'bar',
         data: getData(result.curveTags),
         dataSources: result,
+        dataSourceLabel: 'Curve By Tag',
         labelFn: function (config, datum, idx) {
           return Object.keys(result.curveTags)[idx];
         },
@@ -519,13 +536,17 @@ function baseMapController(
           let palette = wiApi.getPalette("RandomColor");
           return `rgba(${palette[idx].red},${palette[idx].green},${palette[idx].blue},${palette[idx].alpha})`;
         }
-      }
+      }, 
+      id: getUniqChartID()
     }
     $timeout(() => {
       self.dashboardContent = [wTypeWidgetConfig, fieldWidgetConfig, operatorWidgetConfig, tagWidgetConfig, curveTagWidgetConfig];
       // self.dashboardContent = [wTypeWidgetConfig];
 
     });
+  }
+  function getUniqChartID() {
+    return Math.random().toString(36).substr(2, 9);
   }
   function groupWells(prjTree) {
     let wTypes = {};
