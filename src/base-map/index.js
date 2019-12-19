@@ -410,7 +410,7 @@ function baseMapController(
             }
           }
         },
-        setting: true
+        // setting: false
       }
       $timeout(() => {
         self.dashboardContent.push(WidgetConfig);
