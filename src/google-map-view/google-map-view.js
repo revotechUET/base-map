@@ -16,6 +16,7 @@ app.component(componentName, {
     point: "<",
     theme: "<",
     allPopup: "<",
+    focusWell: "<",
     // contour
     focusCurve: "<",
     getCurveInfoFn: "<",
@@ -63,6 +64,14 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken) {
         changeStyleMap(self.theme);
       },
       true
+    );
+    $scope.$watch(
+      function () {
+        return self.focusWell;
+      },
+      function () {
+        focusWell();
+      }
     );
     $scope.$watch(
       function () {
@@ -149,7 +158,7 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken) {
       coordsDiv.innerHTML = "<div>Latitude: <strong>" + (event.latLng.lat()) + "</strong></div><div>Longtitude: <strong>" + (event.latLng.lng()) + "</strong></div>";
     });
     // //REPLACE ICON
-    
+
     // $timeout(()=>{
     //   $('.gm-control-active>img:nth-child(1)')[0].src = 'data:image/svg+xml,%3C%3Fxml%20version%3D%221.0%22%20encoding%3D%22UTF-8%22%3F%3E%0A%3Csvg%20width%3D%2216px%22%20height%3D%2216px%22%20viewBox%3D%220%200%2016%2016%22%20version%3D%221.1%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20xmlns%3Axlink%3D%22http%3A%2F%2Fwww.w3.org%2F1999%2Fxlink%22%3E%0A%20%20%20%20%3C!--%20Generator%3A%20Sketch%2052.5%20(67469)%20-%20http%3A%2F%2Fwww.bohemiancoding.com%2Fsketch%20--%3E%0A%20%20%20%20%3Ctitle%3Ebasemap_zoom_in_16x16%3C%2Ftitle%3E%0A%20%20%20%20%3Cdesc%3ECreated%20with%20Sketch.%3C%2Fdesc%3E%0A%20%20%20%20%3Cg%20id%3D%22basemap_zoom_in_16x16%22%20stroke%3D%22none%22%20stroke-width%3D%221%22%20fill%3D%22none%22%20fill-rule%3D%22evenodd%22%3E%0A%20%20%20%20%20%20%20%20%3Cg%20id%3D%22Group%22%20transform%3D%22translate(1.000000%2C%201.000000)%22%20fill%3D%22%233F87DA%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3Crect%20id%3D%22Rectangle%22%20x%3D%220%22%20y%3D%226%22%20width%3D%2214%22%20height%3D%222%22%20rx%3D%221%22%3E%3C%2Frect%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3Crect%20id%3D%22Rectangle%22%20transform%3D%22translate(7.000000%2C%207.000000)%20rotate(-270.000000)%20translate(-7.000000%2C%20-7.000000)%20%22%20x%3D%220%22%20y%3D%226%22%20width%3D%2214%22%20height%3D%222%22%20rx%3D%221%22%3E%3C%2Frect%3E%0A%20%20%20%20%20%20%20%20%3C%2Fg%3E%0A%20%20%20%20%3C%2Fg%3E%0A%3C%2Fsvg%3E';
     //   $('.gm-control-active>img:nth-child(1)')[1].src = 'data:image/svg+xml,%3C%3Fxml%20version%3D%221.0%22%20encoding%3D%22UTF-8%22%3F%3E%0A%3Csvg%20width%3D%2216px%22%20height%3D%2216px%22%20viewBox%3D%220%200%2016%2016%22%20version%3D%221.1%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20xmlns%3Axlink%3D%22http%3A%2F%2Fwww.w3.org%2F1999%2Fxlink%22%3E%0A%20%20%20%20%3C!--%20Generator%3A%20Sketch%2052.5%20(67469)%20-%20http%3A%2F%2Fwww.bohemiancoding.com%2Fsketch%20--%3E%0A%20%20%20%20%3Ctitle%3Ebasemap_zoom_in_16x16%3C%2Ftitle%3E%0A%20%20%20%20%3Cdesc%3ECreated%20with%20Sketch.%3C%2Fdesc%3E%0A%20%20%20%20%3Cg%20id%3D%22basemap_zoom_in_16x16%22%20stroke%3D%22none%22%20stroke-width%3D%221%22%20fill%3D%22none%22%20fill-rule%3D%22evenodd%22%3E%0A%20%20%20%20%20%20%20%20%3Cg%20id%3D%22Group%22%20transform%3D%22translate(1.000000%2C%201.000000)%22%20fill%3D%22%233F87DA%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3Crect%20id%3D%22Rectangle%22%20x%3D%220%22%20y%3D%226%22%20width%3D%2214%22%20height%3D%222%22%20rx%3D%221%22%3E%3C%2Frect%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3Crect%20id%3D%22Rectangle%22%20transform%3D%22translate(7.000000%2C%207.000000)%20rotate(-270.000000)%20translate(-7.000000%2C%20-7.000000)%20%22%20x%3D%220%22%20y%3D%226%22%20width%3D%2214%22%20height%3D%222%22%20rx%3D%221%22%3E%3C%2Frect%3E%0A%20%20%20%20%20%20%20%20%3C%2Fg%3E%0A%20%20%20%20%3C%2Fg%3E%0A%3C%2Fsvg%3E';
@@ -1199,7 +1208,9 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken) {
           // });
           // map.setCenter(lat, long);
           // map.setCenter({lat:lat, lng:long});
-          map.setCenter(new google.maps.LatLng(lat, long));
+          // map.setCenter(new google.maps.LatLng(lat, long));
+          // map.setCenter(new google.maps.LatLng(lat, long), 5);
+
 
         }
         else if (checkCoordinate(lat, long, x, y) === false) {
@@ -1212,13 +1223,41 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken) {
           infowindow.open(map, aMarker);
           // });
           // map.setCenter(latX, lngY);
-          map.setCenter(new google.maps.LatLng(latX, lngY));
+          // map.setCenter(new google.maps.LatLng(latX, lngY));
+          // map.setCenter(new google.maps.LatLng(latX, lngY), 5);
 
         }
         if (aMarker) {
           markers[self.wells[index].idWell] = aMarker;
         }
       }
+    }
+  }
+  //FOCUS WELL
+  function focusWell() {
+    let firstProjection = self.zoneMap;
+    let secondProjection = "+proj=longlat +ellps=WGS84 +datum=WGS84 +units=degrees";
+    console.log(self.focusWell)
+    if (self.zoneMap && self.focusWell.well_headers) {
+      let lat = getLat(self.focusWell.well_headers);
+      let long = getLong(self.focusWell.well_headers);
+      let x = getX(self.focusWell.well_headers);
+      let y = getY(self.focusWell.well_headers);
+      let latX = proj4(firstProjection, secondProjection, [x, y])[1];
+      let lngY = proj4(firstProjection, secondProjection, [x, y])[0];
+
+      if (checkCoordinate(lat, long, x, y) === true) {
+          // map.setCenter(new google.maps.LatLng(lat, long), 15);
+          map.setCenter({lat:lat, lng:long, alt:0});
+          console.log(lat, long);
+
+      }
+      else if (checkCoordinate(lat, long, x, y) === false) {
+        // map.setCenter(new google.maps.LatLng(latX, lngY), 15);
+          map.setCenter({lat:latX, lng:lngY, alt:0});
+          console.log(latX, lngY);
+
+      } 
     }
   }
   // ================== DRAWING GEOJSON DATA ===================
@@ -1436,48 +1475,48 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken) {
         }
       }
       */
-     await new Promise(resolve => {
-      const promises = [];
-      if ((self.wells || []).length) {
-        for (let index = 0; index < self.wells.length; index++) {
-          promises.push(new Promise(res => {
-            let lat = getLat(self.wells[index].well_headers);
-            let long = getLong(self.wells[index].well_headers);
-            let x = getX(self.wells[index].well_headers);
-            let y = getY(self.wells[index].well_headers);
-            let latX = proj4(firstProjection, secondProjection, [x, y])[1];
-            let lngY = proj4(firstProjection, secondProjection, [x, y])[0];
-            if (checkCoordinate(lat, long, x, y) === true) {
-              // use long, lat
-              getWellDataForContour(self.wells[index])
-                .then(wellData => {
-                  _data.push({
-                    lng: long,
-                    lat,
-                    value: wellData
-                  });
-                  res();
-                })
-            } else if (checkCoordinate(lat, long, x, y) === false) {
-              // use lngY, latX
-              getWellDataForContour(self.wells[index])
-                .then(wellData => {
-                  _data.push({
-                    lng: lngY,
-                    lat: latX,
-                    value: wellData
-                  });
-                  res();
-                })
-            }
-          }))
+      await new Promise(resolve => {
+        const promises = [];
+        if ((self.wells || []).length) {
+          for (let index = 0; index < self.wells.length; index++) {
+            promises.push(new Promise(res => {
+              let lat = getLat(self.wells[index].well_headers);
+              let long = getLong(self.wells[index].well_headers);
+              let x = getX(self.wells[index].well_headers);
+              let y = getY(self.wells[index].well_headers);
+              let latX = proj4(firstProjection, secondProjection, [x, y])[1];
+              let lngY = proj4(firstProjection, secondProjection, [x, y])[0];
+              if (checkCoordinate(lat, long, x, y) === true) {
+                // use long, lat
+                getWellDataForContour(self.wells[index])
+                  .then(wellData => {
+                    _data.push({
+                      lng: long,
+                      lat,
+                      value: wellData
+                    });
+                    res();
+                  })
+              } else if (checkCoordinate(lat, long, x, y) === false) {
+                // use lngY, latX
+                getWellDataForContour(self.wells[index])
+                  .then(wellData => {
+                    _data.push({
+                      lng: lngY,
+                      lat: latX,
+                      value: wellData
+                    });
+                    res();
+                  })
+              }
+            }))
+          }
         }
-      }
-      Promise.all(promises)
-        .then(alldone => {
-          resolve();
-        })
-     })
+        Promise.all(promises)
+          .then(alldone => {
+            resolve();
+          })
+      })
       _contourData.length = 0;
       _data.forEach(d => _contourData.push(d));
     }
