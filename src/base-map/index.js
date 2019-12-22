@@ -40,6 +40,21 @@ var app = angular.module(componentName, [
 function getData(resultObj) {
   return Object.values(resultObj).map(item => item.length);
 }
+
+const DTSRC_OPTIONS_MAP = {
+  "Well By Type": 'well-by-type',
+  "Well By Field": 'well-by-field',
+  "Well By Operator": 'well-by-operator',
+  "Well By Tag": 'well-by-tag',
+  "Curve By Tag": 'curve-by-tag',
+}
+const DTSRC_MAP = {
+  'well-by-type': 'wTypes',
+  'well-by-field': 'fields',
+  'well-by-operator': 'operators',
+  'well-by-tag': 'tags',
+  'curve-by-tag': 'curveTags'
+}
 app.value('chartSettings', {
   chartTypeOpt: {
     type: 'select',
@@ -69,13 +84,6 @@ app.value('chartSettings', {
       return widgetConfig.dataSourceLabel;
     },
     setValue: function (selectedProps, widgetConfig) {
-      const DTSRC_MAP = {
-        'well-by-type': 'wTypes',
-        'well-by-field': 'fields',
-        'well-by-operator': 'operators',
-        'well-by-tag': 'tags',
-        'curve-by-tag': 'curveTags'
-      }
       if (selectedProps) {
         widgetConfig.data = getData(widgetConfig.dataSources[DTSRC_MAP[selectedProps.value]]);
         widgetConfig.labelFn = function (config, datum, idx) {
@@ -382,6 +390,52 @@ function baseMapController(
     }
     $(".main").toggleClass("change-layout");
     $(".dialog").toggleClass("change-layout-dialog");
+  }
+  this.loadDashboard = function() {
+    const widgetConfigs = self.saveDashboard();
+    self.showLoadingDashboard = true;
+    wiApi.getFullInfoPromise(self.selectedNode.idProject, self.selectedNode.owner, self.selectedNode.owner ? self.selectedNode.name : null).then((prjTree) => {
+      projectTree = prjTree;
+      let result = groupWells(prjTree);
+
+      const _dashboardContent = widgetConfigs.map(wConfig => {
+        const data = result[DTSRC_MAP[DTSRC_OPTIONS_MAP[wConfig.config.dataSourceLabel]]];
+        Object.assign(wConfig.config, {
+          data: getData(data),
+          dataSources: result,
+          labelFn: function (config, datum, idx) {
+            return Object.keys(data)[idx];
+          },
+          colorFn: function (config, datum, idx) {
+            let palette = wiApi.getPalette("RandomColor");
+            return `rgba(${palette[idx].red},${palette[idx].green},${palette[idx].blue},${palette[idx].alpha})`;
+          }
+        })
+        return wConfig;
+      });
+      console.log(_dashboardContent);
+      self.dashboardContent = _dashboardContent;
+    }).catch((e) => {
+      console.error(e);
+    }).finally(() => {
+      self.showLoadingDashboard = false;
+    });
+  }
+  this.saveDashboard = function() {
+    const content = self.dashboardContent.map(widget => {
+      const { name, id, config } = widget;
+      const _config = {
+        type: config.type,
+        dataSourceLabel: config.dataSourceLabel,
+        title: config.title,
+        options: config.options,
+      }
+      return {
+        name, id, config: _config
+      }
+    });
+    console.log(content);
+    return content;
   }
   this.addDashboard = function () {
     self.showLoadingDashboard = true;
