@@ -391,8 +391,81 @@ function baseMapController(
     $(".main").toggleClass("change-layout");
     $(".dialog").toggleClass("change-layout-dialog");
   }
-  this.loadDashboard = function() {
-    const widgetConfigs = self.saveDashboard();
+
+  async function getDashboardTemplate() {
+    return new Promise(resolve => {
+      ngDialog.open({
+        template: "dashboard-template-modal",
+        scope: $scope,
+        preCloseCallback: function() {
+          console.log("close modal");
+          return true;
+        },
+        controller: ["$scope", function ($scope) {
+          const self = this;
+          this.mode = "load-dashboard";
+          this.selectedNode = null;
+          this.options = [];
+          this.getDashboardTemplateList = function(wiDropdownCtrl) {
+            httpPost("/managementdashboard/list", {})
+              .then(res => {
+                if (!res || !res.data.content.length) {
+                  $scope.closeThisDialog();
+                  return;
+                }
+                const templateList = res.data.content.map(dbTemplate => {
+                  dbTemplate.content = JSON.parse(dbTemplate.content);
+                  return dbTemplate;
+                })
+                this.options = templateList.map((props)=> {
+                  return {
+                    data: { label: props.content.name },
+                    properties: props
+                  }
+                });
+                wiDropdownCtrl.items = this.options;
+              });
+          }
+          this.getValue = () => {
+            return this.selectedNode;
+          }
+          this.setValue = (selected) => {
+            this.selectedNode = selected;
+          }
+          this.deleteTemplate = (item) => {
+            ngDialog.open({
+              template: 'dashboard-template-modal',
+              controller: ['$scope', function($scope) {
+                this.mode = "confirm-modal";
+                this.message = "Are you sure to delete this template";
+                this.onOkButtonClicked = function() {
+                  console.log("Do delete item", item);
+                  httpPost("/managementdashboard/delete", {idManagementDashboard: item.properties.idManagementDashboard})
+                    .then(res => {
+                      console.log(res);
+                    })
+                    .catch(err => {
+                      console.error(err);
+                    })
+                  $scope.closeThisDialog();
+                }
+              }],
+              controllerAs: 'wiModal'
+            })
+          }
+          this.loadDashboardTemplate = () => {
+            resolve(this.selectedNode.content);
+            $scope.closeThisDialog();
+          }
+        }],
+        controllerAs: "wiModal"
+      });
+    })
+  }
+  this.loadDashboard = async function() {
+    const config = await getDashboardTemplate();
+    if (!config) return;
+    const widgetConfigs = config.widgets;
     self.showLoadingDashboard = true;
     wiApi.getFullInfoPromise(self.selectedNode.idProject, self.selectedNode.owner, self.selectedNode.owner ? self.selectedNode.name : null).then((prjTree) => {
       projectTree = prjTree;
@@ -415,6 +488,8 @@ function baseMapController(
       });
       console.log(_dashboardContent);
       self.dashboardContent = _dashboardContent;
+      self.dashboardContent.project = prjTree;
+      $scope.$digest();
     }).catch((e) => {
       console.error(e);
     }).finally(() => {
@@ -429,14 +504,54 @@ function baseMapController(
         dataSourceLabel: config.dataSourceLabel,
         title: config.title,
         options: config.options,
-      }
+      };
+
       return {
         name, id, config: _config
       }
     });
-    console.log(content);
-    return content;
+    const payload = {
+      name: `${self.dashboardContent.project.alias}-dashboard-template`,
+      widgets: content
+    };
+    ngDialog.open({
+      template: "dashboard-template-modal",
+      scope: $scope,
+      controller: ["$scope", function($scope) {
+        this.mode = "new-dashboard";
+        this.config = payload;
+        this.setValue = (param, newVal) => {
+          this.config.name = newVal;
+        }
+        this.getValue = () => {
+          return this.config.name || "";
+        }
+        this.saveDashboardTemplate = function() {
+          httpPost("/managementdashboard/new", {content: JSON.stringify(payload)})
+            .then(res => {
+              console.log(res);
+            })
+            .catch(err => {
+              console.error(err);
+            });
+          $scope.closeThisDialog();
+        }
+      }],
+      controllerAs: "wiModal"
+    });
   }
+
+  async function httpPost(path, payload) {
+    return await $http({
+      method: "POST",
+      url: BASE_URL + path,
+      data: payload,
+      headers: {
+        Authorization: wiToken.getToken()
+      }
+    });
+  }
+
   this.addDashboard = function () {
     self.showLoadingDashboard = true;
     wiApi.getFullInfoPromise(self.selectedNode.idProject, self.selectedNode.owner, self.selectedNode.owner ? self.selectedNode.name : null).then((prjTree) => {
@@ -595,6 +710,7 @@ function baseMapController(
     }
     $timeout(() => {
       self.dashboardContent = [wTypeWidgetConfig, fieldWidgetConfig, operatorWidgetConfig, tagWidgetConfig, curveTagWidgetConfig];
+      self.dashboardContent.project = prjTree;
       // self.dashboardContent = [wTypeWidgetConfig];
 
     });

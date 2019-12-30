@@ -1,6 +1,11 @@
 <div ng-class="{'show-dashboard': self.showDashboard}" class="dialog">
-  ${require('./dialog-dashboard.html')}
+${require('./dialog-dashboard.html')}
 </div>
+
+<script type="text/ng-template" id="dashboard-template-modal">
+${require('./dashboard-template-modal.html')}
+</script>
+
 <div id="main" class="main slim-scroller" ng-class="{'change-height': self.hideMain}">
   <div class="tab">
     <div style="display: flex; align-items: center;">

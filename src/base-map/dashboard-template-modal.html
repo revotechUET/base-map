@@ -1,0 +1,17 @@
+<div ng-if="wiModal.mode === 'new-dashboard'">
+    <editable style="width: 100%" item-label="'Name'" enabled="true" item-value="wiModal.getValue" set-value="wiModal.setValue"></editable>
+    <button class="btn btn-primary" ng-click="wiModal.saveDashboardTemplate()">OK</button>
+</div>
+<div ng-if="wiModal.mode === 'load-dashboard'">
+    <label>Select Template</label>
+    <wi-dropdown-list items="wiModal.options" on-item-changed="wiModal.setValue" current-select="wiModal.getValue()"
+        ctrl-btn-icon="ti ti-close" on-ctrl-btn-click="wiModal.deleteTemplate"
+        on-wi-dropdown-init="wiModal.getDashboardTemplateList" hide-delete-button="true">
+    </wi-dropdown-list>
+    <button class="btn btn-primary" ng-click="wiModal.loadDashboardTemplate()">Load</button>
+</div>
+<div ng-if="wiModal.mode === 'confirm-modal'">
+    <label>Confirm</label>
+    <div class="content">{{wiModal.message}}</div>
+    <button class="btn btn-primary" ng-click="wiModal.onOkButtonClicked()">OK</button>
+</div>
