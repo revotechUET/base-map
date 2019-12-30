@@ -187,6 +187,27 @@ ${require('./dashboard-template-modal.html')}
           </div>
         </div>
       </div>
+      <div class="setting">
+        <div class="setting-title" style="margin-bottom: 10px;">Show Trajectory</div>
+        <div class="complex-setting">
+          <div class="setting-content">
+            <span
+              class="setting-sub-title">{{self.showTrajectory?"Pick a curve for tracjectory rendering":"Displays trajectory layer"}}</span>
+            <label class="switch">
+              <input type="checkbox" ng-checked="self.showTrajectory" ng-click="self.toggleTrajectory()" />
+              <span class="slider round"></span>
+            </label>
+          </div>
+          <!--
+          <div ng-if="self.showTrajectory" class="setting-content" style="margin-top: 12px;">
+            <wi-tree-view-virtual tree-root="curveList" get-label="self.getLabel" get-icon="self.getIcon"
+              click-fn="self.clickCurveFunction" get-children="self.getChildren" run-match="self.runMatchCurve"
+              hide-unmatched="true" no-drag="true">
+            </wi-tree-view-virtual>
+          </div>
+          -->
+        </div>
+      </div>
       <div class="upload">
         <div class="upload-header">
           <div>
@@ -392,6 +413,7 @@ point="self.point"
 focus-well='focusWell'
 focus-curve="focusCurve"
 show-contour="self.showContour" 
+show-trajectory="self.showTrajectory" 
 focus-marker-or-zone="focusMZ" 
 zone-depth-spec="self.zoneDepthSpec"
 get-curve-info-fn="self.getCurveInfoFn" 

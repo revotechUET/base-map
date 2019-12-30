@@ -150,6 +150,7 @@ function baseMapController(
   self.controlPanel = true;
   self.point = false;
   self.showContour = false;
+  self.showTrajectory = false;
   self.selectedIdsHash = {};
   self.selectedNode = null;
   self.selectedNodes = [];
@@ -280,6 +281,7 @@ function baseMapController(
       self.controlPanel = true;
       self.point = false;
       self.showContour = false;
+      self.showTrajectory = false;
       getZoneList();
 
       self.noWell = true;
@@ -359,6 +361,7 @@ function baseMapController(
               self.controlPanel = data.controlPanel;
               self.point = data.point;
               self.showContour = data.showContour;
+              self.showTrajectory = data.showTrajectory;
               $scope.zoneMap = data.zoneMap;
               $timeout(() => {
                 if (!$scope.$$phase) {
@@ -773,6 +776,9 @@ function baseMapController(
   this.toggleContour = function () {
     self.showContour = !self.showContour;
   };
+  this.toggleTrajectory = function () {
+    self.showTrajectory = !self.showTrajectory;
+  };
 
   function clearTreeState(treeName) {
     switch (treeName) {
@@ -968,6 +974,7 @@ function baseMapController(
       point: self.point,
       allPopup: $scope.allPopup,
       showContour: self.showContour,
+      showTrajectory: self.showTrajectory,
       zoneMap: $scope.zoneMap
     };
     var json2 = JSON.stringify(dataMapSetting),
