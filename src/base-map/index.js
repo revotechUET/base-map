@@ -632,7 +632,8 @@ function baseMapController(
             yAxes: [{
               ticks: {
                 // stepSize: 1.0
-                maxTicksLimit: 10
+                maxTicksLimit: 10,
+                min: 0
               }
             }]
           }
@@ -655,6 +656,16 @@ function baseMapController(
           let palette = wiApi.getPalette("RandomColor");
           return `rgba(${palette[idx].red},${palette[idx].green},${palette[idx].blue},${palette[idx].alpha})`;
         },
+        options: {
+          scales: {
+            yAxes: [{
+              ticks: {
+                maxTicksLimit: 10,
+                min: 0
+              }
+            }]
+          }
+        },
         title: 'Fields'
       },
       id: getUniqChartID()
@@ -673,7 +684,17 @@ function baseMapController(
           // return 'rgba(64,200,64,0.7)';
           let palette = wiApi.getPalette("RandomColor");
           return `rgba(${palette[idx].red},${palette[idx].green},${palette[idx].blue},${palette[idx].alpha})`;
-        }
+        },
+        options: {
+          scales: {
+            yAxes: [{
+              ticks: {
+                maxTicksLimit: 10,
+                min: 0
+              }
+            }]
+          }
+        },
       },
       id: getUniqChartID()
     }
@@ -690,7 +711,17 @@ function baseMapController(
         colorFn: function (config, datum, idx) {
           let palette = wiApi.getPalette("RandomColor");
           return `rgba(${palette[idx].red},${palette[idx].green},${palette[idx].blue},${palette[idx].alpha})`;
-        }
+        },
+        options: {
+          scales: {
+            yAxes: [{
+              ticks: {
+                maxTicksLimit: 10,
+                min: 0
+              }
+            }]
+          }
+        },
       },
       id: getUniqChartID()
     }
@@ -707,7 +738,17 @@ function baseMapController(
         colorFn: function (config, datum, idx) {
           let palette = wiApi.getPalette("RandomColor");
           return `rgba(${palette[idx].red},${palette[idx].green},${palette[idx].blue},${palette[idx].alpha})`;
-        }
+        },
+        options: {
+          scales: {
+            yAxes: [{
+              ticks: {
+                maxTicksLimit: 10,
+                min: 0
+              }
+            }]
+          }
+        },
       }, 
       id: getUniqChartID()
     }
