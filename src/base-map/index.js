@@ -1441,7 +1441,7 @@ function baseMapController(
   this.clickFunction = function ($event, node, selectedNodes) {
     self.selectedNode = node;
     self.selectedNodes = selectedNodes.map((e)=>e.data);
-    // console.log(node)
+    console.log(node)
     if (node.idCurve) {
       // console.log("Curve clicked");
     } else if (node.idDataset) {

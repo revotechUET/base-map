@@ -1236,7 +1236,19 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken) {
               strokeColor: getColorIconMarker(self.wells[index].well_headers),
               scale: 0.5,
             });
-          } else {
+          }
+          else if (getImageIconMarker(self.wells[index].well_headers) == icon_default) {
+            aMarker.setIcon({
+              path: getImageIconMarker(self.wells[index].well_headers),
+              fillColor: '#fb4c4c',
+              fillOpacity: .6,
+              anchor: new google.maps.Point(27, 55),
+              strokeWeight: 1,
+              strokeColor: '#d22c2c',
+              scale: 0.7,
+            });
+          } 
+          else {
             aMarker.setIcon({
               path: getImageIconMarker(self.wells[index].well_headers),
               fillColor: getColorIconMarker(self.wells[index].well_headers),
@@ -1277,7 +1289,6 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken) {
               strokeColor: '#1081E0',
               scale: 0.7,
             });
-
           }
           else {
             aMarker.setIcon({
@@ -1719,7 +1730,7 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken) {
   // =======================  END DRAWING TRAJECTORY ============================
   function getColorIconMarker(wellHeader) {
     if (getFluidCode(wellHeader) === 'Gas') {
-      return 'red'
+      return '#ff9d1d8a'
     } else if (getFluidCode(wellHeader) === 'Water') {
       return 'blue'
     } else if (getFluidCode(wellHeader) === 'Condensate') {
@@ -1839,6 +1850,10 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken) {
     if (!(wellIndex || []).length) return 0;
     for (let index = 0; index < wellIndex.length; index++) {
       if (wellIndex[index].header === "TYPE") {
+        if(wellIndex[index].value.split(' ').shift() !== '')
+        return wellIndex[index].value.split(' ').shift();
+      }  else if (wellIndex[index].header === "WTYPE") {
+        if(wellIndex[index].value.split(' ').shift() !== '')
         return wellIndex[index].value.split(' ').shift();
       }
     }
