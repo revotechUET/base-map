@@ -40,6 +40,21 @@ var app = angular.module(componentName, [
 function getData(resultObj) {
   return Object.values(resultObj).map(item => item.length);
 }
+
+const DTSRC_OPTIONS_MAP = {
+  "Well By Type": 'well-by-type',
+  "Well By Field": 'well-by-field',
+  "Well By Operator": 'well-by-operator',
+  "Well By Tag": 'well-by-tag',
+  "Curve By Tag": 'curve-by-tag',
+}
+const DTSRC_MAP = {
+  'well-by-type': 'wTypes',
+  'well-by-field': 'fields',
+  'well-by-operator': 'operators',
+  'well-by-tag': 'tags',
+  'curve-by-tag': 'curveTags'
+}
 app.value('chartSettings', {
   chartTypeOpt: {
     type: 'select',
@@ -65,14 +80,10 @@ app.value('chartSettings', {
       { data: { label: "Well By Tag" }, properties: { value: "well-by-tag" } },
       { data: { label: "Curve By Tag" }, properties: { value: "curve-by-tag" } },
     ],
+    getValue: function (widgetConfig) {
+      return widgetConfig.dataSourceLabel;
+    },
     setValue: function (selectedProps, widgetConfig) {
-      const DTSRC_MAP = {
-        'well-by-type': 'wTypes',
-        'well-by-field': 'fields',
-        'well-by-operator': 'operators',
-        'well-by-tag': 'tags',
-        'curve-by-tag': 'curveTags'
-      }
       if (selectedProps) {
         widgetConfig.data = getData(widgetConfig.dataSources[DTSRC_MAP[selectedProps.value]]);
         widgetConfig.labelFn = function (config, datum, idx) {
@@ -139,6 +150,7 @@ function baseMapController(
   self.controlPanel = true;
   self.point = false;
   self.showContour = false;
+  self.showTrajectory = false;
   self.selectedIdsHash = {};
   self.selectedNode = null;
   self.selectedNodes = [];
@@ -269,6 +281,7 @@ function baseMapController(
       self.controlPanel = true;
       self.point = false;
       self.showContour = false;
+      self.showTrajectory = false;
       getZoneList();
 
       self.noWell = true;
@@ -348,6 +361,7 @@ function baseMapController(
               self.controlPanel = data.controlPanel;
               self.point = data.point;
               self.showContour = data.showContour;
+              self.showTrajectory = data.showTrajectory;
               $scope.zoneMap = data.zoneMap;
               $timeout(() => {
                 if (!$scope.$$phase) {
@@ -380,6 +394,167 @@ function baseMapController(
     $(".main").toggleClass("change-layout");
     $(".dialog").toggleClass("change-layout-dialog");
   }
+
+  async function getDashboardTemplate() {
+    return new Promise(resolve => {
+      ngDialog.open({
+        template: "dashboard-template-modal",
+        scope: $scope,
+        preCloseCallback: function() {
+          console.log("close modal");
+          return true;
+        },
+        controller: ["$scope", function ($scope) {
+          const self = this;
+          this.mode = "load-dashboard";
+          this.selectedNode = null;
+          this.options = [];
+          this.getDashboardTemplateList = function(wiDropdownCtrl) {
+            httpPost("/managementdashboard/list", {})
+              .then(res => {
+                if (!res || !res.data.content.length) {
+                  $scope.closeThisDialog();
+                  return;
+                }
+                const templateList = res.data.content.map(dbTemplate => {
+                  dbTemplate.content = JSON.parse(dbTemplate.content);
+                  return dbTemplate;
+                })
+                this.options = templateList.map((props)=> {
+                  return {
+                    data: { label: props.content.name },
+                    properties: props
+                  }
+                });
+                wiDropdownCtrl.items = this.options;
+              });
+          }
+          this.getValue = () => {
+            return this.selectedNode;
+          }
+          this.setValue = (selected) => {
+            this.selectedNode = selected;
+          }
+          this.deleteTemplate = (item) => {
+            ngDialog.open({
+              template: 'dashboard-template-modal',
+              controller: ['$scope', function($scope) {
+                this.mode = "confirm-modal";
+                this.message = "Are you sure to delete this template";
+                this.onOkButtonClicked = function() {
+                  console.log("Do delete item", item);
+                  httpPost("/managementdashboard/delete", {idManagementDashboard: item.properties.idManagementDashboard})
+                    .then(res => {
+                      console.log(res);
+                    })
+                    .catch(err => {
+                      console.error(err);
+                    })
+                  $scope.closeThisDialog();
+                }
+              }],
+              controllerAs: 'wiModal'
+            })
+          }
+          this.loadDashboardTemplate = () => {
+            resolve(this.selectedNode.content);
+            $scope.closeThisDialog();
+          }
+        }],
+        controllerAs: "wiModal"
+      });
+    })
+  }
+  this.loadDashboard = async function() {
+    const config = await getDashboardTemplate();
+    if (!config) return;
+    const widgetConfigs = config.widgets;
+    self.showLoadingDashboard = true;
+    wiApi.getFullInfoPromise(self.selectedNode.idProject, self.selectedNode.owner, self.selectedNode.owner ? self.selectedNode.name : null).then((prjTree) => {
+      projectTree = prjTree;
+      let result = groupWells(prjTree);
+
+      const _dashboardContent = widgetConfigs.map(wConfig => {
+        const data = result[DTSRC_MAP[DTSRC_OPTIONS_MAP[wConfig.config.dataSourceLabel]]];
+        Object.assign(wConfig.config, {
+          data: getData(data),
+          dataSources: result,
+          labelFn: function (config, datum, idx) {
+            return Object.keys(data)[idx];
+          },
+          colorFn: function (config, datum, idx) {
+            let palette = wiApi.getPalette("RandomColor");
+            return `rgba(${palette[idx].red},${palette[idx].green},${palette[idx].blue},${palette[idx].alpha})`;
+          }
+        })
+        return wConfig;
+      });
+      console.log(_dashboardContent);
+      self.dashboardContent = _dashboardContent;
+      self.dashboardContent.project = prjTree;
+      $scope.$digest();
+    }).catch((e) => {
+      console.error(e);
+    }).finally(() => {
+      self.showLoadingDashboard = false;
+    });
+  }
+  this.saveDashboard = function() {
+    const content = self.dashboardContent.map(widget => {
+      const { name, id, config } = widget;
+      const _config = {
+        type: config.type,
+        dataSourceLabel: config.dataSourceLabel,
+        title: config.title,
+        options: config.options,
+      };
+
+      return {
+        name, id, config: _config
+      }
+    });
+    const payload = {
+      name: `${self.dashboardContent.project.alias}-dashboard-template`,
+      widgets: content
+    };
+    ngDialog.open({
+      template: "dashboard-template-modal",
+      scope: $scope,
+      controller: ["$scope", function($scope) {
+        this.mode = "new-dashboard";
+        this.config = payload;
+        this.setValue = (param, newVal) => {
+          this.config.name = newVal;
+        }
+        this.getValue = () => {
+          return this.config.name || "";
+        }
+        this.saveDashboardTemplate = function() {
+          httpPost("/managementdashboard/new", {content: JSON.stringify(payload)})
+            .then(res => {
+              console.log(res);
+            })
+            .catch(err => {
+              console.error(err);
+            });
+          $scope.closeThisDialog();
+        }
+      }],
+      controllerAs: "wiModal"
+    });
+  }
+
+  async function httpPost(path, payload) {
+    return await $http({
+      method: "POST",
+      url: BASE_URL + path,
+      data: payload,
+      headers: {
+        Authorization: wiToken.getToken()
+      }
+    });
+  }
+
   this.addDashboard = function () {
     self.showLoadingDashboard = true;
     wiApi.getFullInfoPromise(self.selectedNode.idProject, self.selectedNode.owner, self.selectedNode.owner ? self.selectedNode.name : null).then((prjTree) => {
@@ -410,7 +585,8 @@ function baseMapController(
             }
           }
         },
-        // setting: false
+        // setting: true
+        id: getUniqChartID()
       }
       $timeout(() => {
         self.dashboardContent.push(WidgetConfig);
@@ -442,6 +618,7 @@ function baseMapController(
         type: 'bar',
         data: getData(result.wTypes),
         dataSources: result,
+        dataSourceLabel: 'Well By Type',
         labelFn: function (config, datum, idx) {
           return Object.keys(result.wTypes)[idx];
         },
@@ -455,12 +632,14 @@ function baseMapController(
             yAxes: [{
               ticks: {
                 // stepSize: 1.0
-                maxTicksLimit: 10
+                maxTicksLimit: 10,
+                min: 0
               }
             }]
           }
-        }
-      }
+        },
+      },
+      id: getUniqChartID()
     }
     let fieldWidgetConfig = {
       name: "Fields",
@@ -468,14 +647,28 @@ function baseMapController(
         type: 'bar',
         data: getData(result.fields),
         dataSources: result,
+        dataSourceLabel: 'Well By Field',
         labelFn: function (config, datum, idx) {
           return Object.keys(result.fields)[idx];
         },
         colorFn: function (config, datum, idx) {
-          return 'rgba(64,64,200,0.7)';
+          // return 'rgba(64,64,200,0.7)';
+          let palette = wiApi.getPalette("RandomColor");
+          return `rgba(${palette[idx].red},${palette[idx].green},${palette[idx].blue},${palette[idx].alpha})`;
+        },
+        options: {
+          scales: {
+            yAxes: [{
+              ticks: {
+                maxTicksLimit: 10,
+                min: 0
+              }
+            }]
+          }
         },
         title: 'Fields'
-      }
+      },
+      id: getUniqChartID()
     }
     let operatorWidgetConfig = {
       name: "Operators",
@@ -483,13 +676,27 @@ function baseMapController(
         type: 'bar',
         data: getData(result.operators),
         dataSources: result,
+        dataSourceLabel: 'Well By Operator',
         labelFn: function (config, datum, idx) {
           return Object.keys(result.operators)[idx];
         },
         colorFn: function (config, datum, idx) {
-          return 'rgba(64,200,64,0.7)';
-        }
-      }
+          // return 'rgba(64,200,64,0.7)';
+          let palette = wiApi.getPalette("RandomColor");
+          return `rgba(${palette[idx].red},${palette[idx].green},${palette[idx].blue},${palette[idx].alpha})`;
+        },
+        options: {
+          scales: {
+            yAxes: [{
+              ticks: {
+                maxTicksLimit: 10,
+                min: 0
+              }
+            }]
+          }
+        },
+      },
+      id: getUniqChartID()
     }
     let tagWidgetConfig = {
       name: "Tags",
@@ -497,14 +704,26 @@ function baseMapController(
         type: 'bar',
         data: getData(result.tags),
         dataSources: result,
+        dataSourceLabel: 'Well By Tag',
         labelFn: function (config, datum, idx) {
           return Object.keys(result.tags)[idx];
         },
         colorFn: function (config, datum, idx) {
           let palette = wiApi.getPalette("RandomColor");
           return `rgba(${palette[idx].red},${palette[idx].green},${palette[idx].blue},${palette[idx].alpha})`;
-        }
-      }
+        },
+        options: {
+          scales: {
+            yAxes: [{
+              ticks: {
+                maxTicksLimit: 10,
+                min: 0
+              }
+            }]
+          }
+        },
+      },
+      id: getUniqChartID()
     }
     let curveTagWidgetConfig = {
       name: "Curve Tags",
@@ -512,20 +731,36 @@ function baseMapController(
         type: 'bar',
         data: getData(result.curveTags),
         dataSources: result,
+        dataSourceLabel: 'Curve By Tag',
         labelFn: function (config, datum, idx) {
           return Object.keys(result.curveTags)[idx];
         },
         colorFn: function (config, datum, idx) {
           let palette = wiApi.getPalette("RandomColor");
           return `rgba(${palette[idx].red},${palette[idx].green},${palette[idx].blue},${palette[idx].alpha})`;
-        }
-      }
+        },
+        options: {
+          scales: {
+            yAxes: [{
+              ticks: {
+                maxTicksLimit: 10,
+                min: 0
+              }
+            }]
+          }
+        },
+      }, 
+      id: getUniqChartID()
     }
     $timeout(() => {
       self.dashboardContent = [wTypeWidgetConfig, fieldWidgetConfig, operatorWidgetConfig, tagWidgetConfig, curveTagWidgetConfig];
+      self.dashboardContent.project = prjTree;
       // self.dashboardContent = [wTypeWidgetConfig];
 
     });
+  }
+  function getUniqChartID() {
+    return Math.random().toString(36).substr(2, 9);
   }
   function groupWells(prjTree) {
     let wTypes = {};
@@ -581,6 +816,9 @@ function baseMapController(
   }
   this.toggleContour = function () {
     self.showContour = !self.showContour;
+  };
+  this.toggleTrajectory = function () {
+    self.showTrajectory = !self.showTrajectory;
   };
 
   function clearTreeState(treeName) {
@@ -777,6 +1015,7 @@ function baseMapController(
       point: self.point,
       allPopup: $scope.allPopup,
       showContour: self.showContour,
+      showTrajectory: self.showTrajectory,
       zoneMap: $scope.zoneMap
     };
     var json2 = JSON.stringify(dataMapSetting),

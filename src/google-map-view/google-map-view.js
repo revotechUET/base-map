@@ -27,6 +27,8 @@ app.component(componentName, {
     zoneDepthSpec: '<',
     // draw geojson objects
     geoJson: '<',
+    // draw trajectory map
+    showTrajectory: '<',
   },
   transclude: true
 });
@@ -116,6 +118,7 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken) {
       () => self.focusCurve,
       () => {
         updateContours();
+        updateTrajectory();
       }
     );
     $scope.$watch(
@@ -124,6 +127,12 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken) {
         updateContours();
       }
     );
+    $scope.$watch(
+      () => self.showTrajectory,
+      () => {
+        updateTrajectory();
+      }
+    )
 
     // VIEW BY ZONESET & MARKERSET
     $scope.$watch(
@@ -166,6 +175,9 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken) {
     map.addListener('mousemove', function (event) {
       coordsDiv.innerHTML = "<div>Latitude: <strong>" + (event.latLng.lat()) + "</strong></div><div>Longtitude: <strong>" + (event.latLng.lng()) + "</strong></div>";
     });
+    map.addListener('zoom_changed', function(event) {
+      updateTrajectoryDebounced();
+    })
     // //REPLACE ICON
 
     // $timeout(()=>{
@@ -1192,7 +1204,7 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken) {
     // remove all previous markers
     for (let marker of Object.values(markers)) {
       marker.setMap(null);
-      delete marker;
+      // delete marker;
     }
 
     if (self.zoneMap) {
@@ -1351,6 +1363,130 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken) {
       drawMarkersDebounced();
     })
   }
+  async function getCoordFromDepth(depth, well) {
+    let x, y, lat, lng;
+    if (Array.isArray(depth)) {
+      x = []; y = []; lat = []; lng = [];
+    }
+    const indexDataset = well.datasets.find(ds => ds.name == "INDEX");
+    if (indexDataset) {
+      const xOffsetCurve = indexDataset.curves.find(c => c.idFamily == 762)
+      const yOffsetCurve = indexDataset.curves.find(c => c.idFamily == 764)
+
+      if (xOffsetCurve && yOffsetCurve) {
+        const top = Number(indexDataset.top);
+        const step = Number(indexDataset.step);
+        const xOffsetData = await new Promise((res) => {
+          self.getCurveRawDataFn(xOffsetCurve.idCurve, (err, data) => {
+            res(data.map(d => Object.assign(d, { depth: top + step * d.y })).filter(d => _.isFinite(d.x)));
+          });
+        });
+        const yOffsetData = await new Promise((res) => {
+          self.getCurveRawDataFn(yOffsetCurve.idCurve, (err, data) => {
+            res(data.map(d => Object.assign(d, { depth: top + step * d.y })).filter(d => _.isFinite(d.x)));
+          });
+        });
+
+        if (xOffsetData.length && yOffsetData.length) {
+          const firstProjection = self.zoneMap;
+          const secondProjection = "+proj=longlat +ellps=WGS84 +datum=WGS84 +units=degrees";
+
+          const _lat = getLat(well.well_headers, true);
+          const _lng = getLong(well.well_headers, true);
+          const _x = getX(well.well_headers, true);
+          const _y = getY(well.well_headers, true);
+
+          /* // VERSION 1
+          const xUpperBoundIdx = xOffsetData.findIndex(datum => datum.depth >= depth);
+          const xUpperBound = xOffsetData[xUpperBoundIdx];
+          const xLowerBound = xOffsetData[xUpperBoundIdx - 1];
+
+          // calculate x, y offsets
+          let _xOffset, _yOffset;
+          if (xLowerBound)
+            _xOffset = d3.scaleLinear().domain([xLowerBound.depth, xUpperBound.depth]).range([xLowerBound.x, xUpperBound.x])(depth);
+          else
+            _xOffset = (xUpperBound || xOffsetData[xOffsetData.length - 1]).x;
+
+          const yUpperBoundIdx = yOffsetData.findIndex(datum => datum.depth >= depth);
+          const yUpperBound = yOffsetData[yUpperBoundIdx];
+          const yLowerBound = yOffsetData[yUpperBoundIdx - 1];
+
+          if (yLowerBound)
+            _yOffset = d3.scaleLinear().domain([yLowerBound.depth, yUpperBound.depth]).range([yLowerBound.x, yUpperBound.x])(depth);
+          else
+            _yOffset = (yUpperBound || yOffsetData[yOffsetData.length - 1]).x;
+          */
+
+          // VERSION 2
+          let _xOffset, _yOffset;
+          const xScale = d3.scaleLinear().domain(xOffsetData.map(p => p.depth)).range(xOffsetData.map(p => p.x));
+          const yScale = d3.scaleLinear().domain(yOffsetData.map(p => p.depth)).range(yOffsetData.map(p => p.x));
+          if (Array.isArray(depth)) {
+            _xOffset = depth.map(d => xScale(d));
+            _yOffset = depth.map(d => yScale(d));
+          } else {
+            _xOffset = xScale(depth);
+            _yOffset = yScale(depth);
+          }
+
+
+          const _checkCoordResult = checkCoordinate(_lat, _lng, _x, _y);
+          if (_checkCoordResult == true) {
+            // calculate new lat/lng, x/y from x, y offset
+            if (Array.isArray(depth)) {
+              const zeroProject = proj4(firstProjection, secondProjection, [0, 0]);
+              depth.forEach((d, i) => {
+                const offsetProject = proj4(firstProjection, secondProjection, [_xOffset[i], _yOffset[i]]);
+                lat[i] = _lat + (offsetProject[1] - zeroProject[1]);
+                lng[i] = _lng + (offsetProject[0] - zeroProject[0]);
+                const revertPrj = proj4(secondProjection, firstProjection, [lng[i], lat[i]]);
+                x[i] = revertPrj[0];
+                y[i] = revertPrj[1];
+              })
+            } else {
+              const zeroProject = proj4(firstProjection, secondProjection, [0, 0]);
+              const offsetProject = proj4(firstProjection, secondProjection, [_xOffset, _yOffset]);
+              lat = _lat + (offsetProject[1] - zeroProject[1]);
+              lng = _lng + (offsetProject[0] - zeroProject[0]);
+              const revertPrj = proj4(secondProjection, firstProjection, [lng, lat]);
+              x = revertPrj[0];
+              y = revertPrj[1];
+            }
+          } else if (_checkCoordResult == false) {
+            // calculate new lat/lng from new x, y
+            if (Array.isArray(depth)) {
+              depth.forEach((d, i) => {
+                x[i] = _x + _xOffset[i];
+                y[i] = _y + _yOffset[i];
+                const prjResult = proj4(firstProjection, secondProjection, [x[i], y[i]]);
+                lat[i] = prjResult[1];
+                lng[i] = prjResult[0];
+              })
+            } else {
+              x = _x + _xOffset;
+              y = _y + _yOffset;
+              const prjResult = proj4(firstProjection, secondProjection, [x, y]);
+              lat = prjResult[1];
+              lng = prjResult[0];
+            }
+          }
+        }
+      } else {
+        console.warn(`Cannot find XOFFSET or YOFFSET curve in INDEX dataset of well ${well.name}`);
+        alertDebounce(`Cannot find XOFFSET or YOFFSET curve in INDEX dataset of well ${well.name}`);
+      }
+    } else {
+      console.warn(`Cannot find INDEX dataset in well ${well.name}`);
+      alertDebounce(`Cannot find INDEX dataset in well ${well.name}`);
+    }
+    if (Array.isArray(depth)) {
+      return depth.map((d, i) => {
+        return { x: x[i], y: y[i], lat: lat[i], lng: lng[i] };
+      })
+    }
+    return {x, y, lat, lng};
+  }
   async function getCoordFromCurve(well) {
     const focusedMZ = self.focusMarkerOrZone;
     if (!focusedMZ) {
@@ -1376,88 +1512,10 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken) {
           depth = matchMarker.depth;
       }
     }
-    let x, y;
-    let lat, lng;
     if (_.isFinite(depth)) {
-      const indexDataset = well.datasets.find(ds => ds.name == "INDEX");
-      if (indexDataset) {
-        const xOffsetCurve = indexDataset.curves.find(c => c.idFamily == 762)
-        const yOffsetCurve = indexDataset.curves.find(c => c.idFamily == 764)
-
-        if (xOffsetCurve && yOffsetCurve) {
-          const top = Number(indexDataset.top);
-          const step = Number(indexDataset.step);
-          const xOffsetData = await new Promise((res) => {
-            self.getCurveRawDataFn(xOffsetCurve.idCurve, (err, data) => {
-              res(data.map(d => Object.assign(d, { depth: top + step * d.y })).filter(d => _.isFinite(d.x)));
-            });
-          });
-          const yOffsetData = await new Promise((res) => {
-            self.getCurveRawDataFn(yOffsetCurve.idCurve, (err, data) => {
-              res(data.map(d => Object.assign(d, { depth: top + step * d.y })).filter(d => _.isFinite(d.x)));
-            });
-          });
-
-          if (xOffsetData.length && yOffsetData.length) {
-            const firstProjection = self.zoneMap;
-            const secondProjection = "+proj=longlat +ellps=WGS84 +datum=WGS84 +units=degrees";
-
-            const _lat = getLat(well.well_headers, true);
-            const _lng = getLong(well.well_headers, true);
-            const _x = getX(well.well_headers, true);
-            const _y = getY(well.well_headers, true);
-
-            const xUpperBoundIdx = xOffsetData.findIndex(datum => datum.depth >= depth);
-            const xUpperBound = xOffsetData[xUpperBoundIdx];
-            const xLowerBound = xOffsetData[xUpperBoundIdx - 1];
-
-            // calculate x, y offsets
-            let _xOffset, _yOffset;
-            if (xLowerBound)
-              _xOffset = d3.scaleLinear().domain([xLowerBound.depth, xUpperBound.depth]).range([xLowerBound.x, xUpperBound.x])(depth);
-            else
-              _xOffset = (xUpperBound || xOffsetData[xOffsetData.length - 1]).x;
-
-            const yUpperBoundIdx = yOffsetData.findIndex(datum => datum.depth >= depth);
-            const yUpperBound = yOffsetData[yUpperBoundIdx];
-            const yLowerBound = yOffsetData[yUpperBoundIdx - 1];
-
-            if (yLowerBound)
-              _yOffset = d3.scaleLinear().domain([yLowerBound.depth, yUpperBound.depth]).range([yLowerBound.x, yUpperBound.x])(depth);
-            else
-              _yOffset = (yUpperBound || yOffsetData[yOffsetData.length - 1]).x;
-
-
-            const _checkCoordResult = checkCoordinate(_lat, _lng, _x, _y);
-            if (_checkCoordResult == true) {
-              // calculate new lat/lng, x/y from x, y offset
-              const zeroProject = proj4(firstProjection, secondProjection, [0, 0]);
-              const offsetProject = proj4(firstProjection, secondProjection, [_xOffset, _yOffset]);
-              lat = _lat + (offsetProject[1] - zeroProject[1]);
-              lng = _lng + (offsetProject[0] - zeroProject[0]);
-              const revertPrj = proj4(secondProjection, firstProjection, [lng, lat]);
-              x = revertPrj[0];
-              y = revertPrj[1];
-            } else if (_checkCoordResult == false) {
-              // calculate new lat/lng from new x, y
-              x = _x + _xOffset;
-              y = _y + _yOffset;
-              const prjResult = proj4(firstProjection, secondProjection, [x, y]);
-              lat = prjResult[1];
-              lng = prjResult[0];
-
-            }
-          }
-        } else {
-          console.warn(`Cannot find XOFFSET or YOFFSET curve in INDEX dataset of well ${well.name}`);
-          alertDebounce(`Cannot find XOFFSET or YOFFSET curve in INDEX dataset of well ${well.name}`);
-        }
-      } else {
-        console.warn(`Cannot find INDEX dataset in well ${well.name}`);
-        alertDebounce(`Cannot find INDEX dataset in well ${well.name}`);
-      }
+      return await getCoordFromDepth(depth, well);
     }
-    return { x, y, lat, lng };
+    return { x: null, y: null, lat: null, lng: null };
   }
   // ====================== END DRAWING BY ZONE AND MARKER SET ====================
 

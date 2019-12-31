@@ -1,6 +1,11 @@
 <div ng-class="{'show-dashboard': self.showDashboard}" class="dialog">
   ${require('./dialog-dashboard.html')}
 </div>
+
+<script type="text/ng-template" id="dashboard-template-modal">
+${require('./dashboard-template-modal.html')}
+</script>
+
 <div id="main" class="main slim-scroller" ng-class="{'change-height': self.hideMain}">
   <div class="tab">
     <div style="display: flex; align-items: center;">
@@ -54,7 +59,8 @@
     <div title="Delete wells" class="tab-fn" ng-click="self.deleteWell()" ng-class="{'inactive' : !isSet(3)}">
       <i class="ti ti-trash"></i>
     </div>
-    <div title="Clear all the wells on the map" class="tab-fn" ng-click="self.cleanMap()" ng-class="{'inactive' : !isSet(3)}">
+    <div title="Clear all the wells on the map" class="tab-fn" ng-click="self.cleanMap()"
+      ng-class="{'inactive' : !isSet(3)}">
       <i class="ti ti-paint-roller"></i>
     </div>
     <div title="Refesh" class="tab-fn" ng-click="self.refesh()" ng-class="{'inactive' : !isSet(1)}">
@@ -183,6 +189,27 @@
               hide-unmatched="true" no-drag="true">
             </wi-tree-view-virtual>
           </div>
+        </div>
+      </div>
+      <div class="setting">
+        <div class="setting-title" style="margin-bottom: 10px;">Show Trajectory</div>
+        <div class="complex-setting">
+          <div class="setting-content">
+            <span
+              class="setting-sub-title">{{self.showTrajectory?"Pick a curve for tracjectory rendering":"Displays trajectory layer"}}</span>
+            <label class="switch">
+              <input type="checkbox" ng-checked="self.showTrajectory" ng-click="self.toggleTrajectory()" />
+              <span class="slider round"></span>
+            </label>
+          </div>
+          <!--
+          <div ng-if="self.showTrajectory" class="setting-content" style="margin-top: 12px;">
+            <wi-tree-view-virtual tree-root="curveList" get-label="self.getLabel" get-icon="self.getIcon"
+              click-fn="self.clickCurveFunction" get-children="self.getChildren" run-match="self.runMatchCurve"
+              hide-unmatched="true" no-drag="true">
+            </wi-tree-view-virtual>
+          </div>
+          -->
         </div>
       </div>
       <div class="upload">
@@ -371,7 +398,7 @@
       <div class="arrow"></div>
       <span>Production</span>
     </div>
-    <div class="help-content-row" >
+    <div class="help-content-row">
       <div class="circle"></div>
       <span>Exploration</span>
     </div>
@@ -388,11 +415,13 @@
       <div class="circle" style="background: rgba(0, 253, 21, 0.541);
       border: 1px solid #00681f;"></div>
       <span>Condensate</span>
-    </div><div class="help-content-row">
+    </div>
+    <div class="help-content-row">
       <div class="circle" style="background: rgba(250, 74, 74, 0.541);
       border: 1px solid #af0909;"></div>
       <span>Gas</span>
-    </div><div class="help-content-row">
+    </div>
+    <div class="help-content-row">
       <div class="circle" style="background: rgba(0, 139, 253, 0.541);
       border: 1px solid #096aaf;"></div>
       <span>Water</span>
@@ -413,7 +442,7 @@
 -->
 <google-map-view theme="themeMap" ng-if="checkGoogleApi()" ng-show="self.showMap" all-popup="allPopup" class="mapView"
   wells="wellSelect" geo-json="self.geoJson" control-panel="self.controlPanel" point="self.point" focus-well='focusWell'
-  focus-curve="focusCurve" show-contour="self.showContour" focus-marker-or-zone="focusMZ"
-  zone-depth-spec="self.zoneDepthSpec" get-curve-info-fn="self.getCurveInfoFn"
+  focus-curve="focusCurve" show-contour="self.showContour" show-trajectory="self.showTrajectory"
+  focus-marker-or-zone="focusMZ" zone-depth-spec="self.zoneDepthSpec" get-curve-info-fn="self.getCurveInfoFn"
   get-curve-raw-data-fn="self.getCurveRawDataFn" zone-map="zoneMap">
 </google-map-view>
