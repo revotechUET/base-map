@@ -40,6 +40,11 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken) {
   let self = this;
   let map;
   let markers = [];
+  var drawMarkersDebounced = _.debounce(drawMarkers, 500);
+  let icon_circle = 'M-20,0a20,20 0 1,0 40,0a20,20 0 1,0 -40,0';
+  let icon_arrow_up = 'M33.1,228.2c1.7,4,5.5,6.6,9.9,6.6h116.9v266.7c0,5.9,4.8,10.7,10.7,10.7h170.7c5.9,0,10.7-4.8,10.7-10.7V234.8h117.3    c4.3,0,8.2-2.6,9.9-6.6c1.6-4,0.7-8.6-2.3-11.6L264,3.1c-2-2-4.7-3.1-7.6-3.1c-2.8,0-5.5,1.1-7.6,3.1L35.4,216.6    C32.4,219.7,31.5,224.3,33.1,228.2z';
+  let icon_arrow_down = 'M479.046,283.925c-1.664-3.989-5.547-6.592-9.856-6.592H352.305V10.667C352.305,4.779,347.526,0,341.638,0H170.971    c-5.888,0-10.667,4.779-10.667,10.667v266.667H42.971c-4.309,0-8.192,2.603-9.856,6.571c-1.643,3.989-0.747,8.576,2.304,11.627    l212.8,213.504c2.005,2.005,4.715,3.136,7.552,3.136s5.547-1.131,7.552-3.115l213.419-213.504    C479.793,292.501,480.71,287.915,479.046,283.925z';
+
 
   this.$onInit = function () {
     $timeout(function () {
@@ -96,7 +101,8 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken) {
         return [self.wells];
       },
       function () {
-        drawMarkers();
+        // drawMarkers();
+        drawMarkersDebounced();
         $timeout(() => {
           showAllPopup(self.allPopup);
           updateContours();
@@ -146,10 +152,10 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken) {
   // SHOW MAP
   function drawMap() {
     map = new google.maps.Map(document.getElementById('map'), {
-      zoom: 4, 
+      zoom: 4,
       center: { lat: 21.344, lng: 107.036 },
       scaleControl: true,
- 
+
     });
     map.setOptions({ minZoom: 3 });
 
@@ -1206,15 +1212,28 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken) {
           let infowindow = new google.maps.InfoWindow({
             content: markername
           });
-          // aMarker.addListener('click', function () {
           infowindow.open(map, aMarker);
-          // });
-          // map.setCenter(lat, long);
-          // map.setCenter({lat:lat, lng:long});
-          // map.setCenter(new google.maps.LatLng(lat, long));
-          // map.setCenter(new google.maps.LatLng(lat, long), 5);
-
-
+          if(getImageIconMarker(self.wells[index].well_headers) == icon_circle){
+            aMarker.setIcon({
+              path: getImageIconMarker(self.wells[index].well_headers),
+              fillColor: getColorIconMarker(self.wells[index].well_headers),
+              fillOpacity: .6,
+              anchor: new google.maps.Point(0, 0),
+              strokeWeight: 1,
+              strokeColor: getColorIconMarker(self.wells[index].well_headers),
+              scale: 0.5,
+            });
+          } else {
+            aMarker.setIcon({
+              path: getImageIconMarker(self.wells[index].well_headers),
+              fillColor: getColorIconMarker(self.wells[index].well_headers),
+              fillOpacity: .6,
+              anchor: new google.maps.Point(270, 530),
+              strokeWeight: 1,
+              strokeColor: getColorIconMarker(self.wells[index].well_headers),
+              scale: 0.05,
+            });
+          }
         }
         else if (checkCoordinate(lat, long, x, y) === false) {
           aMarker = new google.maps.Marker({ position: { lat: latX, lng: lngY }, map: map });
@@ -1224,10 +1243,27 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken) {
           });
           // aMarker.addListener('click', function () {
           infowindow.open(map, aMarker);
-          // });
-          // map.setCenter(latX, lngY);
-          // map.setCenter(new google.maps.LatLng(latX, lngY));
-          // map.setCenter(new google.maps.LatLng(latX, lngY), 5);
+          if(getImageIconMarker(self.wells[index].well_headers) == icon_circle){
+            aMarker.setIcon({
+              path: getImageIconMarker(self.wells[index].well_headers),
+              fillColor: getColorIconMarker(self.wells[index].well_headers),
+              fillOpacity: .6,
+              anchor: new google.maps.Point(0, 0),
+              strokeWeight: 1,
+              strokeColor: getColorIconMarker(self.wells[index].well_headers),
+              scale: 0.5,
+            });
+          } else {
+            aMarker.setIcon({
+              path: getImageIconMarker(self.wells[index].well_headers),
+              fillColor: getColorIconMarker(self.wells[index].well_headers),
+              fillOpacity: .6,
+              anchor: new google.maps.Point(270, 530),
+              strokeWeight: 1,
+              strokeColor: getColorIconMarker(self.wells[index].well_headers),
+              scale: 0.05,
+            });
+          }
 
         }
         if (aMarker) {
@@ -1250,16 +1286,12 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken) {
       let lngY = proj4(firstProjection, secondProjection, [x, y])[0];
 
       if (checkCoordinate(lat, long, x, y) === true) {
-          // map.setCenter(new google.maps.LatLng(lat, long), 15);
-          map.setCenter({lat:lat, lng:long, alt:0});
-          console.log(lat, long);
-
+        map.setZoom(12);
+        map.setCenter({ lat: lat, lng: long, alt: 0 });
       }
       else if (checkCoordinate(lat, long, x, y) === false) {
-        // map.setCenter(new google.maps.LatLng(latX, lngY), 15);
-          map.setCenter({lat:latX, lng:lngY, alt:0});
-          console.log(latX, lngY);
-
+        map.setZoom(12);
+        map.setCenter({ lat: latX, lng: lngY, alt: 0 });
       } else {
         ngDialog.open({
           template: "templateError",
@@ -1315,8 +1347,8 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken) {
           next();
         })
     }, () => {
-      drawMarkers();
-      // drawMarkersDebounced();
+      // drawMarkers();
+      drawMarkersDebounced();
     })
   }
   async function getCoordFromCurve(well) {
@@ -1557,7 +1589,30 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken) {
     return curveInfo.DataStatistic.meanValue;
   }
   // =================== END DRAWING CONTOUR =========================
-
+   function getColorIconMarker(wellHeader){
+    if (getFluidCode(wellHeader) === 'Gas') {
+      return 'red'
+    } else if (getFluidCode(wellHeader) === 'Water') {
+      return 'blue'
+    } else if (getFluidCode(wellHeader) === 'Condensate') {
+      return 'green'
+    } else if (getFluidCode(wellHeader) === 'Oil') {
+      return 'gray'
+    } else {
+      return 'yellow'
+    }
+   }
+   function getImageIconMarker(wellHeader){
+    if (getType(wellHeader) === 'Exploration') {
+      return icon_circle
+    } else if (getType(wellHeader) === 'Production') {
+      return icon_arrow_up
+    } else if (getType(wellHeader) === 'Injection') {
+      return icon_arrow_down
+    } else {
+      return ''
+    }
+  }
   function checkCoordinate(lat, long, x, y) {
     if ((!lat || !long) && (x && y)) {
       return false;
@@ -1638,6 +1693,25 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken) {
       if (wellIndex[index].header === "Y") {
         const value = Number(wellIndex[index].value);
         return isNaN(value) ? 0 : value;
+      }
+    }
+    return 0;
+  }
+  function getFluidCode(wellIndex) {
+    if (!(wellIndex || []).length) return 0;
+    for (let index = 0; index < wellIndex.length; index++) {
+      if (wellIndex[index].header === "TYPE") {
+        return wellIndex[index].value.split(' ').pop();
+      }
+    }
+    return 0;
+  }
+
+  function getType(wellIndex) {
+    if (!(wellIndex || []).length) return 0;
+    for (let index = 0; index < wellIndex.length; index++) {
+      if (wellIndex[index].header === "TYPE") {
+        return wellIndex[index].value.split(' ').shift();
       }
     }
     return 0;
