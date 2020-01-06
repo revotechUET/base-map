@@ -55,19 +55,25 @@ const DTSRC_MAP = {
   'well-by-tag': 'tags',
   'curve-by-tag': 'curveTags'
 }
+const chartTypes = [
+  { data: { label: "Bar" }, properties: { value: "bar" } },
+  { data: { label: "Horizontal Bar" }, properties: { value: "horizontal-bar" } },
+  { data: { label: "Pie" }, properties: { value: "pie" } },
+  { data: { label: "Doughnut" }, properties: { value: "doughnut" } }
+] 
 app.value('chartSettings', {
   chartTypeOpt: {
     type: 'select',
     label: "Chart Type",
-    options: [
-      { data: { label: "Bar" }, properties: { value: "bar" } },
-      { data: { label: "Horizontal Bar" }, properties: { value: "horizontal-bar" } },
-      { data: { label: "Pie" }, properties: { value: "pie" } },
-      { data: { label: "Doughnut" }, properties: { value: "doughnut" } }
-    ],
+    options: chartTypes,
     setValue: function (selectedProps, widgetConfig) {
+      console.log("setting type", selectedProps);
       if (selectedProps)
         widgetConfig.type = selectedProps.value;
+    },
+    getValue: function(widgetConfig) {
+      const foundNode = chartTypes.find(d => d.properties.value == widgetConfig.type);
+      return foundNode ? foundNode.data.label : null;
     }
   },
   dataSourceOpt: {
@@ -84,6 +90,7 @@ app.value('chartSettings', {
       return widgetConfig.dataSourceLabel;
     },
     setValue: function (selectedProps, widgetConfig) {
+      console.log("setting data source");
       if (selectedProps) {
         widgetConfig.data = getData(widgetConfig.dataSources[DTSRC_MAP[selectedProps.value]]);
         widgetConfig.labelFn = function (config, datum, idx) {
@@ -99,6 +106,7 @@ app.value('chartSettings', {
       return _.get(widgetConfig, 'options.scales.yAxes[0].ticks.maxTicksLimit', '[empty]');
     },
     setValue: function (widgetConfig /*editable param*/, newVal) {
+      console.log("setting tick options");
       return _.set(widgetConfig, 'options.scales.yAxes[0].ticks.maxTicksLimit', Math.round(Number(newVal)) || 11);
     }
   },
@@ -109,6 +117,7 @@ app.value('chartSettings', {
       return widgetConfig.title || "[empty]";
     },
     setValue: function (widgetConfig /*editable param*/, newVal) {
+      console.log("setting chart label")
       widgetConfig.title = newVal;
     }
   },
@@ -457,7 +466,7 @@ function baseMapController(
             })
           }
           this.loadDashboardTemplate = () => {
-            resolve(this.selectedNode.content);
+            resolve(angular.copy(this.selectedNode.content));
             $scope.closeThisDialog();
           }
         }],
@@ -489,10 +498,11 @@ function baseMapController(
         })
         return wConfig;
       });
-      console.log(_dashboardContent);
-      self.dashboardContent = _dashboardContent;
-      self.dashboardContent.project = prjTree;
-      $scope.$digest();
+      $timeout(() => {
+        _dashboardContent.project = prjTree;
+        self.dashboardContent = _dashboardContent;
+        $scope.$digest();
+      })
     }).catch((e) => {
       console.error(e);
     }).finally(() => {
@@ -753,10 +763,10 @@ function baseMapController(
       id: getUniqChartID()
     }
     $timeout(() => {
-      self.dashboardContent = [wTypeWidgetConfig, fieldWidgetConfig, operatorWidgetConfig, tagWidgetConfig, curveTagWidgetConfig];
-      self.dashboardContent.project = prjTree;
+      const _dashboardContent = [wTypeWidgetConfig, fieldWidgetConfig, operatorWidgetConfig, tagWidgetConfig, curveTagWidgetConfig];
+      _dashboardContent.project = prjTree;
+      self.dashboardContent = _dashboardContent;
       // self.dashboardContent = [wTypeWidgetConfig];
-
     });
   }
   function getUniqChartID() {
