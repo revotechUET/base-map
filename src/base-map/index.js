@@ -475,6 +475,32 @@ function baseMapController(
       });
     })
   }
+  this.reloadDashboardData = function() {
+    self.showLoadingDashboard = true;
+    wiApi.getFullInfoPromise(self.selectedNode.idProject, self.selectedNode.owner, self.selectedNode.owner ? self.selectedNode.name : null).then((prjTree) => {
+      result = groupWells(prjTree);
+      self.dashboardContent.project = prjTree
+      self.dashboardContent.forEach(widgetConfig => {
+        const data = result[DTSRC_MAP[DTSRC_OPTIONS_MAP[widgetConfig.config.dataSourceLabel]]];
+        Object.assign(widgetConfig.config, {
+          data: getData(data),
+          dataSources: result,
+          labelFn: function (config, datum, idx) {
+            return Object.keys(data)[idx];
+          },
+          colorFn: function (config, datum, idx) {
+            let palette = wiApi.getPalette("RandomColor");
+            return `rgba(${palette[idx].red},${palette[idx].green},${palette[idx].blue},${palette[idx].alpha})`;
+          }
+        })
+      })
+      $scope.$digest();
+    }).catch((e) => {
+      console.error(e);
+    }).finally(() => {
+      self.showLoadingDashboard = false;
+    });
+  }
   this.loadDashboard = async function() {
     const config = await getDashboardTemplate();
     if (!config) return;
