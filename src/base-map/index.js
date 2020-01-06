@@ -141,6 +141,7 @@ function baseMapController(
 ) {
   let self = this;
   window._basemap = self;
+  window.$scope = $scope
   self.noWell = true;
   $scope.wellSelect = [];
   $scope.focusWell = [];
@@ -1469,6 +1470,15 @@ function baseMapController(
       }
     }
   };
+
+  this.nodeComparator = function(node1, node2) {
+    return (
+      node1.idProject === node2.idProject &&
+      node1.idCurve === node2.idCurve &&
+      node1.idDataset === node2.idDataset &&
+      node1.idWell === node2.idWell
+    )
+  }
 
   this.getCurveTree = getCurveTree;
   const BASE_URL = WI_BACKEND_HOST;

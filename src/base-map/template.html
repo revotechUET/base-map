@@ -87,7 +87,7 @@ ${require('./dashboard-template-modal.html')}
       <div style="height: 100%; overflow: hidden; display: flex; flex-direction: column; flex: 1;">
         <wi-tree-view-virtual tree-root="treeConfig" get-label="self.getLabel" get-icon="self.getIcon"
           get-children="self.getChildren" run-match="self.runMatch" hide-unmatched="true" click-fn="self.clickFunction"
-          no-drag="true">
+          no-drag="true" node-comparator="self.nodeComparator">
         </wi-tree-view-virtual>
       </div>
     </div>
