@@ -103,11 +103,10 @@ app.value('chartSettings', {
     type: 'number',
     label: "Ticks",
     getValue: function (widgetConfig, /* editable param */) {
-      return _.get(widgetConfig, 'options.scales.yAxes[0].ticks.maxTicksLimit', '[empty]');
+      return _.get(widgetConfig, 'bar_chart_options.scales.yAxes[0].ticks.maxTicksLimit', '[empty]');
     },
     setValue: function (widgetConfig /*editable param*/, newVal) {
-      console.log("setting tick options");
-      return _.set(widgetConfig, 'options.scales.yAxes[0].ticks.maxTicksLimit', Math.round(Number(newVal)) || 11);
+      return _.set(widgetConfig, 'bar_chart_options.scales.yAxes[0].ticks.maxTicksLimit', Math.round(Number(newVal)) || 11);
     }
   },
   chartLabelOpt: {
@@ -117,10 +116,21 @@ app.value('chartSettings', {
       return widgetConfig.title || "[empty]";
     },
     setValue: function (widgetConfig /*editable param*/, newVal) {
-      console.log("setting chart label")
       widgetConfig.title = newVal;
     }
   },
+  chartShowLabel: {
+    type: 'checkbox',
+    label: 'Segment Labels',
+    getValue: function (widgetConfig) {
+      return (widgetConfig.chart_options || {}).showSegmentLabel;
+    },
+    setValue: function (widgetConfig, newVal) {
+      if (!widgetConfig.chart_options)
+        widgetConfig.chart_options = {};
+      widgetConfig.chart_options.showSegmentLabel = newVal;
+    }
+  }
 });
 app.component(componentName, {
   template: require("./template.html"),
@@ -543,7 +553,8 @@ function baseMapController(
         type: config.type,
         dataSourceLabel: config.dataSourceLabel,
         title: config.title,
-        options: config.options,
+        bar_chart_options: config.bar_chart_options,
+        chart_options: config.chart_options
       };
 
       return {
@@ -611,7 +622,7 @@ function baseMapController(
             return `rgba(${palette[idx].red},${palette[idx].green},${palette[idx].blue},${palette[idx].alpha})`;
           },
           title: 'New Dashboard',
-          options: {
+          bar_chart_options: {
             scales: {
               yAxes: [{
                 ticks: {
@@ -652,7 +663,7 @@ function baseMapController(
     let wTypeWidgetConfig = {
       name: "Well Type",
       config: {
-        type: 'bar',
+        type: 'pie',
         data: getData(result.wTypes),
         dataSources: result,
         dataSourceLabel: 'Well By Type',
@@ -664,7 +675,7 @@ function baseMapController(
           return `rgba(${palette[idx].red},${palette[idx].green},${palette[idx].blue},${palette[idx].alpha})`;
         },
         title: 'Well Type',
-        options: {
+        bar_chart_options: {
           scales: {
             yAxes: [{
               ticks: {
@@ -693,7 +704,7 @@ function baseMapController(
           let palette = wiApi.getPalette("RandomColor");
           return `rgba(${palette[idx].red},${palette[idx].green},${palette[idx].blue},${palette[idx].alpha})`;
         },
-        options: {
+        bar_chart_options: {
           scales: {
             yAxes: [{
               ticks: {
@@ -722,7 +733,7 @@ function baseMapController(
           let palette = wiApi.getPalette("RandomColor");
           return `rgba(${palette[idx].red},${palette[idx].green},${palette[idx].blue},${palette[idx].alpha})`;
         },
-        options: {
+        bar_chart_options: {
           scales: {
             yAxes: [{
               ticks: {
@@ -749,7 +760,7 @@ function baseMapController(
           let palette = wiApi.getPalette("RandomColor");
           return `rgba(${palette[idx].red},${palette[idx].green},${palette[idx].blue},${palette[idx].alpha})`;
         },
-        options: {
+        bar_chart_options: {
           scales: {
             yAxes: [{
               ticks: {
@@ -776,7 +787,7 @@ function baseMapController(
           let palette = wiApi.getPalette("RandomColor");
           return `rgba(${palette[idx].red},${palette[idx].green},${palette[idx].blue},${palette[idx].alpha})`;
         },
-        options: {
+        bar_chart_options: {
           scales: {
             yAxes: [{
               ticks: {
