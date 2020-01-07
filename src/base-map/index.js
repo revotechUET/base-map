@@ -663,7 +663,7 @@ function baseMapController(
     let wTypeWidgetConfig = {
       name: "Well Type",
       config: {
-        type: 'pie',
+        type: 'bar',
         data: getData(result.wTypes),
         dataSources: result,
         dataSourceLabel: 'Well By Type',
