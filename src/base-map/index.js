@@ -61,6 +61,7 @@ const chartTypes = [
   { data: { label: "Pie" }, properties: { value: "pie" } },
   { data: { label: "Doughnut" }, properties: { value: "doughnut" } }
 ] 
+const CHART_DATA_SOURCE = {} 
 app.value('chartSettings', {
   chartTypeOpt: {
     type: 'select',
@@ -92,9 +93,15 @@ app.value('chartSettings', {
     setValue: function (selectedProps, widgetConfig) {
       console.log("setting data source");
       if (selectedProps) {
+        /*
         widgetConfig.data = getData(widgetConfig.dataSources[DTSRC_MAP[selectedProps.value]]);
         widgetConfig.labelFn = function (config, datum, idx) {
           return Object.keys(widgetConfig.dataSources[DTSRC_MAP[selectedProps.value]])[idx];
+        }
+        */
+        widgetConfig.data = getData(CHART_DATA_SOURCE[DTSRC_MAP[selectedProps.value]]);
+        widgetConfig.labelFn = function (config, datum, idx) {
+          return Object.keys(CHART_DATA_SOURCE[DTSRC_MAP[selectedProps.value]])[idx];
         }
       }
     }
@@ -130,8 +137,30 @@ app.value('chartSettings', {
         widgetConfig.chart_options = {};
       widgetConfig.chart_options.showSegmentLabel = newVal;
     }
-  }
+  },
+  yAxisMin: {
+    type: 'number',
+    label: "Axis Min",
+    getValue: function (widgetConfig, /* editable param */) {
+      return _.get(widgetConfig, 'bar_chart_options.scales.yAxes[0].ticks.min', '[empty]');
+    },
+    setValue: function (widgetConfig /*editable param*/, newVal) {
+      return _.set(widgetConfig, 'bar_chart_options.scales.yAxes[0].ticks.min', Math.round(Number(newVal)) || 0);
+    }
+  },
+  yAxisMax: {
+    type: 'number',
+    label: "Axis Max",
+    getValue: function (widgetConfig, /* editable param */) {
+      return _.get(widgetConfig, 'bar_chart_options.scales.yAxes[0].ticks.max', '[empty]');
+    },
+    setValue: function (widgetConfig /*editable param*/, newVal) {
+      return _.set(widgetConfig, 'bar_chart_options.scales.yAxes[0].ticks.max', Math.round(Number(newVal)) || 100);
+    }
+  },
+
 });
+app.value('chartDataSource', CHART_DATA_SOURCE)
 app.component(componentName, {
   template: require("./template.html"),
   controller: baseMapController,
@@ -156,7 +185,8 @@ function baseMapController(
   $timeout,
   $location,
   ngDialog,
-  wiApi
+  wiApi,
+  chartDataSource
 ) {
   let self = this;
   window._basemap = self;
@@ -487,14 +517,16 @@ function baseMapController(
   }
   this.reloadDashboardData = function() {
     self.showLoadingDashboard = true;
-    wiApi.getFullInfoPromise(self.selectedNode.idProject, self.selectedNode.owner, self.selectedNode.owner ? self.selectedNode.name : null).then((prjTree) => {
+    wiApi.getFullInfoPromise(self.selectedNode.idProject, self.selectedNode.owner, self.selectedNode.owner ? self.selectedNode.name : null)
+    .then((prjTree) => {
       result = groupWells(prjTree);
+      Object.assign(CHART_DATA_SOURCE, result)
       self.dashboardContent.project = prjTree
       self.dashboardContent.forEach(widgetConfig => {
         const data = result[DTSRC_MAP[DTSRC_OPTIONS_MAP[widgetConfig.config.dataSourceLabel]]];
         Object.assign(widgetConfig.config, {
           data: getData(data),
-          dataSources: result,
+          // dataSources: result,
           labelFn: function (config, datum, idx) {
             return Object.keys(data)[idx];
           },
@@ -504,11 +536,12 @@ function baseMapController(
           }
         })
       })
-      $scope.$digest();
     }).catch((e) => {
       console.error(e);
     }).finally(() => {
+      console.log("finally reload data");
       self.showLoadingDashboard = false;
+      $scope.$digest();
     });
   }
   this.loadDashboard = async function() {
@@ -519,12 +552,13 @@ function baseMapController(
     wiApi.getFullInfoPromise(self.selectedNode.idProject, self.selectedNode.owner, self.selectedNode.owner ? self.selectedNode.name : null).then((prjTree) => {
       projectTree = prjTree;
       let result = groupWells(prjTree);
+      Object.assign(CHART_DATA_SOURCE, result)
 
       const _dashboardContent = widgetConfigs.map(wConfig => {
         const data = result[DTSRC_MAP[DTSRC_OPTIONS_MAP[wConfig.config.dataSourceLabel]]];
         Object.assign(wConfig.config, {
           data: getData(data),
-          dataSources: result,
+          // dataSources: result,
           labelFn: function (config, datum, idx) {
             return Object.keys(data)[idx];
           },
@@ -535,15 +569,13 @@ function baseMapController(
         })
         return wConfig;
       });
-      $timeout(() => {
-        _dashboardContent.project = prjTree;
-        self.dashboardContent = _dashboardContent;
-        $scope.$digest();
-      })
+      _dashboardContent.project = prjTree;
+      self.dashboardContent = _dashboardContent;
     }).catch((e) => {
       console.error(e);
     }).finally(() => {
       self.showLoadingDashboard = false;
+      $scope.$digest();
     });
   }
   this.saveDashboard = function() {
@@ -608,12 +640,13 @@ function baseMapController(
     wiApi.getFullInfoPromise(self.selectedNode.idProject, self.selectedNode.owner, self.selectedNode.owner ? self.selectedNode.name : null).then((prjTree) => {
       projectTree = prjTree;
       let result = groupWells(projectTree);
+      Object.assign(CHART_DATA_SOURCE, result)
       let WidgetConfig = {
         name: "New Dashboard",
         config: {
           type: 'bar',
           data: getData(result.wTypes),
-          dataSources: result,
+          // dataSources: result,
           labelFn: function (config, datum, idx) {
             return Object.keys(result.wTypes)[idx];
           },
@@ -660,12 +693,13 @@ function baseMapController(
   }
   function buildDashboard(prjTree) {
     let result = groupWells(prjTree);
+    Object.assign(CHART_DATA_SOURCE, result)
     let wTypeWidgetConfig = {
       name: "Well Type",
       config: {
         type: 'bar',
         data: getData(result.wTypes),
-        dataSources: result,
+        // dataSources: result,
         dataSourceLabel: 'Well By Type',
         labelFn: function (config, datum, idx) {
           return Object.keys(result.wTypes)[idx];
@@ -694,7 +728,7 @@ function baseMapController(
       config: {
         type: 'bar',
         data: getData(result.fields),
-        dataSources: result,
+        // dataSources: result,
         dataSourceLabel: 'Well By Field',
         labelFn: function (config, datum, idx) {
           return Object.keys(result.fields)[idx];
@@ -723,7 +757,7 @@ function baseMapController(
       config: {
         type: 'bar',
         data: getData(result.operators),
-        dataSources: result,
+        // dataSources: result,
         dataSourceLabel: 'Well By Operator',
         labelFn: function (config, datum, idx) {
           return Object.keys(result.operators)[idx];
@@ -751,7 +785,7 @@ function baseMapController(
       config: {
         type: 'bar',
         data: getData(result.tags),
-        dataSources: result,
+        // dataSources: result,
         dataSourceLabel: 'Well By Tag',
         labelFn: function (config, datum, idx) {
           return Object.keys(result.tags)[idx];
@@ -778,7 +812,7 @@ function baseMapController(
       config: {
         type: 'bar',
         data: getData(result.curveTags),
-        dataSources: result,
+        // dataSources: result,
         dataSourceLabel: 'Curve By Tag',
         labelFn: function (config, datum, idx) {
           return Object.keys(result.curveTags)[idx];
