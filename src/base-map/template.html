@@ -235,27 +235,6 @@ ${require('./dashboard-template-modal.html')}
           </div>
         </div>
       </div>
-      <!-- <div class="upload">
-        <div class="upload-header">
-          <div>
-            <div style="font-weight: bold;">Import your config</div>
-            <span>Upload a zip file.</span>
-          </div>
-          <div class="btn-add" id="map-upfile-2-btn">
-            <span class="ti ti-plus"></span>
-          </div>
-        </div>
-        <div class="upload-content">
-          <p>
-            <input type="file" id="map-upfile-2" class="file-upload" accept=".zip" placeholder="choose a file .zip"
-              onblur="angular.element(this).scope().clearSelectedContourFile()"
-              onchange="angular.element(this).scope().onZipFileChange(), angular.element(this).scope().GetFileSizeNameAndType2()" />
-          </p>
-          <div id="fp2" style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis; margin-top: 15px;">
-          </div>
-        </div>
-      </div> -->
-
     </div>
   </div>
   <div ng-show="isSet(2) && !self.hideMain" class="content">
@@ -332,7 +311,7 @@ ${require('./dashboard-template-modal.html')}
         <div class="setting-content">
           <span>Dark mode for menu window, dashboard </span>
           <label class="switch">
-            <input type="checkbox" ng-click="self.changeTheme(); " />
+            <input type="checkbox" ng-model="self.darkMode" ng-click="self.toggleDarkMode(); " />
             <span class="slider round"></span>
           </label>
         </div>
@@ -350,7 +329,7 @@ ${require('./dashboard-template-modal.html')}
         <div class="upload-content">
           <p>
             <input type="file" id="map-upfile-2" class="file-upload" accept=".zip" placeholder="choose a file .zip"
-              onblur="angular.element(this).scope().clearSelectedContourFile()"
+              onblur="angular.element(this).scope().clearSelectedConfigFile()"
               onchange="angular.element(this).scope().onZipFileChange(), angular.element(this).scope().GetFileSizeNameAndType2()" />
           </p>
           <div id="fp2" style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis; margin-top: 15px;">

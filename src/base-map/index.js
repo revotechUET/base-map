@@ -207,6 +207,9 @@ function baseMapController(
   self.showLoading = false;
   self.showLoadingDashboard = false;
   self.showMap = true;
+  self.darkMode = false;
+  self.showZonesets = false;
+  self.showMarkersets = false;
   $scope.zoneDepthSpecs = [
     { label: 'Zone Top', value: 'zone-top' },
     { label: 'Zone Middle', value: 'zone-middle' },
@@ -317,7 +320,7 @@ function baseMapController(
     }
   };
 
-  $scope.clearSelectedContourFile = function (event) {
+  $scope.clearSelectedConfigFile = function (event) {
     const files = $element.find("input.file-upload")[1].files;
     if (!files || files.length == 0) {
       $scope.wellSelect = [];
@@ -332,6 +335,9 @@ function baseMapController(
       self.point = false;
       self.showContour = false;
       self.showTrajectory = false;
+      self.darkMode = false;
+      self.showZonesets = false;
+      self.showMarkersets = false;
       getZoneList();
 
       self.noWell = true;
@@ -358,36 +364,6 @@ function baseMapController(
             };
           })
           .then(async function (result) {
-            /*
-            result.contour.then(function (data) {
-              data = JSON.parse(data);
-              $scope.wellSelect = data.selectWell || [];
-              $scope.curveList = data.selectCurve || [];
-              $scope.zoneList = data.selectedZone || [];
-              $scope.markerList = data.selectedMarker || [];
-              self.noWell = false;
-              $timeout(() => {
-                if (!$scope.$$phase) {
-                  $scope.$apply();
-                }
-              })
-            });
-            result.mapSetting.then(function (data) {
-              data = JSON.parse(data);
-              $scope.themeMap = data.themeMap;
-              $scope.allPopup = data.allPopup;
-              self.activeTheme = data.activeTheme;
-              self.controlPanel = data.controlPanel;
-              self.point = data.point;
-              self.showContour = data.showContour;
-              $scope.zoneMap = data.zoneMap;
-              $timeout(() => {
-                if (!$scope.$$phase) {
-                  $scope.$apply();
-                };
-              })
-            });
-            */
             await result.contour.then(function (data) {
               return new Promise(res => {
                 data = JSON.parse(data);
@@ -397,6 +373,11 @@ function baseMapController(
                 $scope.markerList = data.selectedMarker || [];
                 self.noWell = false;
                 $scope.focusCurve = $scope.curveList.find(c => c._selected);
+                let selectedZoneset = $scope.zoneList.find(zs => zs.zones.find(z => z._selected));
+                let selectedMarkerset = $scope.markerList.find(ms => ms.markers.find(m => m._selected));
+                $scope.focusMZ = selectedZoneset
+                    ? selectedZoneset.zones.find(z => z._selected)
+                    : selectedMarkerset ? selectedMarkerset.markers.find(m => m._selected) : null
                 if (!$scope.$$phase) {
                   $scope.$apply();
                   $timeout(res, 500);
@@ -412,6 +393,9 @@ function baseMapController(
               self.point = data.point;
               self.showContour = data.showContour;
               self.showTrajectory = data.showTrajectory;
+              self.darkMode = data.darkMode;
+              self.showZonesets = data.showZonesets;
+              self.showMarkersets = data.showMarkersets;
               $scope.zoneMap = data.zoneMap;
               $timeout(() => {
                 if (!$scope.$$phase) {
@@ -892,7 +876,8 @@ function baseMapController(
 
     return { wTypes, fields, operators, tags, curveTags };
   }
-  this.changeTheme = function () {
+  this.toggleDarkMode = function () {
+    self.darkMode = !self.darkMode;
     document.getElementById("main").classList.toggle("dark-mode");
     $(".dialog").toggleClass("dark-mode");
   }
@@ -1037,7 +1022,7 @@ function baseMapController(
     $scope.themeMap = theme;
   };
 
-  this.refesh = function () {
+  this.refresh = function () {
     getZoneList();
     getCurveTree();
     // $scope.wellSelect = [];
@@ -1083,7 +1068,9 @@ function baseMapController(
     var curveSelect = $scope.curveList;
     var dataContour = {
       selectWell: wellSelect,
-      selectCurve: curveSelect
+      selectCurve: curveSelect,
+      selectedZone: $scope.zoneList,
+      selectedMarker: $scope.markerList
     };
     var json1 = JSON.stringify(dataContour),
       blob1 = new Blob([json1], { type: "octet/stream" });
@@ -1098,7 +1085,10 @@ function baseMapController(
       allPopup: $scope.allPopup,
       showContour: self.showContour,
       showTrajectory: self.showTrajectory,
-      zoneMap: $scope.zoneMap
+      zoneMap: $scope.zoneMap,
+      darkMode: self.darkMode,
+      showZonesets: self.showZonesets,
+      showMarkersets: self.showMarkersets
     };
     var json2 = JSON.stringify(dataMapSetting),
       blob2 = new Blob([json2], { type: "octet/stream" });
