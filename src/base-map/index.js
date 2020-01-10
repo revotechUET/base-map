@@ -1701,4 +1701,58 @@ function baseMapController(
   }
 
   $scope.storageDatabase = {};
+  //===============================SYNC data well selected===========================
+  this.refeshWellSelect = async function () {
+    self.projectList = [];
+    self.idWellArray = [];
+    await $http({
+      method: "POST",
+      url: BASE_URL + "/project/list",
+      data: {},
+      headers: {
+        Authorization: wiToken.getToken()
+      }
+    }).then(
+      function (response) {
+        self.projectList = response.data.content;
+      }
+    )
+      for (let index = 0; index < self.projectList.length; index++) {
+        let element = self.projectList[index];
+        if(element.owner){
+          wiApi.getFullInfoPromise(element.idProject, element.owner, element.owner ? element.name : null).then((data) => {
+            console.log(data);
+            console.log('---------------------------------------')
+          }).catch((e) => {
+            console.error(e);
+          })
+        } else if (!element.owner){
+          wiApi.getListWells(element.idProject).then((data) => {
+            console.log(data);
+            console.log('---------------------------------------')
+          }).catch((e) => {
+            console.error(e);
+          })
+        }
+
+      }
+  }
+  function dynamicSort(property) {
+		var sortOrder = 1;
+	
+		if(property[0] === "-") {
+			sortOrder = -1;
+			property = property.substr(1);
+		}
+	
+		return function (a,b) {
+			const compareValOfA = a[property] || ''
+			const compareValOfB = b[property] || ''
+			if(sortOrder == -1){
+				return compareValOfB.localeCompare(compareValOfA);
+			}else{
+				return compareValOfA.localeCompare(compareValOfB);
+			}        
+		}
+	}
 }

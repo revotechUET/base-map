@@ -1302,6 +1302,8 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken) {
             });
           }
 
+        } else {
+          console.log(lat, long, x, y)
         }
         if (aMarker) {
           markers[self.wells[index].idWell] = aMarker;
@@ -1323,18 +1325,24 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken) {
       let lngY = proj4(firstProjection, secondProjection, [x, y])[0];
 
       if (checkCoordinate(lat, long, x, y) === true) {
-        map.setZoom(12);
-        map.setCenter({ lat: lat, lng: long, alt: 0 });
+        // map.setCenter({ lat: lat, lng: long, alt: 0 });
+        // map.setCenter(new google.maps.LatLng(lat, long));
+        // map.panTo(new google.maps.LatLng(lat, long));
+        map.panTo(new google.maps.LatLng(lat, long));
       }
       else if (checkCoordinate(lat, long, x, y) === false) {
-        map.setZoom(12);
-        map.setCenter({ lat: latX, lng: lngY, alt: 0 });
-      } else {
-        ngDialog.open({
-          template: "templateError",
-          className: "ngdialog-theme-default",
-          scope: Object.assign($scope.$new(), { message: `Well's coordinate has been error ${self.focusWell.name}` })
-        })
+        // map.setCenter({ lat: latX, lng: lngY, alt: 0 });
+        // map.setCenter(new google.maps.LatLng(latX, logY));
+        // map.panTo(new google.maps.LatLng(latX, lngY));
+        map.panTo(new google.maps.LatLng(latX, lngY));
+      } 
+      else {
+        self.wellError = self.focusWell.name;
+        // ngDialog.open({
+        //   template: "templateError",
+        //   className: "ngdialog-theme-default",
+        //   scope: Object.assign($scope.$new(), { message: `Well's coordinate has been error ${self.focusWell.name}` })
+        // })
       }
     }
   }

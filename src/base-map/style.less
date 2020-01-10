@@ -10,6 +10,21 @@ base-map {
     #map-upfile-2 {
         display: none;
     }
+    .customize-tree-view {
+        &> div input {
+            border-radius: 0;
+            margin: 0px 0 20px 0;
+            max-width: 100%;
+            background: transparent;
+            border-bottom: 1px solid #ccc;
+        }
+        wi-tree-node-virtual .node-content.selected {
+            margin: 0;
+        }
+        wi-tree-node-virtual .node-content {
+            margin: 0;
+        }
+    }
     .help {
         cursor: pointer;
         animation          : showing-side-right 3s;
@@ -149,7 +164,7 @@ base-map {
         position           : fixed;
         z-index            : 1;
         border-radius      : 5px;
-        box-shadow         : 0 4px 50px -2px rgba(18, 22, 33, 0.08);
+        box-shadow         : 0 4px 50px -2px rgba(18, 22, 33, 0.19);
         animation          : showing-side 3s;
         animation-duration : 2.5s;
         animation-fill-mode: both;
@@ -775,7 +790,7 @@ base-map {
             .main-dialog {
                 flex      : 1;
                 display   : flex;
-                padding   : 20px;
+                // padding   : 20px;
                 overflow  : auto;
                 background: #7b7b7b12;
                 display   : flex;

@@ -38,6 +38,22 @@
 <div id="map"></div>
 <div id="contour-map-container"></div>
 <div id="coords"></div>
+<div class="dialog-error" ng-show="self.wellError">
+    <div class="dialog-header">
+        <div style="display: flex; align-items: center;">
+            <div class="ti-alert" style="color: #ff8503; font-size: 20px;"></div>
+            <span>Warning</span>
+        </div>
+        <div class="ti ti-close" ng-click="self.wellError = !self.wellError" style="cursor: pointer;"></div>
+    </div>
+    <div class="dialog-main">
+        <span>
+            <b>Well: {{self.wellError}}</b><br>
+            Lat Long cannot be converted to UTM or failed to get projected coordinates.
+        </span>
+    </div>
+    
+</div>
 
 <script type="text/ng-template" id="templateError">
     <style>

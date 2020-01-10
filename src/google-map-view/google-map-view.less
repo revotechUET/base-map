@@ -1,4 +1,5 @@
 google-map-view {
+    overflow: hidden !important;
     #map {
         height  : 100%;
         width   : 100%;
@@ -6,6 +7,35 @@ google-map-view {
     }
     .showControl {
         display: none;
+    }
+    .dialog-error {
+        z-index: 1;
+        position: fixed;
+        width: 340px;
+        max-height: 300px;
+        height: 160px;
+        margin: 40px auto auto 420px;
+        top: 0;
+        border-radius: 5px;
+        background: #fff;
+        box-shadow: 0 4px 50px -2px rgba(18, 22, 33, 0.19);
+        overflow: hidden;
+        animation          : showing-dialog-popup 0.5s;
+        animation-fill-mode: both;
+        .dialog-header {
+            padding: 14px 20px;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid #c4c4c459;
+            justify-content: space-between;
+            &>div>span {
+                font-weight: bold; 
+                margin-left: 15px;
+            }
+        }
+        .dialog-main {
+            padding: 20px;
+        }
     }
 
     .gm-bundled-control-on-bottom {
@@ -52,4 +82,22 @@ google-map-view {
         display: none !important;
 
     }
+    @keyframes showing-dialog-popup {
+
+        0% {
+            transform: translateY(-500px);
+        }
+
+        90% {
+            transform: translateY(10px);
+
+        }
+
+        100% {
+            transform: translateY(0);
+
+        }
+
+    }
+    
 }

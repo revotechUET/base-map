@@ -63,9 +63,12 @@ ${require('./dashboard-template-modal.html')}
       ng-class="{'inactive' : !isSet(3)}">
       <i class="ti ti-paint-roller"></i>
     </div>
-    <div title="Refesh" class="tab-fn" ng-click="self.refesh()" ng-class="{'inactive' : !isSet(1)}">
+    <div title="Refesh Projects List" class="tab-fn" ng-click="self.refesh()" ng-class="{'inactive' : !isSet(1)}" ng-hide="!isSet(1)">
       <i class="ti ti-reload"></i>
     </div>
+    <!-- <div title="Refesh Wells Selected" class="tab-fn" ng-click="self.refeshWellSelect()" ng-class="{'inactive' : !isSet(3)}" ng-show="isSet(3)">
+      <i class="ti ti-reload"></i>
+    </div> -->
     <div title="Toggle menu" ng-show="!self.hideMain && self.showMap" class="tab-fn"
       ng-click="self.hideMain = !self.hideMain">
       <i class="ti ti-angle-up"></i>
@@ -143,13 +146,13 @@ ${require('./dashboard-template-modal.html')}
           </div>
           <div ng-if="self.showZonesets" class="setting-content"
             style="margin-top:12px; flex-direction: column; align-items: unset;">
-            <div style="flex-basis: 1.5em; display: flex; justify-content: space-around;">
+            <div style="flex-basis: 1.5em; display: flex; justify-content: space-between;">
               <label ng-repeat="_zoneDepthSpec in zoneDepthSpecs">
-                <input type="radio" ng-model="self.zoneDepthSpec" value="{{_zoneDepthSpec.value}}">
+                <input type="radio" ng-model="self.zoneDepthSpec" value="{{_zoneDepthSpec.value}}">&nbsp&nbsp
                 {{_zoneDepthSpec.label}}
               </label>
             </div>
-            <wi-tree-view-virtual tree-root="zoneList" get-label="self.getLabel" get-icon="self.getIcon"
+            <wi-tree-view-virtual tree-root="zoneList" get-label="self.getLabel" get-icon="self.getIcon" class="customize-tree-view"
               click-fn="self.clickZoneFunction" get-children="self.getChildren" run-match="self.runMatchZonesets"
               hide-unmatched="true" no-drag="true">
             </wi-tree-view-virtual>
@@ -165,7 +168,7 @@ ${require('./dashboard-template-modal.html')}
             </label>
           </div>
           <div ng-if="self.showMarkersets" class="setting-content" style="margin-top:12px;">
-            <wi-tree-view-virtual tree-root="markerList" get-label="self.getLabel" get-icon="self.getIcon"
+            <wi-tree-view-virtual tree-root="markerList" get-label="self.getLabel" get-icon="self.getIcon" class="customize-tree-view"
               click-fn="self.clickMarkerFunction" get-children="self.getChildren" run-match="self.runMatchMarkersets"
               hide-unmatched="true" no-drag="true">
             </wi-tree-view-virtual>
@@ -184,7 +187,7 @@ ${require('./dashboard-template-modal.html')}
             </label>
           </div>
           <div ng-if="self.showContour" class="setting-content" style="margin-top: 12px;">
-            <wi-tree-view-virtual tree-root="curveList" get-label="self.getLabel" get-icon="self.getIcon"
+            <wi-tree-view-virtual tree-root="curveList" get-label="self.getLabel" get-icon="self.getIcon" class="customize-tree-view"
               click-fn="self.clickCurveFunction" get-children="self.getChildren" run-match="self.runMatchCurve"
               hide-unmatched="true" no-drag="true">
             </wi-tree-view-virtual>
