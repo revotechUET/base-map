@@ -1130,6 +1130,7 @@ function baseMapController(
         idZoneTemplate: z.idZoneTemplate,
         zonesetName: zoneset.name
       }))
+      .sort((za, zb) => za.name.localeCompare(zb.name))
       .value();
   }
   function createZoneSetNode(zoneset) {
@@ -1178,6 +1179,7 @@ function baseMapController(
           .reverse()
           .forEach(zsi => _zonesets.splice(zsi, 1));
       }
+      _zonesets.sort((zsa, zsb) => zsa.name.localeCompare(zsb.name))
     })
   }
 
@@ -1192,6 +1194,7 @@ function baseMapController(
         markersetName: markerset.name,
         idMarkerTemplate: m.idMarkerTemplate
       }))
+      .sort((ma, mb) => ma.name.localeCompare(mb.name))
       .value();
   }
   function createMarkerSetNode(markerset) {
@@ -1239,6 +1242,8 @@ function baseMapController(
           .sort()
           .reverse()
           .forEach(msi => _markersets.splice(msi, 1));
+        
+        _markersets.sort((msa, msb) => msa.name.localeCompare(msb.name))
       }
     })
   }
@@ -1288,6 +1293,7 @@ function baseMapController(
         if (!_curves.find(c => c.name == $scope.focusCurve.name))
           $scope.focusCurve = null;
       }
+      _curves.sort((ca, cb) => ca.name.localeCompare(cb.name))
     })
     // if (!$scope.$$phase) {
     //   $scope.$digest();
