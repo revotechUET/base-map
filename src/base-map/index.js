@@ -376,7 +376,12 @@ function baseMapController(
       } else if (startReadData) {
         lineData = line.split(/\s+/);
         if (lineData.length) {
-          returnData.data.push(lineData.map(v => Number(v)))
+          if (returnData.data[returnData.data.length - 1] && returnData.data[returnData.data.length - 1].length < returnData.headers["numOfRows"])
+            //concatinating new data
+            returnData.data[returnData.data.length - 1] = returnData.data[returnData.data.length - 1].concat(lineData.map(v => Number(v)));
+          else if (returnData.data.length < returnData.headers["numOfCols"]) {
+            returnData.data.push(lineData.map(v => Number(v)))
+          }
         }
         continue;
       } else if (headerLineIdx < 0) {
