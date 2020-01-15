@@ -320,6 +320,89 @@ function baseMapController(
     }
   };
 
+
+  function parseGridFileContent(fileContent) {
+    const lines = fileContent.split("\n");
+    let headerLineIdx = -1;
+    let startReadData = false;
+    const returnData = {
+      data: [],
+      headers: {}
+    }
+    for (let i = 0; i < lines.length; ++i) {
+      let line = lines[i].trim()
+      if (line.match(/^!/)) {
+        // comment
+        continue;
+      } else if (line.match(/^@Grid/)) {
+        headerLineIdx = 0;
+        lineData = line.split(",");
+        returnData.headers["gridNodesPerPhysicalLine"] = Number(lineData[2]);
+        continue;
+      } else if (headerLineIdx == 0) {
+        // read first header line
+        lineData = line.split(",");
+        if (lineData.length) {
+          returnData.headers["nodeWidth"] = Number(lineData[0]);
+          returnData.headers["numNullValue"] = Number(lineData[1]);
+          returnData.headers["textNullValue"] = Number(lineData[2]);
+          returnData.headers["numOfDecimal"] = Number(lineData[3]);
+          returnData.headers["startCol"] = Number(lineData[4]);
+
+          headerLineIdx = 1;
+        }
+      } else if (headerLineIdx == 1) {
+        // read second header line
+        lineData = line.split(",");
+        if (lineData.length) {
+          returnData.headers["numOfRows"] = Number(lineData[0]);
+          returnData.headers["numOfCols"] = Number(lineData[1]);
+          returnData.headers["minX"] = Number(lineData[2]);
+          returnData.headers["maxX"] = Number(lineData[3]);
+          returnData.headers["minY"] = Number(lineData[4]);
+          returnData.headers["maxY"] = Number(lineData[5]);
+
+          headerLineIdx = 2;
+        }
+      } else if (headerLineIdx == 2) {
+        lineData = line.split(",");
+        if (lineData.length) {
+          headerLineIdx = 3;
+        }
+      } else if (headerLineIdx >= 3 && line.match(/^@$/)) {
+        // reading data
+        startReadData = true;
+        continue;
+      } else if (startReadData) {
+        lineData = line.split(/\s+/);
+        if (lineData.length) {
+          returnData.data.push(lineData.map(v => Number(v)))
+        }
+        continue;
+      } else if (headerLineIdx < 0) {
+        continue;
+      }
+    }
+    return returnData;
+  }
+
+  $scope.onGridFileChange = function() {
+    const files = $element.find("input#map-upfile-text")[0].files;
+    if (files[0]) {
+      // console.log(files[0]);
+      const reader = new FileReader();
+      reader.onload = function(event) {
+        // console.log(event.target.result);
+        data = parseGridFileContent(event.target.result);
+        console.log(data);
+      }
+      reader.readAsText(files[0]);
+      reader.onerror = function (event) {
+        console.error(event);
+      };
+    }
+  }
+
   $scope.clearSelectedConfigFile = function (event) {
     const files = $element.find("input.file-upload")[1].files;
     if (!files || files.length == 0) {
