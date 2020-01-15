@@ -1711,27 +1711,28 @@ function baseMapController(
     }).then(
       function (response) {
         self.projectList = response.data.content;
+        console.log(self.projectList)
+        for (let index = 0; index < self.projectList.length; index++) {
+          let element = self.projectList[index];
+          if(element.owner){
+            wiApi.getFullInfoPromise(element.idProject, element.owner, element.owner ? element.name : null).then((data) => {
+              console.log(data);
+              console.log('---------------------------------------')
+            }).catch((e) => {
+              console.error(e);
+            })
+          } else if (!element.owner){
+            wiApi.getListWells(element.idProject).then((data) => {
+              console.log(data);
+              console.log('---------------------------------------')
+            }).catch((e) => {
+              console.error(e);
+            })
+          }
+  
+        }
       }
     )
-      for (let index = 0; index < self.projectList.length; index++) {
-        let element = self.projectList[index];
-        if(element.owner){
-          wiApi.getFullInfoPromise(element.idProject, element.owner, element.owner ? element.name : null).then((data) => {
-            console.log(data);
-            console.log('---------------------------------------')
-          }).catch((e) => {
-            console.error(e);
-          })
-        } else if (!element.owner){
-          wiApi.getListWells(element.idProject).then((data) => {
-            console.log(data);
-            console.log('---------------------------------------')
-          }).catch((e) => {
-            console.error(e);
-          })
-        }
-
-      }
   }
   function dynamicSort(property) {
 		var sortOrder = 1;

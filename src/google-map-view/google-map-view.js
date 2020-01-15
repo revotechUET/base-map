@@ -1328,13 +1328,24 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken) {
         // map.setCenter({ lat: lat, lng: long, alt: 0 });
         // map.setCenter(new google.maps.LatLng(lat, long));
         // map.panTo(new google.maps.LatLng(lat, long));
-        map.panTo(new google.maps.LatLng(lat, long));
+        // marker = new google.maps.Marker({ position: { lat: lat, lng: long }, map: map, zIndex: 10000 });
+        // // marker.setAnimation(google.maps.Animation.BOUNCE);
+        // let infowindow = new google.maps.InfoWindow({
+        //   content: 'markername'
+        // });
+        // infowindow.open(map, marker);
+ 
       }
       else if (checkCoordinate(lat, long, x, y) === false) {
         // map.setCenter({ lat: latX, lng: lngY, alt: 0 });
         // map.setCenter(new google.maps.LatLng(latX, logY));
         // map.panTo(new google.maps.LatLng(latX, lngY));
-        map.panTo(new google.maps.LatLng(latX, lngY));
+        // marker = new google.maps.Marker({ position: { lat: latX, lng: lngY }, map: map, zIndex: 10000 });
+        // // marker.setAnimation(google.maps.Animation.BOUNCE);
+        // let infowindow = new google.maps.InfoWindow({
+        //   content: 'markername'
+        // });
+        // infowindow.open(map, marker);
       } 
       else {
         self.wellError = self.focusWell.name;
