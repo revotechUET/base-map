@@ -110,10 +110,12 @@ app.value('chartSettings', {
     type: 'number',
     label: "Ticks",
     getValue: function (widgetConfig, /* editable param */) {
-      return _.get(widgetConfig, 'bar_chart_options.scales.yAxes[0].ticks.maxTicksLimit', '[empty]');
+      return _.get(widgetConfig, 'bar_chart_options.scales.yAxes[0].ticks.maxTicksLimit',
+          _.get(widgetConfig, 'bar_chart_options.scales.xAxes[0].ticks.maxTicksLimit', '[empty]'));
     },
     setValue: function (widgetConfig /*editable param*/, newVal) {
-      return _.set(widgetConfig, 'bar_chart_options.scales.yAxes[0].ticks.maxTicksLimit', Math.round(Number(newVal)) || 11);
+      _.set(widgetConfig, 'bar_chart_options.scales.xAxes[0].ticks.maxTicksLimit', Math.round(Number(newVal)) || 11);
+      _.set(widgetConfig, 'bar_chart_options.scales.yAxes[0].ticks.maxTicksLimit', Math.round(Number(newVal)) || 11);
     }
   },
   chartLabelOpt: {
@@ -142,20 +144,24 @@ app.value('chartSettings', {
     type: 'number',
     label: "Axis Min",
     getValue: function (widgetConfig, /* editable param */) {
-      return _.get(widgetConfig, 'bar_chart_options.scales.yAxes[0].ticks.min', '[empty]');
+      return _.get(widgetConfig, 'bar_chart_options.scales.yAxes[0].ticks.min',
+          _.get(widgetConfig, 'bar_chart_options.scales.xAxes[0].ticks.min', '[empty]'));
     },
     setValue: function (widgetConfig /*editable param*/, newVal) {
-      return _.set(widgetConfig, 'bar_chart_options.scales.yAxes[0].ticks.min', Math.round(Number(newVal)) || 0);
+      _.set(widgetConfig, 'bar_chart_options.scales.xAxes[0].ticks.min', Math.round(Number(newVal)) || 0);
+      _.set(widgetConfig, 'bar_chart_options.scales.yAxes[0].ticks.min', Math.round(Number(newVal)) || 0);
     }
   },
   yAxisMax: {
     type: 'number',
     label: "Axis Max",
     getValue: function (widgetConfig, /* editable param */) {
-      return _.get(widgetConfig, 'bar_chart_options.scales.yAxes[0].ticks.max', '[empty]');
+      return _.get(widgetConfig, 'bar_chart_options.scales.yAxes[0].ticks.max',
+          _.get(widgetConfig, 'bar_chart_options.scales.yAxes[0].ticks.max', '[empty]'));
     },
     setValue: function (widgetConfig /*editable param*/, newVal) {
-      return _.set(widgetConfig, 'bar_chart_options.scales.yAxes[0].ticks.max', Math.round(Number(newVal)) || 100);
+      _.set(widgetConfig, 'bar_chart_options.scales.xAxes[0].ticks.max', Math.round(Number(newVal)) || 100);
+      _.set(widgetConfig, 'bar_chart_options.scales.yAxes[0].ticks.max', Math.round(Number(newVal)) || 100);
     }
   },
 
@@ -785,7 +791,12 @@ function baseMapController(
           scales: {
             yAxes: [{
               ticks: {
-                // stepSize: 1.0
+                maxTicksLimit: 10,
+                min: 0
+              }
+            }],
+            xAxes: [{
+              ticks: {
                 maxTicksLimit: 10,
                 min: 0
               }
@@ -813,6 +824,12 @@ function baseMapController(
         bar_chart_options: {
           scales: {
             yAxes: [{
+              ticks: {
+                maxTicksLimit: 10,
+                min: 0
+              }
+            }],
+            xAxes: [{
               ticks: {
                 maxTicksLimit: 10,
                 min: 0
@@ -846,6 +863,12 @@ function baseMapController(
                 maxTicksLimit: 10,
                 min: 0
               }
+            }],
+            xAxes: [{
+              ticks: {
+                maxTicksLimit: 10,
+                min: 0
+              }
             }]
           }
         },
@@ -873,6 +896,12 @@ function baseMapController(
                 maxTicksLimit: 10,
                 min: 0
               }
+            }],
+            xAxes: [{
+              ticks: {
+                maxTicksLimit: 10,
+                min: 0
+              }
             }]
           }
         },
@@ -896,6 +925,12 @@ function baseMapController(
         bar_chart_options: {
           scales: {
             yAxes: [{
+              ticks: {
+                maxTicksLimit: 10,
+                min: 0
+              }
+            }],
+            xAxes: [{
               ticks: {
                 maxTicksLimit: 10,
                 min: 0
