@@ -564,25 +564,16 @@ function baseMapController(
             this.selectedNode = selected;
           }
           this.deleteTemplate = (item) => {
-            ngDialog.open({
-              template: 'dashboard-template-modal',
-              controller: ['$scope', function($scope) {
-                this.mode = "confirm-modal";
-                this.message = "Are you sure to delete this template";
-                this.onOkButtonClicked = function() {
-                  console.log("Do delete item", item);
-                  httpPost("/managementdashboard/delete", {idManagementDashboard: item.properties.idManagementDashboard})
-                    .then(res => {
-                      console.log(res);
-                    })
-                    .catch(err => {
-                      console.error(err);
-                    })
-                  $scope.closeThisDialog();
-                }
-              }],
-              controllerAs: 'wiModal'
-            })
+            confirmDialog("Are you sure to delete this template")
+              .then(() => {
+                httpPost("/managementdashboard/delete", { idManagementDashboard: item.properties.idManagementDashboard })
+                  .then(res => {
+                    console.log(res);
+                  })
+                  .catch(err => {
+                    console.error(err);
+                  })
+              })
           }
           this.loadDashboardTemplate = () => {
             resolve(angular.copy(this.selectedNode.content));
@@ -593,6 +584,24 @@ function baseMapController(
       });
     })
   }
+
+  function confirmDialog(message) {
+    return new Promise(resolve => {
+      ngDialog.open({
+        template: 'dashboard-template-modal',
+        controller: ['$scope', function ($scope) {
+          this.mode = "confirm-modal";
+          this.message = message;
+          this.onOkButtonClicked = function () {
+            resolve();
+            $scope.closeThisDialog();
+          }
+        }],
+        controllerAs: 'wiModal'
+      })
+    })
+  }
+
   this.reloadDashboardData = function() {
     self.showLoadingDashboard = true;
     wiApi.getFullInfoPromise(self.selectedNode.idProject, self.selectedNode.owner, self.selectedNode.owner ? self.selectedNode.name : null)
@@ -687,14 +696,43 @@ function baseMapController(
         this.getValue = () => {
           return this.config.name || "";
         }
+        function checkAvailableDashboard(dshbrdName) {
+          return new Promise(resolve => {
+            httpPost("/managementdashboard/list", {})
+              .then(res => {
+                if (!res || !res.data.content.length) {
+                  return resolve(null);
+                }
+                const templateList = res.data.content.map(dbTemplate => {
+                  dbTemplate.content = JSON.parse(dbTemplate.content);
+                  return dbTemplate;
+                });
+                const hasName = templateList.find(props => props.content.name === dshbrdName);
+                if (hasName) {
+                  // confirmation
+                  confirmDialog("This template name has been used. Replace it?")
+                    .then(() => {
+                      // resolve(hasName.idManagementDashboard);
+                      resolve(null);
+                    })
+                } else {
+                  return resolve(null);
+                }
+              })
+          })
+        }
         this.saveDashboardTemplate = function() {
-          httpPost("/managementdashboard/new", {content: JSON.stringify(payload)})
-            .then(res => {
-              console.log(res);
+          checkAvailableDashboard(this.config.name)
+            .then(idMngDshbrd => {
+              const path = `/managementdashboard/${idMngDshbrd !== null ? "edit":"new"}`;
+              httpPost(path, { content: JSON.stringify(payload), idManagementDashboard: idMngDshbrd })
+                .then(res => {
+                  console.log(res);
+                })
+                .catch(err => {
+                  console.error(err);
+                });
             })
-            .catch(err => {
-              console.error(err);
-            });
           $scope.closeThisDialog();
         }
       }],

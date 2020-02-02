@@ -1,8 +1,8 @@
-<div ng-if="wiModal.mode === 'new-dashboard'">
-    <editable style="width: 100%; padding: 0.25em 0.15em" item-label="'Name'" enabled="true" item-value="wiModal.getValue" set-value="wiModal.setValue"></editable>
+<div ng-if="wiModal.mode === 'new-dashboard'" style="font-size: 1.25em;">
+    <editable style="width: 100%; padding: 0.25em 0.15em;" item-label="'Name'" enabled="true" item-value="wiModal.getValue" set-value="wiModal.setValue"></editable>
     <button class="btn btn-primary" ng-click="wiModal.saveDashboardTemplate()">OK</button>
 </div>
-<div ng-if="wiModal.mode === 'load-dashboard'">
+<div ng-if="wiModal.mode === 'load-dashboard'" style="font-size: 1.25em;">
     <label>Select Template</label>
     <div style="margin: 0.25em 0;">
         <wi-dropdown-list items="wiModal.options" on-item-changed="wiModal.setValue" current-select="wiModal.getValue()"
@@ -12,8 +12,8 @@
     </div>
     <button class="btn btn-primary" ng-click="wiModal.loadDashboardTemplate()">Load</button>
 </div>
-<div ng-if="wiModal.mode === 'confirm-modal'">
+<div ng-if="wiModal.mode === 'confirm-modal'" style="font-size: 1.25em;">
     <label>Confirm</label>
-    <div class="content">{{wiModal.message}}</div>
-    <button class="btn btn-primary" ng-click="wiModal.onOkButtonClicked()">OK</button>
+    <div class="content" style="margin: 0.25em 0;">{{wiModal.message}}</div>
+    <button class="col btn btn-primary" ng-click="wiModal.onOkButtonClicked()">OK</button>
 </div>
