@@ -34,7 +34,9 @@ var app = angular.module(componentName, [
   "wiToken",
   "angularResizable",
   'managerDashboard',
-  'wiApi'
+  'wiApi',
+  'file-explorer',
+  'wiDialog'
 ]);
 
 function getData(resultObj) {
@@ -192,7 +194,9 @@ function baseMapController(
   $location,
   ngDialog,
   wiApi,
-  chartDataSource
+  wiDialog,
+  chartDataSource,
+  Upload
 ) {
   let self = this;
   window._basemap = self;
@@ -1920,5 +1924,95 @@ function baseMapController(
 				return compareValOfA.localeCompare(compareValOfB);
 			}        
 		}
-	}
+  }
+  this.setContainerFileBrowser = function(container) {
+    self.fileBrowserController = container;
+    console.log(container);
+  }
+  this.uploadZipFileDatabase = function() {
+    var zip = new JSZip();
+    console.log("file zip can download!");
+    //file contour.json
+    var wellSelect = $scope.wellSelect;
+    var curveSelect = $scope.curveList;
+    var dataContour = {
+      selectWell: wellSelect,
+      selectCurve: curveSelect,
+      selectedZone: $scope.zoneList,
+      selectedMarker: $scope.markerList
+    };
+    var json1 = JSON.stringify(dataContour),
+      blob1 = new Blob([json1], { type: "octet/stream" });
+    zip.file("contour.json", blob1);
+
+    //file mapsetting.json
+    var dataMapSetting = {
+      themeMap: $scope.themeMap,
+      activeTheme: self.activeTheme,
+      controlPanel: self.controlPanel,
+      point: self.point,
+      allPopup: $scope.allPopup,
+      showContour: self.showContour,
+      showTrajectory: self.showTrajectory,
+      zoneMap: $scope.zoneMap,
+      darkMode: self.darkMode,
+      showZonesets: self.showZonesets,
+      showMarkersets: self.showMarkersets
+    };
+    var json2 = JSON.stringify(dataMapSetting),
+      blob2 = new Blob([json2], { type: "octet/stream" });
+    zip.file("mapsetting.json", blob2);
+
+    //file blocks.geojson
+    var dataBlocks = self.geoJson;
+    var json3 = JSON.stringify(dataBlocks),
+      blob3 = new Blob([json3], { type: "octet/stream" });
+    zip.file("blocks.geojson", blob3);
+
+    //Compress file
+    zip.generateAsync({ type: "blob" }).then(content => {
+      // content.name = "i2G_basemap_configuration.zip";
+      wiApi.getListProjects()
+      .then((list) => {
+        list = list.filter(e => !e.shared).map(e => {
+          return {
+            data: {
+              label: e.name
+            },  
+            icon: "project-normal-16x16",
+            properties: e
+          }
+        });
+        console.log(list);
+        wiDialog.promptListDialog({
+          title: "Select project to save",
+          inputName: "Project",
+          iconBtn: "project-normal-16x16",
+          hideButtonDelete: true,
+          selectionList: list
+  
+        }, function(item) {
+          console.log(item);
+          wiApi.getFullInfoPromise(item.idProject)
+          .then((res) => {
+            console.log(res);
+            var sd = res.storage_databases[0];
+            var file = new File([content], "i2G_basemap_configuration.zip");
+            wiDialog.treeExplorer({
+                file: file,
+                url: config.url,
+                storage_database: JSON.stringify({
+                  company: sd.company,
+                  directory: sd.input_directory,
+                  whereami: "WI_BASE_MAP"
+                })
+
+              }, Upload, (res) => {
+                console.log(res);
+            });
+          });
+        });
+      });
+    });
+  }
 }

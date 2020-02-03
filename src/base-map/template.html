@@ -391,6 +391,18 @@ ${require('./dashboard-template-modal.html')}
       <div class="export" ng-click="self.downloadZipFile()">
         Save Configuration
       </div>
+      <div style="    background: #3f85ff;
+      border-radius: 3px;
+      color: #fff;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      padding: 15px;
+      bottom: 15px;
+      cursor: pointer;" ng-click="self.uploadZipFileDatabase()">
+        Save to database
+      </div>
     </div>
   </div>
 </div>
@@ -458,3 +470,10 @@ ${require('./dashboard-template-modal.html')}
   focus-marker-or-zone="focusMZ" zone-depth-spec="self.zoneDepthSpec" get-curve-info-fn="self.getCurveInfoFn"
   get-curve-raw-data-fn="self.getCurveRawDataFn" zone-map="zoneMap">
 </google-map-view>
+
+<file-explorer ng-hide="true"
+              url="{{self.fileManager}}" storage-database="self.storageDatabaseAdmin"
+              id-project="1" set-container="self.setContainerFileBrowser"
+              preview-url="{{self.previewUrl}}" hide-import-to-inventory="true" is-database="false"
+              hide-action-filter="true" hide-associate="true">
+</file-explorer>
