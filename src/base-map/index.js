@@ -1020,8 +1020,10 @@ function baseMapController(
 
       if (well.relatedTo && well.relatedTo.tags && well.relatedTo.tags.length) {
         for (let tag of well.relatedTo.tags) {
-          tags[tag] = tags[tag] || [];
-          tags[tag].push(well);
+          if (tag && tag !== "") {
+            tags[tag] = tags[tag] || [];
+            tags[tag].push(well);
+          }
         }
       }
       if (well.datasets.length) {
