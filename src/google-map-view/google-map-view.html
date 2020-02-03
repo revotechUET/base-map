@@ -1,5 +1,8 @@
 <style>
     #contour-map-container {
+    }
+
+    .map-overlay {
         width: 100%;
         height: 100%;
         position: absolute;
@@ -38,8 +41,9 @@
 
 <div class="map-container">
     <div id="map"></div>
-    <div id="contour-map-container"></div>
+    <div class="map-overlay" id="contour-map-container"></div>
     <div id="coords"></div>
+    <div class="map-overlay" id="axes"></div>
 </div>
 <div class="dialog-error" ng-show="self.wellError">
     <div class="dialog-header">

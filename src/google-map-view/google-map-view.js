@@ -4,6 +4,7 @@ require("./google-map-view.less");
 const test_contour = require("./test.json")
 var app = angular.module(componentName, ["ngDialog", "wiToken"]);
 const Contour = require("../contour");
+const Axes = require("../axes");
 
 app.component(componentName, {
   template: require("./google-map-view.html"),
@@ -53,6 +54,7 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken) {
     $timeout(function () {
       drawMap();
       initContours();
+      initAxes();
       // console.log('Draw map')
     }, 10);
     $scope.$watch(
@@ -1572,6 +1574,14 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken) {
     })
     window._contour = contour;
   }
+  let axes = null
+  function initAxes() {
+    axes = new Axes("#axes", map);
+    google.maps.event.addListener(map, 'bounds_changed', function () {
+      axes.drawAxesDebounced();
+    })
+  }
+
   const updateContours = _.debounce(_updateContours, 100);
   async function _updateContours() {
     if (!map || !contour) return;
