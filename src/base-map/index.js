@@ -488,6 +488,7 @@ function baseMapController(
               self.showContour = data.showContour;
               self.showTrajectory = data.showTrajectory;
               self.darkMode = data.darkMode;
+              setDarkMode(self.darkMode);
               self.showZonesets = data.showZonesets;
               self.showMarkersets = data.showMarkersets;
               $scope.zoneMap = data.zoneMap;
@@ -709,11 +710,9 @@ function baseMapController(
                 });
                 const hasName = templateList.find(props => props.content.name === dshbrdName);
                 if (hasName) {
-                  // confirmation
                   confirmDialog("This template name has been used. Replace it?")
                     .then(() => {
                       resolve(hasName.idManagementDashboard);
-                      // resolve(null);
                     })
                 } else {
                   return resolve(null);
@@ -1041,6 +1040,15 @@ function baseMapController(
     self.darkMode = !self.darkMode;
     document.getElementById("main").classList.toggle("dark-mode");
     $(".dialog").toggleClass("dark-mode");
+  }
+  function setDarkMode(enable) {
+    if (enable) {
+      document.getElementById("main").classList.add("dark-mode");
+      $(".dialog").addClass("dark-mode");
+    } else {
+      document.getElementById("main").classList.remove("dark-mode");
+      $(".dialog").removeClass("dark-mode");
+    }
   }
   this.toggleContour = function () {
     self.showContour = !self.showContour;
