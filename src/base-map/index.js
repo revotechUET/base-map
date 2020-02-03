@@ -712,8 +712,8 @@ function baseMapController(
                   // confirmation
                   confirmDialog("This template name has been used. Replace it?")
                     .then(() => {
-                      // resolve(hasName.idManagementDashboard);
-                      resolve(null);
+                      resolve(hasName.idManagementDashboard);
+                      // resolve(null);
                     })
                 } else {
                   return resolve(null);

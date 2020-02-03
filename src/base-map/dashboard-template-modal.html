@@ -7,7 +7,7 @@
     <div style="margin: 0.25em 0;">
         <wi-dropdown-list items="wiModal.options" on-item-changed="wiModal.setValue" current-select="wiModal.getValue()"
             ctrl-btn-icon="ti ti-close" on-ctrl-btn-click="wiModal.deleteTemplate"
-            on-wi-dropdown-init="wiModal.getDashboardTemplateList" hide-delete-button="true">
+            on-wi-dropdown-init="wiModal.getDashboardTemplateList" hide-delete-button="false">
         </wi-dropdown-list>
     </div>
     <button class="btn btn-primary" ng-click="wiModal.loadDashboardTemplate()">Load</button>
