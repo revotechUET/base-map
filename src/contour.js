@@ -63,8 +63,11 @@ function Contour(container, map, data) {
     const EPSILON = 0.5 + 10e-9;
     function getBounds() {
         const mapBounds = self.map.getBounds();
-        const sw = mapBounds._sw ? mapBounds._sw : {lat: mapBounds.pa.g, lng: mapBounds.pa.h};
-        const ne = mapBounds._ne ? mapBounds._ne : {lat: mapBounds.ka.g, lng: mapBounds.ka.h};
+        const mapBoundsValues = Object.values(mapBounds);
+        // const sw = mapBounds._sw ? mapBounds._sw : {lat: mapBounds.pa.g, lng: mapBounds.pa.h};
+        // const ne = mapBounds._ne ? mapBounds._ne : {lat: mapBounds.ka.g, lng: mapBounds.ka.h};
+        const sw = mapBounds._sw ? mapBounds._sw : {lat: Object.values(mapBoundsValues[0])[0], lng: Object.values(mapBoundsValues[0])[1]};
+        const ne = mapBounds._ne ? mapBounds._ne : {lat: Object.values(mapBoundsValues[1])[0], lng: Object.values(mapBoundsValues[1])[1]};
 
         const minLat = Math.max(d3.min(self.data, (d => d.lat)), sw.lat);
         const maxLat = Math.min(d3.max(self.data, (d => d.lat)), ne.lat);

@@ -1591,33 +1591,6 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken) {
     let secondProjection =
       "+proj=longlat +ellps=WGS84 +datum=WGS84 +units=degrees";
     if (self.zoneMap) {
-      /*
-      if ((self.wells || []).length) {
-        for (let index = 0; index < self.wells.length; index++) {
-          let lat = getLat(self.wells[index].well_headers);
-          let long = getLong(self.wells[index].well_headers);
-          let x = getX(self.wells[index].well_headers);
-          let y = getY(self.wells[index].well_headers);
-          let latX = proj4(firstProjection, secondProjection, [x, y])[1];
-          let lngY = proj4(firstProjection, secondProjection, [x, y])[0];
-          if (checkCoordinate(lat, long, x, y) === true) {
-            // use long, lat
-            _data.push({
-              lng: long,
-              lat,
-              value: await getWellDataForContour(self.wells[index])
-            });
-          } else if (checkCoordinate(lat, long, x, y) === false) {
-            // use lngY, latX
-            _data.push({
-              lng: lngY,
-              lat: latX,
-              value: await getWellDataForContour(self.wells[index])
-            });
-          }
-        }
-      }
-      */
       await new Promise(resolve => {
         const promises = [];
         if ((self.wells || []).length) {
