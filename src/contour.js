@@ -165,6 +165,8 @@ function Contour(container, map, data) {
         return d3.scaleSequential(interpolateTerrain).domain(d3.extent(contourData.values)).nice();
     }
     function getLng(lng) {
+        if (typeof(self.map.getCenter().lng) == "function")
+            return self.map.getCenter().lng() < 0 ? -1 * (360 - lng):lng;
         return self.map.getCenter().lng < 0 ? -1 * (360 - lng):lng;
     }
     function generalizeData(data, {minLat, minLng}) {

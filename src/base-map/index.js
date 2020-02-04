@@ -211,6 +211,7 @@ function baseMapController(
   self.point = false;
   self.showContour = false;
   self.showTrajectory = false;
+  self.showAxes = false;
   self.selectedIdsHash = {};
   self.selectedNode = null;
   self.selectedNodes = [];
@@ -433,6 +434,7 @@ function baseMapController(
       self.point = false;
       self.showContour = false;
       self.showTrajectory = false;
+      self.showAxes = false;
       self.darkMode = false;
       self.showZonesets = false;
       self.showMarkersets = false;
@@ -491,6 +493,7 @@ function baseMapController(
               self.point = data.point;
               self.showContour = data.showContour;
               self.showTrajectory = data.showTrajectory;
+              self.showAxes = data.showAxes;
               self.darkMode = data.darkMode;
               setDarkMode(self.darkMode);
               self.showZonesets = data.showZonesets;
@@ -1062,6 +1065,9 @@ function baseMapController(
   this.toggleTrajectory = function () {
     self.showTrajectory = !self.showTrajectory;
   };
+  this.toggleAxes = function() {
+    self.showAxes = !self.showAxes;
+  }
 
   function clearTreeState(treeName) {
     switch (treeName) {
@@ -1260,6 +1266,7 @@ function baseMapController(
       allPopup: $scope.allPopup,
       showContour: self.showContour,
       showTrajectory: self.showTrajectory,
+      showAxes: self.showAxes,
       zoneMap: $scope.zoneMap,
       darkMode: self.darkMode,
       showZonesets: self.showZonesets,
@@ -1956,6 +1963,7 @@ function baseMapController(
       allPopup: $scope.allPopup,
       showContour: self.showContour,
       showTrajectory: self.showTrajectory,
+      showAxes: self.showAxes,
       zoneMap: $scope.zoneMap,
       darkMode: self.darkMode,
       showZonesets: self.showZonesets,

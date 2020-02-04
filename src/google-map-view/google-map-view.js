@@ -29,6 +29,8 @@ app.component(componentName, {
     geoJson: '<',
     // draw trajectory map
     showTrajectory: '<',
+    // draw Axes
+    showAxes: "<",
   },
   transclude: true
 });
@@ -75,6 +77,7 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken) {
         $timeout(() => {
           showAllPopup(self.allPopup);
           updateContours();
+          updateAxes();
         })
       },
       true
@@ -143,13 +146,20 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken) {
         updateContours();
       }
     );
+    // Trajectory
     $scope.$watch(
       () => self.showTrajectory,
       () => {
         updateTrajectory();
       }
     )
-
+    // AXES
+    $scope.$watch(
+      () => self.showAxes,
+      () => {
+        updateAxes();
+      }
+    )
     // VIEW BY ZONESET & MARKERSET
     $scope.$watch(
       () => self.focusMarkerOrZone,
@@ -1827,6 +1837,33 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken) {
   }
   // ====================== END DRAWING BY ZONE AND MARKER SET ====================
 
+
+  // ======================== DRAWING AXES ========================
+  let axes = null
+  function initAxes() {
+    axes = new Axes("#axes", map);
+    google.maps.event.addListener(map, 'bounds_changed', function () {
+      if (!self.showAxes)
+        return axes.clearLayer();
+      axes.drawAxesDebounced();
+    })
+    updateAxes();
+  }
+  function updateAxes() {
+    if (!axes) return;
+    if (!self.showAxes)
+      return axes.clearLayer();
+    const firstProjection = "+proj=longlat +ellps=WGS84 +datum=WGS84 +units=degrees";
+    const secondProjection = self.zoneMap;
+    axes.latLng2XYFn = function(lat, lng) {
+      const result = proj4(firstProjection, secondProjection, [lng, lat]);
+      return {
+        x: result[0],
+        y: result[1]
+      }
+    }
+    axes.drawAxesDebounced();
+  }
   // ======================= DRAWING CONTOUR ===========================
   let contour = null;
   function initContours() {
@@ -1835,13 +1872,6 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken) {
       contour.drawContourDebounced();
     })
     window._contour = contour;
-  }
-  let axes = null
-  function initAxes() {
-    axes = new Axes("#axes", map);
-    google.maps.event.addListener(map, 'bounds_changed', function () {
-      axes.drawAxesDebounced();
-    })
   }
 
   const updateContours = _.debounce(_updateContours, 100);

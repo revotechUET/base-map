@@ -198,9 +198,30 @@ ${require('./dashboard-template-modal.html')}
         <div class="complex-setting">
           <div class="setting-content">
             <span
-              class="setting-sub-title">{{self.showTrajectory?"Pick a curve for tracjectory rendering":"Displays trajectory layer"}}</span>
+              class="setting-sub-title">{{self.showTrajectory?"Displaying trajectory":"Displays trajectory layer"}}</span>
             <label class="switch">
               <input type="checkbox" ng-checked="self.showTrajectory" ng-click="self.toggleTrajectory()" />
+              <span class="slider round"></span>
+            </label>
+          </div>
+          <!--
+          <div ng-if="self.showTrajectory" class="setting-content" style="margin-top: 12px;">
+            <wi-tree-view-virtual tree-root="curveList" get-label="self.getLabel" get-icon="self.getIcon"
+              click-fn="self.clickCurveFunction" get-children="self.getChildren" run-match="self.runMatchCurve"
+              hide-unmatched="true" no-drag="true">
+            </wi-tree-view-virtual>
+          </div>
+          -->
+        </div>
+      </div>
+      <div class="setting">
+        <div class="setting-title" style="margin-bottom: 10px;">Show Axes</div>
+        <div class="complex-setting">
+          <div class="setting-content">
+            <span
+              class="setting-sub-title">{{self.showAxes?"Displaying Axes":"Displays Axes layer"}}</span>
+            <label class="switch">
+              <input type="checkbox" ng-checked="self.showAxes" ng-click="self.toggleAxes()" />
               <span class="slider round"></span>
             </label>
           </div>
@@ -457,7 +478,7 @@ ${require('./dashboard-template-modal.html')}
 -->
 <google-map-view theme="themeMap" ng-if="checkGoogleApi()" ng-show="self.showMap" all-popup="allPopup" class="mapView"
   wells="wellSelect" geo-json="self.geoJson" control-panel="self.controlPanel" point="self.point" focus-well='focusWell'
-  focus-curve="focusCurve" show-contour="self.showContour" show-trajectory="self.showTrajectory"
+  focus-curve="focusCurve" show-contour="self.showContour" show-trajectory="self.showTrajectory" show-Axes="self.showAxes"
   focus-marker-or-zone="focusMZ" zone-depth-spec="self.zoneDepthSpec" get-curve-info-fn="self.getCurveInfoFn"
   get-curve-raw-data-fn="self.getCurveRawDataFn" zone-map="zoneMap">
 </google-map-view>
