@@ -3,6 +3,7 @@ module.exports.name = componentName;
 require("./google-map-view.less");
 var app = angular.module(componentName, ["ngDialog", "wiToken"]);
 const Contour = require("../contour");
+const Axes = require("../axes");
 
 app.component(componentName, {
   template: require("./google-map-view.html"),
@@ -52,6 +53,7 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken) {
     $timeout(function () {
       drawMap();
       initContours();
+      initAxes();
       // console.log('Draw map')
     }, 10);
     $scope.$watch(
@@ -1834,6 +1836,14 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken) {
     })
     window._contour = contour;
   }
+  let axes = null
+  function initAxes() {
+    axes = new Axes("#axes", map);
+    google.maps.event.addListener(map, 'bounds_changed', function () {
+      axes.drawAxesDebounced();
+    })
+  }
+
   const updateContours = _.debounce(_updateContours, 100);
   async function _updateContours() {
     if (!map || !contour) return;
@@ -1853,33 +1863,6 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken) {
     let secondProjection =
       "+proj=longlat +ellps=WGS84 +datum=WGS84 +units=degrees";
     if (self.zoneMap) {
-      /*
-      if ((self.wells || []).length) {
-        for (let index = 0; index < self.wells.length; index++) {
-          let lat = getLat(self.wells[index].well_headers);
-          let long = getLong(self.wells[index].well_headers);
-          let x = getX(self.wells[index].well_headers);
-          let y = getY(self.wells[index].well_headers);
-          let latX = proj4(firstProjection, secondProjection, [x, y])[1];
-          let lngY = proj4(firstProjection, secondProjection, [x, y])[0];
-          if (checkCoordinate(lat, long, x, y) === true) {
-            // use long, lat
-            _data.push({
-              lng: long,
-              lat,
-              value: await getWellDataForContour(self.wells[index])
-            });
-          } else if (checkCoordinate(lat, long, x, y) === false) {
-            // use lngY, latX
-            _data.push({
-              lng: lngY,
-              lat: latX,
-              value: await getWellDataForContour(self.wells[index])
-            });
-          }
-        }
-      }
-      */
       await new Promise(resolve => {
         const promises = [];
         if ((self.wells || []).length) {
