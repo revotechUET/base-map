@@ -124,7 +124,7 @@ base-map {
 
     .searchInput {
         border    : none;
-        padding   : 8px 10px;
+        padding   : 8px 15px;
         width     : 100%;
         background: none;
     }
@@ -359,17 +359,24 @@ base-map {
 
             .export {
                 position       : absolute;
-                background     : #3f85ff;
-                border-radius  : 3px;
-                color          : #fff;
+                width          : calc(100% - 30px);
                 display        : flex;
                 align-items    : center;
                 justify-content: center;
-                font-weight    : bold;
-                padding        : 15px;
-                width          : calc(100% - 30px);
                 bottom         : 15px;
-                cursor         : pointer;
+                &>div {
+                    flex: 1;
+                    background     : #3f85ff;
+                    border-radius  : 3px;
+                    color          : #fff;
+                    font-weight    : bold;
+                    padding        : 15px;
+                    display: flex;
+                    justify-content: center;
+
+                    cursor         : pointer;
+                }
+
             }
 
             .upload {
@@ -633,12 +640,12 @@ base-map {
                             // background   : #ffffff;
                             color           : #656565;
                             border-radius   : 2px;
-                            padding         : 0 15px 10px 15px;
+                            padding         : 5px 15px 25px 30px;
                             // box-shadow   : 0 3px 4px #00000005;
                         }
 
                         .icon {
-                            margin-right: 10px;
+                            margin-right: 15px;
                             filter      : grayscale(1);
                             cursor      : pointer;
                             transition  : all ease-in 0.2s;
@@ -658,7 +665,7 @@ base-map {
                         width          : 100%;
                         align-items    : center;
                         justify-content: space-between;
-                        margin         : 15px 0 0 0;
+                        // margin         : 15px 0 0 0;
                         transition     : all ease-in 0.2s;
 
                         >div {

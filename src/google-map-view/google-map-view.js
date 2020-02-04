@@ -1,7 +1,6 @@
 var componentName = "googleMapView";
 module.exports.name = componentName;
 require("./google-map-view.less");
-const test_contour = require("./test.json")
 var app = angular.module(componentName, ["ngDialog", "wiToken"]);
 const Contour = require("../contour");
 
@@ -66,6 +65,20 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken) {
     );
     $scope.$watch(
       function () {
+        return [self.zoneMap];
+      },
+      function () {
+        // console.log(self.zoneMap)
+        drawMarkersDebounced();
+        $timeout(() => {
+          showAllPopup(self.allPopup);
+          updateContours();
+        })
+      },
+      true
+    );
+    $scope.$watch(
+      function () {
         return [self.theme];
       },
       function () {
@@ -78,7 +91,7 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken) {
         return self.focusWell;
       },
       function () {
-        focusWell();
+        focusWell(self.focusWell);
       }
     );
     $scope.$watch(
@@ -171,26 +184,282 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken) {
 
     // Show the lat and lng under the mouse cursor.
     var coordsDiv = document.getElementById('coords');
-    var pointLocatinDiv =
-      map.controls[google.maps.ControlPosition.TOP_CENTER].push(coordsDiv);
+    map.controls[google.maps.ControlPosition.TOP_CENTER].push(coordsDiv);
     map.addListener('mousemove', function (event) {
       coordsDiv.innerHTML = "<div>Latitude: <strong>" + (event.latLng.lat()) + "</strong></div><div>Longtitude: <strong>" + (event.latLng.lng()) + "</strong></div>";
     });
     map.addListener('zoom_changed', function (event) {
       updateTrajectoryDebounced();
     })
-    // //REPLACE ICON
 
-    // $timeout(()=>{
-    //   $('.gm-control-active>img:nth-child(1)')[0].src = 'data:image/svg+xml,%3C%3Fxml%20version%3D%221.0%22%20encoding%3D%22UTF-8%22%3F%3E%0A%3Csvg%20width%3D%2216px%22%20height%3D%2216px%22%20viewBox%3D%220%200%2016%2016%22%20version%3D%221.1%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20xmlns%3Axlink%3D%22http%3A%2F%2Fwww.w3.org%2F1999%2Fxlink%22%3E%0A%20%20%20%20%3C!--%20Generator%3A%20Sketch%2052.5%20(67469)%20-%20http%3A%2F%2Fwww.bohemiancoding.com%2Fsketch%20--%3E%0A%20%20%20%20%3Ctitle%3Ebasemap_zoom_in_16x16%3C%2Ftitle%3E%0A%20%20%20%20%3Cdesc%3ECreated%20with%20Sketch.%3C%2Fdesc%3E%0A%20%20%20%20%3Cg%20id%3D%22basemap_zoom_in_16x16%22%20stroke%3D%22none%22%20stroke-width%3D%221%22%20fill%3D%22none%22%20fill-rule%3D%22evenodd%22%3E%0A%20%20%20%20%20%20%20%20%3Cg%20id%3D%22Group%22%20transform%3D%22translate(1.000000%2C%201.000000)%22%20fill%3D%22%233F87DA%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3Crect%20id%3D%22Rectangle%22%20x%3D%220%22%20y%3D%226%22%20width%3D%2214%22%20height%3D%222%22%20rx%3D%221%22%3E%3C%2Frect%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3Crect%20id%3D%22Rectangle%22%20transform%3D%22translate(7.000000%2C%207.000000)%20rotate(-270.000000)%20translate(-7.000000%2C%20-7.000000)%20%22%20x%3D%220%22%20y%3D%226%22%20width%3D%2214%22%20height%3D%222%22%20rx%3D%221%22%3E%3C%2Frect%3E%0A%20%20%20%20%20%20%20%20%3C%2Fg%3E%0A%20%20%20%20%3C%2Fg%3E%0A%3C%2Fsvg%3E';
-    //   $('.gm-control-active>img:nth-child(1)')[1].src = 'data:image/svg+xml,%3C%3Fxml%20version%3D%221.0%22%20encoding%3D%22UTF-8%22%3F%3E%0A%3Csvg%20width%3D%2216px%22%20height%3D%2216px%22%20viewBox%3D%220%200%2016%2016%22%20version%3D%221.1%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20xmlns%3Axlink%3D%22http%3A%2F%2Fwww.w3.org%2F1999%2Fxlink%22%3E%0A%20%20%20%20%3C!--%20Generator%3A%20Sketch%2052.5%20(67469)%20-%20http%3A%2F%2Fwww.bohemiancoding.com%2Fsketch%20--%3E%0A%20%20%20%20%3Ctitle%3Ebasemap_zoom_in_16x16%3C%2Ftitle%3E%0A%20%20%20%20%3Cdesc%3ECreated%20with%20Sketch.%3C%2Fdesc%3E%0A%20%20%20%20%3Cg%20id%3D%22basemap_zoom_in_16x16%22%20stroke%3D%22none%22%20stroke-width%3D%221%22%20fill%3D%22none%22%20fill-rule%3D%22evenodd%22%3E%0A%20%20%20%20%20%20%20%20%3Cg%20id%3D%22Group%22%20transform%3D%22translate(1.000000%2C%201.000000)%22%20fill%3D%22%233F87DA%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3Crect%20id%3D%22Rectangle%22%20x%3D%220%22%20y%3D%226%22%20width%3D%2214%22%20height%3D%222%22%20rx%3D%221%22%3E%3C%2Frect%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3Crect%20id%3D%22Rectangle%22%20transform%3D%22translate(7.000000%2C%207.000000)%20rotate(-270.000000)%20translate(-7.000000%2C%20-7.000000)%20%22%20x%3D%220%22%20y%3D%226%22%20width%3D%2214%22%20height%3D%222%22%20rx%3D%221%22%3E%3C%2Frect%3E%0A%20%20%20%20%20%20%20%20%3C%2Fg%3E%0A%20%20%20%20%3C%2Fg%3E%0A%3C%2Fsvg%3E';
-    //   $('.gm-control-active>img:nth-child(1)')[2].src = 'data:image/svg+xml,%3C%3Fxml%20version%3D%221.0%22%20encoding%3D%22UTF-8%22%3F%3E%0A%3Csvg%20width%3D%2216px%22%20height%3D%2216px%22%20viewBox%3D%220%200%2016%2016%22%20version%3D%221.1%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20xmlns%3Axlink%3D%22http%3A%2F%2Fwww.w3.org%2F1999%2Fxlink%22%3E%0A%20%20%20%20%3C!--%20Generator%3A%20Sketch%2052.5%20(67469)%20-%20http%3A%2F%2Fwww.bohemiancoding.com%2Fsketch%20--%3E%0A%20%20%20%20%3Ctitle%3Ebasemap_zoom_out_16x16%3C%2Ftitle%3E%0A%20%20%20%20%3Cdesc%3ECreated%20with%20Sketch.%3C%2Fdesc%3E%0A%20%20%20%20%3Cg%20id%3D%22basemap_zoom_out_16x16%22%20stroke%3D%22none%22%20stroke-width%3D%221%22%20fill%3D%22none%22%20fill-rule%3D%22evenodd%22%3E%0A%20%20%20%20%20%20%20%20%3Crect%20id%3D%22Rectangle%22%20fill%3D%22%233F87DA%22%20x%3D%221%22%20y%3D%227%22%20width%3D%2214%22%20height%3D%222%22%20rx%3D%221%22%3E%3C%2Frect%3E%0A%20%20%20%20%3C%2Fg%3E%0A%3C%2Fsvg%3E';
-    //   $('.gm-control-active>img:nth-child(2)')[1].src = 'data:image/svg+xml,%3C%3Fxml%20version%3D%221.0%22%20encoding%3D%22UTF-8%22%3F%3E%0A%3Csvg%20width%3D%2216px%22%20height%3D%2216px%22%20viewBox%3D%220%200%2016%2016%22%20version%3D%221.1%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20xmlns%3Axlink%3D%22http%3A%2F%2Fwww.w3.org%2F1999%2Fxlink%22%3E%0A%20%20%20%20%3C!--%20Generator%3A%20Sketch%2052.5%20(67469)%20-%20http%3A%2F%2Fwww.bohemiancoding.com%2Fsketch%20--%3E%0A%20%20%20%20%3Ctitle%3Ebasemap_zoom_in_16x16%3C%2Ftitle%3E%0A%20%20%20%20%3Cdesc%3ECreated%20with%20Sketch.%3C%2Fdesc%3E%0A%20%20%20%20%3Cg%20id%3D%22basemap_zoom_in_16x16%22%20stroke%3D%22none%22%20stroke-width%3D%221%22%20fill%3D%22none%22%20fill-rule%3D%22evenodd%22%3E%0A%20%20%20%20%20%20%20%20%3Cg%20id%3D%22Group%22%20transform%3D%22translate(1.000000%2C%201.000000)%22%20fill%3D%22%233F87DA%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3Crect%20id%3D%22Rectangle%22%20x%3D%220%22%20y%3D%226%22%20width%3D%2214%22%20height%3D%222%22%20rx%3D%221%22%3E%3C%2Frect%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3Crect%20id%3D%22Rectangle%22%20transform%3D%22translate(7.000000%2C%207.000000)%20rotate(-270.000000)%20translate(-7.000000%2C%20-7.000000)%20%22%20x%3D%220%22%20y%3D%226%22%20width%3D%2214%22%20height%3D%222%22%20rx%3D%221%22%3E%3C%2Frect%3E%0A%20%20%20%20%20%20%20%20%3C%2Fg%3E%0A%20%20%20%20%3C%2Fg%3E%0A%3C%2Fsvg%3E';
-    //   $('.gm-control-active>img:nth-child(2)')[2].src = 'data:image/svg+xml,%3C%3Fxml%20version%3D%221.0%22%20encoding%3D%22UTF-8%22%3F%3E%0A%3Csvg%20width%3D%2216px%22%20height%3D%2216px%22%20viewBox%3D%220%200%2016%2016%22%20version%3D%221.1%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20xmlns%3Axlink%3D%22http%3A%2F%2Fwww.w3.org%2F1999%2Fxlink%22%3E%0A%20%20%20%20%3C!--%20Generator%3A%20Sketch%2052.5%20(67469)%20-%20http%3A%2F%2Fwww.bohemiancoding.com%2Fsketch%20--%3E%0A%20%20%20%20%3Ctitle%3Ebasemap_zoom_out_16x16%3C%2Ftitle%3E%0A%20%20%20%20%3Cdesc%3ECreated%20with%20Sketch.%3C%2Fdesc%3E%0A%20%20%20%20%3Cg%20id%3D%22basemap_zoom_out_16x16%22%20stroke%3D%22none%22%20stroke-width%3D%221%22%20fill%3D%22none%22%20fill-rule%3D%22evenodd%22%3E%0A%20%20%20%20%20%20%20%20%3Crect%20id%3D%22Rectangle%22%20fill%3D%22%233F87DA%22%20x%3D%221%22%20y%3D%227%22%20width%3D%2214%22%20height%3D%222%22%20rx%3D%221%22%3E%3C%2Frect%3E%0A%20%20%20%20%3C%2Fg%3E%0A%3C%2Fsvg%3E';
-    //   $('.gm-control-active>img:nth-child(3)')[1].src = 'data:image/svg+xml,%3C%3Fxml%20version%3D%221.0%22%20encoding%3D%22UTF-8%22%3F%3E%0A%3Csvg%20width%3D%2216px%22%20height%3D%2216px%22%20viewBox%3D%220%200%2016%2016%22%20version%3D%221.1%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20xmlns%3Axlink%3D%22http%3A%2F%2Fwww.w3.org%2F1999%2Fxlink%22%3E%0A%20%20%20%20%3C!--%20Generator%3A%20Sketch%2052.5%20(67469)%20-%20http%3A%2F%2Fwww.bohemiancoding.com%2Fsketch%20--%3E%0A%20%20%20%20%3Ctitle%3Ebasemap_zoom_in_16x16%3C%2Ftitle%3E%0A%20%20%20%20%3Cdesc%3ECreated%20with%20Sketch.%3C%2Fdesc%3E%0A%20%20%20%20%3Cg%20id%3D%22basemap_zoom_in_16x16%22%20stroke%3D%22none%22%20stroke-width%3D%221%22%20fill%3D%22none%22%20fill-rule%3D%22evenodd%22%3E%0A%20%20%20%20%20%20%20%20%3Cg%20id%3D%22Group%22%20transform%3D%22translate(1.000000%2C%201.000000)%22%20fill%3D%22%233F87DA%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3Crect%20id%3D%22Rectangle%22%20x%3D%220%22%20y%3D%226%22%20width%3D%2214%22%20height%3D%222%22%20rx%3D%221%22%3E%3C%2Frect%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3Crect%20id%3D%22Rectangle%22%20transform%3D%22translate(7.000000%2C%207.000000)%20rotate(-270.000000)%20translate(-7.000000%2C%20-7.000000)%20%22%20x%3D%220%22%20y%3D%226%22%20width%3D%2214%22%20height%3D%222%22%20rx%3D%221%22%3E%3C%2Frect%3E%0A%20%20%20%20%20%20%20%20%3C%2Fg%3E%0A%20%20%20%20%3C%2Fg%3E%0A%3C%2Fsvg%3E';
-    //   $('.gm-control-active>img:nth-child(3)')[2].src = 'data:image/svg+xml,%3C%3Fxml%20version%3D%221.0%22%20encoding%3D%22UTF-8%22%3F%3E%0A%3Csvg%20width%3D%2216px%22%20height%3D%2216px%22%20viewBox%3D%220%200%2016%2016%22%20version%3D%221.1%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20xmlns%3Axlink%3D%22http%3A%2F%2Fwww.w3.org%2F1999%2Fxlink%22%3E%0A%20%20%20%20%3C!--%20Generator%3A%20Sketch%2052.5%20(67469)%20-%20http%3A%2F%2Fwww.bohemiancoding.com%2Fsketch%20--%3E%0A%20%20%20%20%3Ctitle%3Ebasemap_zoom_out_16x16%3C%2Ftitle%3E%0A%20%20%20%20%3Cdesc%3ECreated%20with%20Sketch.%3C%2Fdesc%3E%0A%20%20%20%20%3Cg%20id%3D%22basemap_zoom_out_16x16%22%20stroke%3D%22none%22%20stroke-width%3D%221%22%20fill%3D%22none%22%20fill-rule%3D%22evenodd%22%3E%0A%20%20%20%20%20%20%20%20%3Crect%20id%3D%22Rectangle%22%20fill%3D%22%233F87DA%22%20x%3D%221%22%20y%3D%227%22%20width%3D%2214%22%20height%3D%222%22%20rx%3D%221%22%3E%3C%2Frect%3E%0A%20%20%20%20%3C%2Fg%3E%0A%3C%2Fsvg%3E';
-    // },1000)
-    // map.data.addGeoJson(test_contour);
+    //SHOW ZONE LINE
+    var zoneLayerCoordinates = 
+    [
+      [
+      {lat: 0, lng: -180},
+      {lat: 0, lng: 0}
+      ],
+      [
+      {lat: 0, lng: 180},
+      {lat: 0, lng: 0}
+      ],
+      [
+      {lat: -85, lng: 0},
+      {lat: 85, lng: 0}
+      ],
+      [
+      {lat: -85, lng: 6},
+      {lat: 85, lng: 6}
+      ],
+      [
+      {lat: -85, lng: 12},
+      {lat: 85, lng: 12}
+      ],
+      [
+      {lat: -85, lng: 18},
+      {lat: 85, lng: 18}
+      ],
+      [
+      {lat: -85, lng: 24},
+      {lat: 85, lng: 24}
+      ],
+      [
+      {lat: -85, lng: 30},
+      {lat: 85, lng: 30}
+      ],
+      [
+      {lat: -85, lng: 36},
+      {lat: 85, lng: 36}
+      ],
+      [
+      {lat: -85, lng: 42},
+      {lat: 85, lng: 42}
+      ],
+      [
+      {lat: -85, lng: 48},
+      {lat: 85, lng: 48}
+      ],
+      [
+      {lat: -85, lng: 54},
+      {lat: 85, lng: 54}
+      ],
+      [
+      {lat: -85, lng: 60},
+      {lat: 85, lng: 60}
+      ],
+      [
+      {lat: -85, lng: 66},
+      {lat: 85, lng: 66}
+      ],
+      [
+      {lat: -85, lng: 72},
+      {lat: 85, lng: 72}
+      ],
+      [
+      {lat: -85, lng: 78},
+      {lat: 85, lng: 78}
+      ],
+      [
+      {lat: -85, lng: 84},
+      {lat: 85, lng: 84}
+      ],
+      [
+      {lat: -85, lng: 90},
+      {lat: 85, lng: 90}
+      ],
+      [
+      {lat: -85, lng: 96},
+      {lat: 85, lng: 96}
+      ],
+      [
+      {lat: -85, lng: 102},
+      {lat: 85, lng: 102}
+      ],
+      [
+      {lat: -85, lng: 108},
+      {lat: 85, lng: 108}
+      ],
+      [
+      {lat: -85, lng: 114},
+      {lat: 85, lng: 114}
+      ],
+      [
+      {lat: -85, lng: 120},
+      {lat: 85, lng: 120}
+      ],
+      [
+      {lat: -85, lng: 126},
+      {lat: 85, lng: 126}
+      ],
+      [
+      {lat: -85, lng: 132},
+      {lat: 85, lng: 132}
+      ],
+      [
+      {lat: -85, lng: 138},
+      {lat: 85, lng: 138}
+      ],
+      [
+      {lat: -85, lng: 144},
+      {lat: 85, lng: 144}
+      ],
+      [
+      {lat: -85, lng: 150},
+      {lat: 85, lng: 150}
+      ],
+      [
+      {lat: -85, lng: 156},
+      {lat: 85, lng: 156}
+      ],
+      [
+      {lat: -85, lng: 162},
+      {lat: 85, lng: 162}
+      ],
+      [
+      {lat: -85, lng: 168},
+      {lat: 85, lng: 168}
+      ],
+      [
+      {lat: -85, lng: 174},
+      {lat: 85, lng: 174}
+      ],
+      [
+      {lat: -85, lng: 180},
+      {lat: 85, lng: 180}
+      ],
+      [
+      {lat: -85, lng: -6},
+      {lat: 85, lng: -6}
+      ],
+      [
+      {lat: -85, lng: -12},
+      {lat: 85, lng: -12}
+      ],
+      [
+      {lat: -85, lng: -18},
+      {lat: 85, lng: -18}
+      ],
+      [
+      {lat: -85, lng: -24},
+      {lat: 85, lng: -24}
+      ],
+      [
+      {lat: -85, lng: -30},
+      {lat: 85, lng: -30}
+      ],
+      [
+      {lat: -85, lng: -36},
+      {lat: 85, lng: -36}
+      ],
+      [
+      {lat: -85, lng: -42},
+      {lat: 85, lng: -42}
+      ],
+      [
+      {lat: -85, lng: -48},
+      {lat: 85, lng: -48}
+      ],
+      [
+      {lat: -85, lng: -54},
+      {lat: 85, lng: -54}
+      ],
+      [
+      {lat: -85, lng: -60},
+      {lat: 85, lng: -60}
+      ],
+      [
+      {lat: -85, lng: -66},
+      {lat: 85, lng: -66}
+      ],
+      [
+      {lat: -85, lng: -72},
+      {lat: 85, lng: -72}
+      ],
+      [
+      {lat: -85, lng: -78},
+      {lat: 85, lng: -78}
+      ],
+      [
+      {lat: -85, lng: -84},
+      {lat: 85, lng: -84}
+      ],
+      [
+      {lat: -85, lng: -90},
+      {lat: 85, lng: -90}
+      ],
+      [
+      {lat: -85, lng: -96},
+      {lat: 85, lng: -96}
+      ],
+      [
+      {lat: -85, lng: -102},
+      {lat: 85, lng: -102}
+      ],
+      [
+      {lat: -85, lng: -108},
+      {lat: 85, lng: -108}
+      ],
+      [
+      {lat: -85, lng: -114},
+      {lat: 85, lng: -114}
+      ],
+      [
+      {lat: -85, lng: -120},
+      {lat: 85, lng: -120}
+      ],
+      [
+      {lat: -85, lng: -126},
+      {lat: 85, lng: -126}
+      ],
+      [
+      {lat: -85, lng: -132},
+      {lat: 85, lng: -132}
+      ],
+      [
+      {lat: -85, lng: -138},
+      {lat: 85, lng: -138}
+      ],
+      [
+      {lat: -85, lng: -144},
+      {lat: 85, lng: -144}
+      ],
+      [
+      {lat: -85, lng: -150},
+      {lat: 85, lng: -150}
+      ],
+      [
+      {lat: -85, lng: -156},
+      {lat: 85, lng: -156}
+      ],
+      [
+      {lat: -85, lng: -162},
+      {lat: 85, lng: -162}
+      ],
+      [
+      {lat: -85, lng: -168},
+      {lat: 85, lng: -168}
+      ],
+      [
+      {lat: -85, lng: -174},
+      {lat: 85, lng: -174}
+      ]
+    ];
+    for (let index = 0; index < zoneLayerCoordinates.length; index++) {
+      let zone = zoneLayerCoordinates[index];
+      var zone_layer = new google.maps.Polyline({
+        path: zone,
+        geodesic: true,
+        strokeColor: '#3f85ff',
+        strokeOpacity: 0.2,
+        strokeWeight: 1
+      });
+      zone_layer.setMap(map);
+    }
+
+    //SHOW ZONE NAME
+
+    // mapLabel.setMap(map);
+
     window.mapView = map;
   }
   // CHANGE STYLE
@@ -1223,7 +1492,8 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken) {
           aMarker = new google.maps.Marker({ position: { lat: lat, lng: long }, map: map });
           let markername = '<div id="firstHeading" class="firstHeading">' + self.wells[index].name + '</div>';
           let infowindow = new google.maps.InfoWindow({
-            content: markername
+            content: markername,
+            disableAutoPan: true
           });
           infowindow.open(map, aMarker);
           if (getImageIconMarker(self.wells[index].well_headers) == icon_circle) {
@@ -1236,6 +1506,8 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken) {
               strokeColor: getColorIconMarker(self.wells[index].well_headers),
               scale: 0.5,
             });
+            // map.setCenter(new google.maps.LatLng(lat, long));
+
           }
           else if (getImageIconMarker(self.wells[index].well_headers) == icon_default) {
             aMarker.setIcon({
@@ -1247,6 +1519,8 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken) {
               strokeColor: '#d22c2c',
               scale: 0.7,
             });
+            // map.setCenter(new google.maps.LatLng(lat, long));
+
           } 
           else {
             aMarker.setIcon({
@@ -1258,13 +1532,16 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken) {
               strokeColor: getColorIconMarker(self.wells[index].well_headers),
               scale: 0.05,
             });
+            // map.setCenter(new google.maps.LatLng(lat, long));
+
           }
         }
         else if (checkCoordinate(lat, long, x, y) === false) {
           aMarker = new google.maps.Marker({ position: { lat: latX, lng: lngY }, map: map });
           let markername = '<div id="firstHeading" class="firstHeading">' + self.wells[index].name + '</div>';
           let infowindow = new google.maps.InfoWindow({
-            content: markername
+            content: markername,
+            disableAutoPan: true
           });
           // aMarker.addListener('click', function () {
           infowindow.open(map, aMarker);
@@ -1278,6 +1555,7 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken) {
               strokeColor: getColorIconMarker(self.wells[index].well_headers),
               scale: 0.5,
             });
+            // map.setCenter(new google.maps.LatLng(latX, lngY));
           }
           else if (getImageIconMarker(self.wells[index].well_headers) == icon_default) {
             aMarker.setIcon({
@@ -1289,6 +1567,8 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken) {
               strokeColor: '#1081E0',
               scale: 0.7,
             });
+            // map.setCenter(new google.maps.LatLng(latX, lngY));
+
           }
           else {
             aMarker.setIcon({
@@ -1300,6 +1580,8 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken) {
               strokeColor: getColorIconMarker(self.wells[index].well_headers),
               scale: 0.05,
             });
+            // map.setCenter(new google.maps.LatLng(latX, lngY));
+
           }
 
         } else {
@@ -1312,48 +1594,28 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken) {
     }
   }
   //FOCUS WELL
-  function focusWell() {
+  function focusWell(well) {
     let firstProjection = self.zoneMap;
     let secondProjection = "+proj=longlat +ellps=WGS84 +datum=WGS84 +units=degrees";
-    console.log(self.focusWell)
-    if (self.zoneMap && self.focusWell.well_headers) {
-      let lat = getLat(self.focusWell.well_headers);
-      let long = getLong(self.focusWell.well_headers);
-      let x = getX(self.focusWell.well_headers);
-      let y = getY(self.focusWell.well_headers);
+    if (self.zoneMap && well.well_headers) {
+      let lat = getLat(well.well_headers);
+      let long = getLong(well.well_headers);
+      let x = getX(well.well_headers);
+      let y = getY(well.well_headers);
       let latX = proj4(firstProjection, secondProjection, [x, y])[1];
       let lngY = proj4(firstProjection, secondProjection, [x, y])[0];
 
       if (checkCoordinate(lat, long, x, y) === true) {
-        // map.setCenter({ lat: lat, lng: long, alt: 0 });
-        // map.setCenter(new google.maps.LatLng(lat, long));
-        // map.panTo(new google.maps.LatLng(lat, long));
-        // marker = new google.maps.Marker({ position: { lat: lat, lng: long }, map: map, zIndex: 10000 });
-        // // marker.setAnimation(google.maps.Animation.BOUNCE);
-        // let infowindow = new google.maps.InfoWindow({
-        //   content: 'markername'
-        // });
-        // infowindow.open(map, marker);
+        map.panTo(new google.maps.LatLng(lat, long));
+      
  
       }
       else if (checkCoordinate(lat, long, x, y) === false) {
-        // map.setCenter({ lat: latX, lng: lngY, alt: 0 });
-        // map.setCenter(new google.maps.LatLng(latX, logY));
-        // map.panTo(new google.maps.LatLng(latX, lngY));
-        // marker = new google.maps.Marker({ position: { lat: latX, lng: lngY }, map: map, zIndex: 10000 });
-        // // marker.setAnimation(google.maps.Animation.BOUNCE);
-        // let infowindow = new google.maps.InfoWindow({
-        //   content: 'markername'
-        // });
-        // infowindow.open(map, marker);
+        map.panTo(new google.maps.LatLng(latX, lngY));
+    
       } 
       else {
-        self.wellError = self.focusWell.name;
-        // ngDialog.open({
-        //   template: "templateError",
-        //   className: "ngdialog-theme-default",
-        //   scope: Object.assign($scope.$new(), { message: `Well's coordinate has been error ${self.focusWell.name}` })
-        // })
+        self.wellError = well.name;
       }
     }
   }

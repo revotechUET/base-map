@@ -132,7 +132,6 @@ ${require('./dashboard-template-modal.html')}
   <div ng-show="isSet(5) && !self.hideMain" class="content">
     <div style="flex: 1; margin: 15px; user-select: none; overflow: hidden ;display: flex; flex-direction: column;"
       onmouseover=this.style.overflow='overlay' onmouseout=this.style.overflow='hidden'>
-
       <div class="setting">
         <div class="setting-title" style="margin-bottom: 10px;">Zonesets & Markersets</div>
         <div class="complex-setting" style="margin-bottom: 10px">
@@ -226,12 +225,41 @@ ${require('./dashboard-template-modal.html')}
           </div>
         </div>
         <div class="upload-content">
-          <p>
+          <p ng-show="false">
             <input type="file" id="map-upfile-1" class="file-upload" accept=".geojson,application/zip"
               placeholder="choose a file" onblur="angular.element(this).scope().clearSelectedFile()"
               onchange="angular.element(this).scope().onFileChange(), angular.element(this).scope().GetFileSizeNameAndType()" />
           </p>
-          <div id="fp" style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis; margin-top: 15px;">
+          <div id="fp" style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis; padding-top: 15px;">
+          </div>
+        </div>
+      </div>
+      <div class="setting" style="flex: 1; overflow: hidden;">
+        <div>
+          <div class="setting-title">Zone</div>
+          <div class="setting-content" style="align-items: flex-start;">
+            <span>{{ zoneMap }}</span>
+          </div>
+        </div>
+        <div class="filter-zone">
+          <div class="filter">
+            <div style="margin-left: 0" class="ti ti-search"></div>
+          </div>
+          <input class="searchInput" type="text" placeholder="Search zone" ng-model="searchProject" />
+          <div class="filter">
+            <div ng-click="self.showDetailZone = !self.showDetailZone"
+              ng-class="{'show-detail-zone': !self.showDetailZone}" class="ti ti-align-left" style="padding: 10px 0;"></div>
+          </div>
+        </div>
+        <div class="list-zone">
+          <div class="zone" ng-repeat="item in zoneFieldTable | filter:searchProject track by $index">
+            <div class="zone-title">
+              <div ng-class="{'selected-zone': zoneMap == item.output}" style="display: flex;">
+                <div ng-click="hasChanged(item)" class="icon apply-16x16"></div>
+                <span ng-click="hasChanged(item)" ng-bind="item.Name"></span>
+              </div>
+            </div>
+            <span ng-show="!self.showDetailZone" class="zone-name" ng-bind="item.output"></span>
           </div>
         </div>
       </div>
@@ -357,52 +385,15 @@ ${require('./dashboard-template-modal.html')}
         </div>
       </div>
       -->
-      <div class="setting">
-        <!-- <div>
-          <div class="setting-title">Zone</div>
-          <div class="setting-content" style="align-items: flex-start;">
-            <span>{{ zoneMap }}</span>
-          </div>
-        </div> -->
-        <!-- <span class="zone-btn" ng-click="self.showDialog = !self.showDialog">49N</span> -->
-        <!-- <div class="filter-zone">
-          <div class="filter">
-            <div style="margin-left: 0" class="ti ti-search"></div>
-          </div>
-          <input class="searchInput" type="text" placeholder="Search zone" ng-model="searchProject" />
-          <div class="filter">
-            <div ng-click="self.showDetailZone = !self.showDetailZone"
-              ng-class="{'show-detail-zone': !self.showDetailZone}" class="ti ti-comment" style="padding: 10px;"></div>
-          </div>
+      <div class="export" >
+        <div ng-click="self.downloadZipFile()">
+          Save Configuration
         </div>
-        <div class="list-zone">
-          <div class="zone" ng-repeat="item in zoneFieldTable | filter:searchProject track by $index">
-            <div class="zone-title">
-              <div ng-class="{'selected-zone': zoneMap == item.output}" style="display: flex;">
-                <div ng-click="hasChanged(item)" class="icon apply-16x16"></div>
-                <span ng-click="hasChanged(item)" ng-bind="item.Name"></span>
-              </div>
-            </div>
-            <span ng-show="!self.showDetailZone" class="zone-name" ng-bind="item.output"></span>
-          </div>
-        </div> -->
-
+        <div ng-click="self.uploadZipFileDatabase()" style="margin-left: 15px;">
+          Save to Database
+        </div>
       </div>
-      <div class="export" ng-click="self.downloadZipFile()">
-        Save Configuration
-      </div>
-      <div style="    background: #3f85ff;
-      border-radius: 3px;
-      color: #fff;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      font-weight: bold;
-      padding: 15px;
-      bottom: 15px;
-      cursor: pointer;" ng-click="self.uploadZipFileDatabase()">
-        Save to database
-      </div>
+      
     </div>
   </div>
 </div>
@@ -446,8 +437,8 @@ ${require('./dashboard-template-modal.html')}
       <span>Water</span>
     </div>
     <div class="help-content-row">
-      <div class="circle" style="background: yellow;
-      border: 1px solid rgb(194, 194, 0);"></div>
+      <div class="circle" style="background: rgb(238, 84, 84);
+      border: 1px solid red;"></div>
       <span>Default</span>
     </div>
   </div>
