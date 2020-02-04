@@ -112,11 +112,14 @@ app.value('chartSettings', {
     type: 'number',
     label: "Ticks",
     getValue: function (widgetConfig, /* editable param */) {
+      return _.get(widgetConfig, 'bar_chart_options.scales.yAxes[0].ticks.maxTicksLimit', '[empty]');
+      /*
       return _.get(widgetConfig, 'bar_chart_options.scales.yAxes[0].ticks.maxTicksLimit',
           _.get(widgetConfig, 'bar_chart_options.scales.xAxes[0].ticks.maxTicksLimit', '[empty]'));
+          */
     },
     setValue: function (widgetConfig /*editable param*/, newVal) {
-      _.set(widgetConfig, 'bar_chart_options.scales.xAxes[0].ticks.maxTicksLimit', Math.round(Number(newVal)) || 11);
+      // _.set(widgetConfig, 'bar_chart_options.scales.xAxes[0].ticks.maxTicksLimit', Math.round(Number(newVal)) || 11);
       _.set(widgetConfig, 'bar_chart_options.scales.yAxes[0].ticks.maxTicksLimit', Math.round(Number(newVal)) || 11);
     }
   },
@@ -841,7 +844,7 @@ function baseMapController(
             }],
             xAxes: [{
               ticks: {
-                maxTicksLimit: 10,
+                // maxTicksLimit: 10,
                 min: 0
               }
             }]
@@ -875,7 +878,7 @@ function baseMapController(
             }],
             xAxes: [{
               ticks: {
-                maxTicksLimit: 10,
+                // maxTicksLimit: 10,
                 min: 0
               }
             }]
@@ -910,7 +913,7 @@ function baseMapController(
             }],
             xAxes: [{
               ticks: {
-                maxTicksLimit: 10,
+                // maxTicksLimit: 10,
                 min: 0
               }
             }]
@@ -943,7 +946,7 @@ function baseMapController(
             }],
             xAxes: [{
               ticks: {
-                maxTicksLimit: 10,
+                // maxTicksLimit: 10,
                 min: 0
               }
             }]
@@ -976,7 +979,7 @@ function baseMapController(
             }],
             xAxes: [{
               ticks: {
-                maxTicksLimit: 10,
+                // maxTicksLimit: 10,
                 min: 0
               }
             }]
