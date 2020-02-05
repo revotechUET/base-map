@@ -168,7 +168,6 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken) {
     $scope.$watch(
       () => self.axesUnit,
       () => {
-        console.log("axesUnit changed");
         updateAxes();
       }
     )
@@ -1886,6 +1885,7 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken) {
       }
     }
   }
+  const LONGTITUDE_COMPENSTATION = 1.4887438843871905
   function updateAxes() {
     if (!axes) return;
     if (!self.showAxes)
@@ -1893,7 +1893,7 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken) {
     const firstProjection = "+proj=longlat +ellps=WGS84 +datum=WGS84 +units=degrees";
     const secondProjection = self.zoneMap;
     axes.latLng2XYFn = function(lat, lng) {
-      const result = proj4(firstProjection, secondProjection, [lng, lat]);
+      const result = proj4(firstProjection, secondProjection, [lng - LONGTITUDE_COMPENSTATION, lat]);
       if (self.axesUnit && _.isFinite(self.axesUnit.ratio)) {
         return {
           x: Number(result[0]) * self.axesUnit.ratio,

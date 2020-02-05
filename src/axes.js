@@ -1,4 +1,6 @@
 module.exports = Axes;
+
+const BASE_LAT = 0;
 function Axes(container, map) {
     const self = this;
     this.container = d3.select(container);
@@ -40,9 +42,12 @@ function Axes(container, map) {
         return map.project.bind(map);
     }
     function getLng(lng) {
+        return lng;
+        /*
         if (typeof(self.map.getCenter().lng) == "function")
             return self.map.getCenter().lng() < 0 ? -1 * (360 - lng):lng;
         return self.map.getCenter().lng < 0 ? -1 * (360 - lng):lng;
+        */
     }
     this.clearLayer = clearLayer;
     function clearLayer() {
@@ -146,13 +151,13 @@ function Axes(container, map) {
         context.stroke();
 
         xPoints.forEach((lng, i) => {
-            const projected = projectFn(getLatLngObj(0, getLng(lng)));
-            const textValues = self.latLng2XYFn ? self.latLng2XYFn(0, getLng(lng)) : {x: getLng(lng), y: 0};
+            const projected = projectFn(getLatLngObj(BASE_LAT, getLng(lng)));
+            const textValues = self.latLng2XYFn ? self.latLng2XYFn(BASE_LAT, getLng(lng)) : {x: getLng(lng), y: 0};
             context.fillRect(projected.x - 2, viewHeight - 30, 4, 10);
             context.fillText(textValues.x.toFixed(0) + unit, projected.x, viewHeight);
             if (i > 0) {
                 d3.range(xPoints[i - 1], lng, xMinorStep).forEach(minorLng => {
-                    const _projected = projectFn(getLatLngObj(0, minorLng));
+                    const _projected = projectFn(getLatLngObj(BASE_LAT, minorLng));
                     context.fillRect(_projected.x - 1, viewHeight - 25, 2, 5);
                 })
             }
