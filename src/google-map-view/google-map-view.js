@@ -82,6 +82,7 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken) {
         $timeout(() => {
           showAllPopup(self.allPopup);
           updateContours();
+          updateTrajectory();
           updateAxes();
         })
       },
@@ -132,6 +133,7 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken) {
         $timeout(() => {
           showAllPopup(self.allPopup);
           updateContours();
+          updateTrajectory();
         })
       },
       true
@@ -2017,9 +2019,9 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken) {
   const wellPathHash = {};
   const updateTrajectoryDebounced = _.debounce(updateTrajectory, 100);
   function updateTrajectory() {
+    clearTrajectoryMap();
+    if (!self.showTrajectory) return;
     self.wells.forEach(async (well) => {
-      if (!self.showTrajectory)
-        return clearTrajectoryMap();
       if (!wellPathHash[well.idWell])
         wellPathHash[well.idWell] = new google.maps.Polyline({
           geodesic: true,
