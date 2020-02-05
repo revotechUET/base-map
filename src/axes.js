@@ -74,7 +74,11 @@ function Axes(container, map) {
     }
 
     function _drawAxes() {
-        const unit = typeof(self.latLng2XYFn) === "function" ? "m":"°";
+        const unit = typeof(self.latLng2XYFn) === "function" 
+                ? typeof(self.getUnitLabel) === "function"
+                    ? self.getUnitLabel()
+                    : "m"
+                :"°";
         const projectFn = getProjectionFn();    
         const context = self.canvas.getContext("2d");
         context.fillStyle = "black";

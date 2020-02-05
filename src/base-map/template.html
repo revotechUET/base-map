@@ -114,7 +114,7 @@ ${require('./dashboard-template-modal.html')}
     </div> -->
 
 
-  </div>
+  <div>
   <div ng-show="isSet(3) && !self.hideMain" class="content">
 
     <wi-tree-view-virtual tree-root="wellSelect" get-label="self.getLabel" get-icon="self.getIcon"
@@ -225,14 +225,26 @@ ${require('./dashboard-template-modal.html')}
               <span class="slider round"></span>
             </label>
           </div>
-          <!--
-          <div ng-if="self.showTrajectory" class="setting-content" style="margin-top: 12px;">
-            <wi-tree-view-virtual tree-root="curveList" get-label="self.getLabel" get-icon="self.getIcon"
-              click-fn="self.clickCurveFunction" get-children="self.getChildren" run-match="self.runMatchCurve"
-              hide-unmatched="true" no-drag="true">
-            </wi-tree-view-virtual>
+          <div ng-if="self.showAxes" class="setting-content" style="margin-top: 12px; flex-direction: column;">
+            <div style="display: flex; width: 100%">
+              <label style="flex: 1">Unit</label>
+              <select style="flex: 2" ng-model="self.axesUnit">
+                <option ng-repeat="opt in self.axesUnitOptions" ng-value="opt">{{opt.label}}</option>
+              </select>
+            </div>
+            <!--
+            <div style="display: flex; width: 100%">
+              <label style="flex: 1">X</label>
+              <input ng-model="self.XLeft" type="number" style="flex: 1">
+              <input ng-model="self.XRight" type="number" style="flex: 1">
+            </div>
+            <div style="display: flex; width: 100%">
+              <label style="flex: 1">Y</label>
+              <input ng-model="self.YBottom "type="number" style="flex: 1">
+              <input ng-model="self.YTop" type="number" style="flex: 1">
+            </div>
+            -->
           </div>
-          -->
         </div>
       </div>
       <div class="upload">
@@ -479,6 +491,7 @@ ${require('./dashboard-template-modal.html')}
 <google-map-view theme="themeMap" ng-if="checkGoogleApi()" ng-show="self.showMap" all-popup="allPopup" class="mapView"
   wells="wellSelect" geo-json="self.geoJson" control-panel="self.controlPanel" point="self.point" focus-well='focusWell'
   focus-curve="focusCurve" show-contour="self.showContour" show-trajectory="self.showTrajectory" show-Axes="self.showAxes"
+  axes-unit="self.axesUnit" axes-x-left="self.XLeft" axes-x-right="self.XRight" axes-y-bottom="self.YBottom" axes-y-top="self.YTop"
   focus-marker-or-zone="focusMZ" zone-depth-spec="self.zoneDepthSpec" get-curve-info-fn="self.getCurveInfoFn"
   get-curve-raw-data-fn="self.getCurveRawDataFn" zone-map="zoneMap">
 </google-map-view>

@@ -31,6 +31,11 @@ app.component(componentName, {
     showTrajectory: '<',
     // draw Axes
     showAxes: "<",
+    axesUnit: "<",
+    axesXLeft: "<",
+    axesXRight: "<",
+    axesYTop: "<",
+    axesYBottom: "<"
   },
   transclude: true
 });
@@ -159,6 +164,20 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken) {
       () => {
         updateAxes();
       }
+    )
+    $scope.$watch(
+      () => self.axesUnit,
+      () => {
+        console.log("axesUnit changed");
+        updateAxes();
+      }
+    )
+    $scope.$watch(
+      () => [ self.axesXLeft, self.axesXRight, self.axesYTop, self.axestYBottom ],
+      () => {
+        updateMapBounds();
+      },
+      true
     )
     // VIEW BY ZONESET & MARKERSET
     $scope.$watch(
@@ -1849,6 +1868,24 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken) {
     })
     updateAxes();
   }
+  function updateMapBounds() {
+    if (_.isFinite(self.axesXLeft) && _.isFinite(self.axesXRight)
+      && _.isFinite(self.axesYTop) && _.isFinite(self.axesYBottom)) {
+      const secondProjection = "+proj=longlat +ellps=WGS84 +datum=WGS84 +units=degrees";
+      const firstProjection = self.zoneMap;
+      const SW = proj4(firstProjection, secondProjection, [self.axesXLeft, self.axesYBottom]);
+      const NE = proj4(firstProjection, secondProjection, [self.axesXRight, self.axesYTop]);
+      if (SW.length && _.isFinite(SW[0]) && _.isFinite(SW[1])
+        && NE.length && _.isFinite(NE[0]) && _.isFinite(NE[1])) {
+          const _sw = new google.maps.LatLng(SW[1], SW[0]);
+          const _ne = new google.maps.LatLng(NE[1], NE[0]);
+          const _bounds = new google.maps.LatLngBounds();
+          _bounds.extend(_sw);
+          _bounds.extend(_ne);
+          map.fitBounds(_bounds);
+      }
+    }
+  }
   function updateAxes() {
     if (!axes) return;
     if (!self.showAxes)
@@ -1857,10 +1894,19 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken) {
     const secondProjection = self.zoneMap;
     axes.latLng2XYFn = function(lat, lng) {
       const result = proj4(firstProjection, secondProjection, [lng, lat]);
+      if (self.axesUnit && _.isFinite(self.axesUnit.ratio)) {
+        return {
+          x: Number(result[0]) * self.axesUnit.ratio,
+          y: Number(result[1]) * self.axesUnit.ratio
+        }
+      }
       return {
         x: result[0],
         y: result[1]
       }
+    }
+    axes.getUnitLabel = function() {
+      return self.axesUnit ? self.axesUnit.label : "m";
     }
     axes.drawAxesDebounced();
   }

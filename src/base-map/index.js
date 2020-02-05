@@ -204,6 +204,11 @@ app.component(componentName, {
   transclude: true
 });
 
+const AxesUnitOptions = [
+  {label: "m", ratio: 1},
+  {label: "km", ratio: 1/1000}
+]
+
 function baseMapController(
   $scope,
   $http,
@@ -231,6 +236,8 @@ function baseMapController(
   self.showContour = false;
   self.showTrajectory = false;
   self.showAxes = false;
+  self.axesUnitOptions = AxesUnitOptions;
+  self.axesUnit = self.axesUnitOptions[0];
   self.selectedIdsHash = {};
   self.selectedNode = null;
   self.selectedNodes = [];
