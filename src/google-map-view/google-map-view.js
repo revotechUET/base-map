@@ -2041,7 +2041,7 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken) {
 
   function getDepthsFromScale(startDepth, endDepth) {
     const zoomFactor = map.getZoom();
-    const numberOfPoints = Math.min(2 ** Math.max((zoomFactor - 15), 1), 150);
+    const numberOfPoints = 150 || Math.min(2 ** Math.max((zoomFactor - 15), 1), 150);
     const step = (endDepth - startDepth) / numberOfPoints;
 
     return _.range(startDepth, endDepth + step, step, step);
