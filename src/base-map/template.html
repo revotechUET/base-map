@@ -114,7 +114,7 @@ ${require('./dashboard-template-modal.html')}
     </div> -->
 
 
-  <div>
+  </div>
   <div ng-show="isSet(3) && !self.hideMain" class="content">
 
     <wi-tree-view-virtual tree-root="wellSelect" get-label="self.getLabel" get-icon="self.getIcon"
@@ -225,7 +225,7 @@ ${require('./dashboard-template-modal.html')}
               <span class="slider round"></span>
             </label>
           </div>
-          <div ng-if="self.showAxes" class="setting-content" style="margin-top: 12px; flex-direction: column;">
+          <div ng-if="self.showAxes" class="setting-content" style="margin-top: 12px;">
             <div style="display: flex; width: 100%">
               <label style="flex: 1">Unit</label>
               <select style="flex: 2" ng-model="self.axesUnit">
