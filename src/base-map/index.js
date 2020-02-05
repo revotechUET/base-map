@@ -71,8 +71,19 @@ app.value('chartSettings', {
     options: chartTypes,
     setValue: function (selectedProps, widgetConfig) {
       console.log("setting type", selectedProps);
-      if (selectedProps)
+      const lastType = widgetConfig.type;
+      if (selectedProps) {
         widgetConfig.type = selectedProps.value;
+        if (widgetConfig.type === "horizontal-bar" && lastType !== "horizontal-bar") {
+          const maxTicksLimit = _.get(widgetConfig, 'bar_chart_options.scales.yAxes[0].ticks.maxTicksLimit', null);
+          _.set(widgetConfig, 'bar_chart_options.scales.yAxes[0].ticks.maxTicksLimit', null);
+          _.set(widgetConfig, 'bar_chart_options.scales.xAxes[0].ticks.maxTicksLimit', maxTicksLimit);
+        } else if (lastType === "horizontal-bar" && widgetConfig.type !== "horizontal-bar") {
+          const maxTicksLimit = _.get(widgetConfig, 'bar_chart_options.scales.xAxes[0].ticks.maxTicksLimit', null);
+          _.set(widgetConfig, 'bar_chart_options.scales.xAxes[0].ticks.maxTicksLimit', null);
+          _.set(widgetConfig, 'bar_chart_options.scales.yAxes[0].ticks.maxTicksLimit', maxTicksLimit);
+        }
+      }
     },
     getValue: function(widgetConfig) {
       const foundNode = chartTypes.find(d => d.properties.value == widgetConfig.type);
@@ -112,7 +123,9 @@ app.value('chartSettings', {
     type: 'number',
     label: "Ticks",
     getValue: function (widgetConfig, /* editable param */) {
-      return _.get(widgetConfig, 'bar_chart_options.scales.yAxes[0].ticks.maxTicksLimit', '[empty]');
+      if (widgetConfig.type != "horizontal-bar")
+        return _.get(widgetConfig, 'bar_chart_options.scales.yAxes[0].ticks.maxTicksLimit', '[empty]');
+      return _.get(widgetConfig, 'bar_chart_options.scales.xAxes[0].ticks.maxTicksLimit', '[empty]');
       /*
       return _.get(widgetConfig, 'bar_chart_options.scales.yAxes[0].ticks.maxTicksLimit',
           _.get(widgetConfig, 'bar_chart_options.scales.xAxes[0].ticks.maxTicksLimit', '[empty]'));
@@ -120,7 +133,10 @@ app.value('chartSettings', {
     },
     setValue: function (widgetConfig /*editable param*/, newVal) {
       // _.set(widgetConfig, 'bar_chart_options.scales.xAxes[0].ticks.maxTicksLimit', Math.round(Number(newVal)) || 11);
-      _.set(widgetConfig, 'bar_chart_options.scales.yAxes[0].ticks.maxTicksLimit', Math.round(Number(newVal)) || 11);
+      if (widgetConfig.type !== "horizontal-bar")
+        _.set(widgetConfig, 'bar_chart_options.scales.yAxes[0].ticks.maxTicksLimit', Math.round(Number(newVal)) || null);
+      else
+        _.set(widgetConfig, 'bar_chart_options.scales.xAxes[0].ticks.maxTicksLimit', Math.round(Number(newVal)) || null);
     }
   },
   chartLabelOpt: {
