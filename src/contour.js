@@ -53,6 +53,14 @@ function Contour(container, map, data) {
         return {lat, lng};
     }
 
+    this.updateCanvasSize = function() {
+        viewWidth = self.container.node().offsetWidth;
+        viewHeight = self.container.node().offsetHeight;
+        d3.select(self.canvas)
+            .attr("width", viewWidth)
+            .attr("height", viewHeight)
+    }
+
     function clearLayer() {
         requestAnimationFrame(() => {
             const context = self.canvas.getContext('2d');

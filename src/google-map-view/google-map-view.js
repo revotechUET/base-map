@@ -61,6 +61,10 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken) {
       drawMap();
       initContours();
       initAxes();
+      window.onresize = function() {
+        updateContours();
+        updateAxesLayerSize();
+      }
       // console.log('Draw map')
     }, 10);
     $scope.$watch(
@@ -1887,6 +1891,9 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken) {
       }
     }
   }
+  function updateAxesLayerSize() {
+    axes.updateCanvasSize();
+  }
   // const LONGTITUDE_COMPENSTATION = 1.4887438843871905
   const LONGTITUDE_COMPENSTATION = 0
   function updateAxes() {
@@ -1915,6 +1922,9 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken) {
   }
   // ======================= DRAWING CONTOUR ===========================
   let contour = null;
+  function updateContourLayerSize() {
+    contour.updateCanvasSize();
+  }
   function initContours() {
     contour = new Contour("#contour-map-container", map, []);
     google.maps.event.addListener(map, 'bounds_changed', function () {

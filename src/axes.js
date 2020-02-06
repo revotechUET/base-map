@@ -6,8 +6,8 @@ function Axes(container, map) {
     this.container = d3.select(container);
     this.map = map;
 
-    const viewWidth = this.container.node().offsetWidth;
-    const viewHeight = this.container.node().offsetHeight;
+    let viewWidth = this.container.node().offsetWidth;
+    let viewHeight = this.container.node().offsetHeight;
 
     // create canvas
     let canvas = this.container.select('canvas');
@@ -48,6 +48,13 @@ function Axes(container, map) {
             return self.map.getCenter().lng() < 0 ? -1 * (360 - lng):lng;
         return self.map.getCenter().lng < 0 ? -1 * (360 - lng):lng;
         */
+    }
+    this.updateCanvasSize = function() {
+        viewWidth = self.container.node().offsetWidth;
+        viewHeight = self.container.node().offsetHeight;
+        d3.select(self.canvas)
+            .attr("width", viewWidth)
+            .attr("height", viewHeight)
     }
     this.clearLayer = clearLayer;
     function clearLayer() {
