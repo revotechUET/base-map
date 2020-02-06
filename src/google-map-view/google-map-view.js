@@ -1887,8 +1887,8 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken) {
       }
     }
   }
-  // const LONGTITUDE_COMPENSTATION = 1.4887438843871905
-  const LONGTITUDE_COMPENSTATION = 0
+  const LONGTITUDE_COMPENSTATION = 1.4887438843871905
+  // const LONGTITUDE_COMPENSTATION = 0
   function updateAxes() {
     if (!axes) return;
     if (!self.showAxes)
