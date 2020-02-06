@@ -1383,7 +1383,7 @@ function baseMapController(
           }
         }
         _disjoinIndexes
-          .sort()
+          .sort((a ,b) => a - b)
           .reverse()
           .forEach(zsi => _zonesets.splice(zsi, 1));
       }
@@ -1447,7 +1447,7 @@ function baseMapController(
           }
         }
         _disjoinIndexes
-          .sort()
+          .sort((a, b) => a - b)
           .reverse()
           .forEach(msi => _markersets.splice(msi, 1));
         
@@ -1492,7 +1492,7 @@ function baseMapController(
             }
           }
           _disjoinIndexes
-            .sort()
+            .sort((a, b) => a - b)
             .reverse()
             .forEach(ci => _curves.splice(ci, 1));
         }
