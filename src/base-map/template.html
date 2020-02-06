@@ -397,6 +397,21 @@ ${require('./dashboard-template-modal.html')}
           </div>
         </div>
       </div>
+      <div class="upload">
+        <div class="upload-header">
+          <div>
+            <div style="font-weight: bold; margin-bottom: 10px;">Open configuration file</div>
+            <span>Get file from database.</span>
+          </div>
+          <div class="btn-add" ng-click="self.downloadConfig()">
+            <span class="ti ti-plus"></span>
+          </div>
+        </div>
+        <div class="upload-content">
+          <div id="fp3" style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis; margin-top: 15px;">
+          </div>
+        </div>
+      </div>
       <!--
       <div class="upload">
         <div class="upload-header">

@@ -2035,6 +2035,7 @@ function baseMapController(
             var sd = res.storage_databases[0];
             var file = new File([content], "i2G_basemap_configuration.zip");
             wiDialog.treeExplorer({
+                selectWhat: 'folder',
                 file: file,
                 url: config.url,
                 storage_database: JSON.stringify({
@@ -2050,5 +2051,186 @@ function baseMapController(
         });
       });
     });
+  }
+  this.downloadConfig = function() {
+    wiApi.getListProjects()
+      .then((list) => {
+        list = list.filter(e => !e.shared).map(e => {
+          return {
+            data: {
+              label: e.name
+            },  
+            icon: "project-normal-16x16",
+            properties: e
+          }
+        });
+        console.log(list);
+        wiDialog.promptListDialog({
+          title: "Select project to save",
+          inputName: "Project",
+          iconBtn: "project-normal-16x16",
+          hideButtonDelete: true,
+          selectionList: list
+        }, function(item) {
+          console.log(item);
+          wiApi.getFullInfoPromise(item.idProject)
+          .then((res) => {
+            console.log(res);
+            var sd = res.storage_databases[0];
+            wiDialog.treeExplorer({
+                selectWhat: 'file',
+                url: config.url,
+                storage_database: JSON.stringify({
+                  company: sd.company,
+                  directory: sd.input_directory,
+                  whereami: "WI_STORAGE_ADMIN"
+                })
+              }, Upload, (res) => {
+                var file = res;
+                file.name = "a.zip";
+                if (file) {
+                  JSZip.loadAsync(file)
+                  .then(function (zip) {
+                    self.GetFileSizeNameAndType3(zip.file(Object.keys(zip.files)[0]));
+                    return JSZip.loadAsync(zip.file(Object.keys(zip.files)[0]).async("blob"))
+                  })
+                  .then((zip1) => {
+                    console.log(zip1);
+                    return {
+                            contour: zip1.file("contour.json").async("string"),
+                            mapSetting: zip1.file("mapsetting.json").async("string"),
+                            blocks: zip1.file("blocks.geojson").async("string")
+                          };
+                  })
+                  .then(async function (result) {
+                    await result.contour.then(function (data) {
+                      return new Promise(res => {
+                        data = JSON.parse(data);
+                        $scope.wellSelect = data.selectWell || [];
+                        $scope.curveList = data.selectCurve || [];
+                        $scope.zoneList = data.selectedZone || [];
+                        $scope.markerList = data.selectedMarker || [];
+                        self.noWell = false;
+                        $scope.focusCurve = $scope.curveList.find(c => c._selected);
+                        let selectedZoneset = $scope.zoneList.find(zs => zs.zones.find(z => z._selected));
+                        let selectedMarkerset = $scope.markerList.find(ms => ms.markers.find(m => m._selected));
+                        $scope.focusMZ = selectedZoneset
+                            ? selectedZoneset.zones.find(z => z._selected)
+                            : selectedMarkerset ? selectedMarkerset.markers.find(m => m._selected) : null
+                        if (!$scope.$$phase) {
+                          $scope.$apply();
+                          $timeout(res, 500);
+                        }
+                      })
+                    });
+                    result.mapSetting.then(function (data) {
+                      data = JSON.parse(data);
+                      $scope.themeMap = data.themeMap;
+                      $scope.allPopup = data.allPopup;
+                      self.activeTheme = data.activeTheme;
+                      self.controlPanel = data.controlPanel;
+                      self.point = data.point;
+                      self.showContour = data.showContour;
+                      self.showTrajectory = data.showTrajectory;
+                      self.darkMode = data.darkMode;
+                      setDarkMode(self.darkMode);
+                      self.showZonesets = data.showZonesets;
+                      self.showMarkersets = data.showMarkersets;
+                      $scope.zoneMap = data.zoneMap;
+                      $timeout(() => {
+                        if (!$scope.$$phase) {
+                          $scope.$apply();
+                        };
+                      })
+                    });
+                    result.blocks.then(function (data) {
+                      data = JSON.parse(data);
+                      self.geoJson = data;
+                      $scope.$digest();
+                    });
+                  });
+                  // if (/(.zip)/.exec(file.name)) {
+                  //   console.log(".zip file upzip");
+                  //   JSZip.loadAsync(file)
+                  //     .then(function (zip) {
+                  //       return {
+                  //         contour: zip.file("contour.json").async("string"),
+                  //         mapSetting: zip.file("mapsetting.json").async("string"),
+                  //         blocks: zip.file("blocks.geojson").async("string")
+                  //       };
+                  //     })
+                  //     .then(async function (result) {
+                  //       await result.contour.then(function (data) {
+                  //         return new Promise(res => {
+                  //           data = JSON.parse(data);
+                  //           $scope.wellSelect = data.selectWell || [];
+                  //           $scope.curveList = data.selectCurve || [];
+                  //           $scope.zoneList = data.selectedZone || [];
+                  //           $scope.markerList = data.selectedMarker || [];
+                  //           self.noWell = false;
+                  //           $scope.focusCurve = $scope.curveList.find(c => c._selected);
+                  //           let selectedZoneset = $scope.zoneList.find(zs => zs.zones.find(z => z._selected));
+                  //           let selectedMarkerset = $scope.markerList.find(ms => ms.markers.find(m => m._selected));
+                  //           $scope.focusMZ = selectedZoneset
+                  //               ? selectedZoneset.zones.find(z => z._selected)
+                  //               : selectedMarkerset ? selectedMarkerset.markers.find(m => m._selected) : null
+                  //           if (!$scope.$$phase) {
+                  //             $scope.$apply();
+                  //             $timeout(res, 500);
+                  //           }
+                  //         })
+                  //       });
+                  //       result.mapSetting.then(function (data) {
+                  //         data = JSON.parse(data);
+                  //         $scope.themeMap = data.themeMap;
+                  //         $scope.allPopup = data.allPopup;
+                  //         self.activeTheme = data.activeTheme;
+                  //         self.controlPanel = data.controlPanel;
+                  //         self.point = data.point;
+                  //         self.showContour = data.showContour;
+                  //         self.showTrajectory = data.showTrajectory;
+                  //         self.darkMode = data.darkMode;
+                  //         setDarkMode(self.darkMode);
+                  //         self.showZonesets = data.showZonesets;
+                  //         self.showMarkersets = data.showMarkersets;
+                  //         $scope.zoneMap = data.zoneMap;
+                  //         $timeout(() => {
+                  //           if (!$scope.$$phase) {
+                  //             $scope.$apply();
+                  //           };
+                  //         })
+                  //       });
+                  //       result.blocks.then(function (data) {
+                  //         data = JSON.parse(data);
+                  //         self.geoJson = data;
+                  //         $scope.$digest();
+                  //       });
+                  //     });
+                  // } else {
+                  //   const reader = new FileReader();
+                  //   reader.onload = function (event) {
+                  //     shp(event.target.result).catch(e => console.error(e));
+                  //   };
+                  //   reader.onerror = function (event) {
+                  //     console.error(event);
+                  //   };
+                  //   reader.readAsArrayBuffer(file);
+                  // }
+                }
+            });
+          });
+        });
+      });
+  }
+  this.GetFileSizeNameAndType3 = function (file) {
+    if (file) {
+      document.getElementById('fp3').innerHTML = '';
+        let fsize = file.size;
+        document.getElementById('fp3').innerHTML =
+          document.getElementById('fp3').innerHTML
+          + '<b>File Name: </b>' + file.name + '</br>'
+          // + '<b>File Size: </b>' + Math.round((fsize / 1024)) + 'KB </br>'
+          // + '<b>File Type: </b>' + file.type + "</br>";
+    }
   }
 }
