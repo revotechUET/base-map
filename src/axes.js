@@ -18,6 +18,15 @@ function Axes(container, map) {
             .attr('height', viewHeight);
     this.canvas = canvas.node();
 
+    let bCanvas = this.container.select('canvas.bound-canvas');
+    if (!bCanvas.node())
+        bCanvas = this.container
+            .append('canvas')
+            .attr("class", "bound-canvas")
+            .attr('width', viewWidth)
+            .attr('height', viewHeight);
+    this.bCanvas = bCanvas.node();
+
     this.drawAxesDebounced = _.debounce(drawAxes);
 
     function latLng2Point(latLng) {
@@ -53,6 +62,9 @@ function Axes(container, map) {
         viewWidth = self.container.node().offsetWidth;
         viewHeight = self.container.node().offsetHeight;
         d3.select(self.canvas)
+            .attr("width", viewWidth)
+            .attr("height", viewHeight)
+        d3.select(self.bCanvas)
             .attr("width", viewWidth)
             .attr("height", viewHeight)
     }
@@ -173,5 +185,44 @@ function Axes(container, map) {
                 })
             }
         });
+    }
+    this.clearBoundsLayer = function() {
+        const context = self.bCanvas.getContext("2d");
+        context.clearRect(0, 0, viewWidth, viewHeight);
+    }
+    this.drawBounds = function(bound) {
+        const context = self.bCanvas.getContext("2d");
+        const projectFn = getProjectionFn();    
+        const sw = bound.southWest;
+        const ne = bound.northEast;
+        context.strokeStyle = "red";
+        const _sw_projected = projectFn(getLatLngObj(sw.lat, sw.lng));
+        const _ne_projected = projectFn(getLatLngObj(ne.lat, ne.lng));
+        context.beginPath();
+        context.moveTo(_sw_projected.x, _sw_projected.y);
+        context.lineTo(_sw_projected.x, _ne_projected.y);
+        context.closePath();
+        context.stroke();
+
+        // context.strokeStyle = "green";
+        context.beginPath();
+        context.moveTo(_sw_projected.x, _ne_projected.y);
+        context.lineTo(_ne_projected.x, _ne_projected.y);
+        context.closePath();
+        context.stroke();
+
+        // context.strokeStyle = "blue";
+        context.beginPath();
+        context.moveTo(_ne_projected.x, _ne_projected.y);
+        context.lineTo(_ne_projected.x, _sw_projected.y);
+        context.closePath();
+        context.stroke();
+
+        // context.strokeStyle = "purple";
+        context.beginPath();
+        context.moveTo(_ne_projected.x, _sw_projected.y);
+        context.lineTo(_sw_projected.x, _sw_projected.y);
+        context.closePath();
+        context.stroke();
     }
 }

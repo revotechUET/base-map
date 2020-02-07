@@ -168,17 +168,19 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken) {
     $scope.$watch(
       () => self.showAxes,
       () => {
+        updateMapBoundsDebounced();
         updateAxes();
       }
     )
     $scope.$watch(
       () => self.axesUnit,
       () => {
+        updateMapBoundsDebounced();
         updateAxes();
       }
     )
     $scope.$watch(
-      () => [ self.axesXLeft, self.axesXRight, self.axesYTop, self.axestYBottom ],
+      () => [ self.axesXLeft, self.axesXRight, self.axesYTop, self.axesYBottom ],
       () => {
         updateMapBounds();
       },
@@ -1867,19 +1869,27 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken) {
   function initAxes() {
     axes = new Axes("#axes", map);
     google.maps.event.addListener(map, 'bounds_changed', function () {
-      if (!self.showAxes)
+      if (!self.showAxes) {
+        axes.clearBoundsLayer();
         return axes.clearLayer();
+      }
+      updateMapBoundsDebounced();
       axes.drawAxesDebounced();
     })
     updateAxes();
   }
+  const updateMapBoundsDebounced = _.debounce(updateMapBounds);
   function updateMapBounds() {
+    axes.clearBoundsLayer();
     if (_.isFinite(self.axesXLeft) && _.isFinite(self.axesXRight)
       && _.isFinite(self.axesYTop) && _.isFinite(self.axesYBottom)) {
       const secondProjection = "+proj=longlat +ellps=WGS84 +datum=WGS84 +units=degrees";
       const firstProjection = self.zoneMap;
-      const SW = proj4(firstProjection, secondProjection, [self.axesXLeft, self.axesYBottom]);
-      const NE = proj4(firstProjection, secondProjection, [self.axesXRight, self.axesYTop]);
+      const unitRatio = self.axesUnit ? self.axesUnit.ratio : 1;
+      // console.log("SW", self.axesXLeft, self.axesYBottom);
+      // console.log("NE", self.axesXRight, self.axesYTop);
+      const SW = proj4(firstProjection, secondProjection, [self.axesXLeft / unitRatio, self.axesYBottom / unitRatio]);
+      const NE = proj4(firstProjection, secondProjection, [self.axesXRight / unitRatio, self.axesYTop / unitRatio]);
       if (SW.length && _.isFinite(SW[0]) && _.isFinite(SW[1])
         && NE.length && _.isFinite(NE[0]) && _.isFinite(NE[1])) {
           const _sw = new google.maps.LatLng(SW[1], SW[0]);
@@ -1887,7 +1897,16 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken) {
           const _bounds = new google.maps.LatLngBounds();
           _bounds.extend(_sw);
           _bounds.extend(_ne);
+          // console.log("Bounds", SW, NE);
           map.fitBounds(_bounds);
+          // console.log("After Bounds",
+          //   [map.getBounds().getSouthWest().lat(), map.getBounds().getSouthWest().lng()], 
+          //   [map.getBounds().getNorthEast().lat(), map.getBounds().getNorthEast().lng()]
+          // )
+          axes.drawBounds({
+            southWest: {lat: _sw.lat(), lng: _sw.lng()},
+            northEast: {lat: _ne.lat(), lng: _ne.lng()}
+          })
       }
     }
   }
@@ -1898,8 +1917,10 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken) {
   const LONGTITUDE_COMPENSTATION = 0
   function updateAxes() {
     if (!axes) return;
-    if (!self.showAxes)
+    if (!self.showAxes) {
+      axes.clearBoundsLayer();
       return axes.clearLayer();
+    }
     const firstProjection = "+proj=longlat +ellps=WGS84 +datum=WGS84 +units=degrees";
     const secondProjection = self.zoneMap;
     axes.latLng2XYFn = function(lat, lng) {
