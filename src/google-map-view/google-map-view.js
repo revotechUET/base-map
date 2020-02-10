@@ -1723,12 +1723,14 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken, wiApi) {
         const step = Number(indexDataset.step);
         const xOffsetData = await new Promise((res) => {
           self.getCurveRawDataFn(xOffsetCurve.idCurve, (err, data) => {
-            res(data.filter(d => _.isFinite(d.x)).map(d => Object.assign({}, d, { depth: top + step * d.y, x: wiApi.convertUnit(d.x, xOffsetCurve.unit, "m")})));
+            // res(data.filter(d => _.isFinite(d.x)).map(d => Object.assign({}, d, { depth: top + step * d.y, x: wiApi.convertUnit(d.x, xOffsetCurve.unit, "m")})));
+            res(data.filter(d => _.isFinite(d.x)).map(d => Object.assign(d, { depth: top + step * d.y })));
           });
         });
         const yOffsetData = await new Promise((res) => {
           self.getCurveRawDataFn(yOffsetCurve.idCurve, (err, data) => {
-            res(data.filter(d => _.isFinite(d.x)).map(d => Object.assign({}, d, { depth: top + step * d.y, x: wiApi.convertUnit(d.x, yOffsetCurve.unit, "m")})));
+            // res(data.filter(d => _.isFinite(d.x)).map(d => Object.assign({}, d, { depth: top + step * d.y, x: wiApi.convertUnit(d.x, yOffsetCurve.unit, "m")})));
+            res(data.filter(d => _.isFinite(d.x)).map(d => Object.assign(d, { depth: top + step * d.y })));
           });
         });
 
@@ -1768,13 +1770,12 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken, wiApi) {
           const xScale = d3.scaleLinear().domain(xOffsetData.map(p => p.depth)).range(xOffsetData.map(p => p.x));
           const yScale = d3.scaleLinear().domain(yOffsetData.map(p => p.depth)).range(yOffsetData.map(p => p.x));
           if (Array.isArray(depth)) {
-            _xOffset = depth.map(d => xScale(d));
-            _yOffset = depth.map(d => yScale(d));
+            _xOffset = depth.map(d => wiApi.convertUnit(xScale(d), xOffsetCurve.unit, "m"));
+            _yOffset = depth.map(d => wiApi.convertUnit(yScale(d), yOffsetCurve.unit, "m"));
           } else {
-            _xOffset = xScale(depth);
-            _yOffset = yScale(depth);
+            _xOffset = wiApi.convertUnit(xScale(depth), xOffsetCurve.unit, "m");
+            _yOffset = wiApi.convertUnit(yScale(depth), yOffsetCurve.unit, "m");
           }
-
 
           const _checkCoordResult = checkCoordinate(_lat, _lng, _x, _y);
           if (_checkCoordResult == true) {
@@ -2052,7 +2053,7 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken, wiApi) {
 
   // ========================= DRAWING TRAJECTORY ========================
   const wellPathHash = {};
-  const updateTrajectoryDebounced = _.debounce(updateTrajectory, 100);
+  const updateTrajectoryDebounced = _.debounce(updateTrajectory, 1000);
   function updateTrajectory() {
     clearTrajectoryMap();
     if (!self.showTrajectory) return;
@@ -2078,7 +2079,7 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken, wiApi) {
 
   function getDepthsFromScale(startDepth, endDepth) {
     const zoomFactor = map.getZoom();
-    const numberOfPoints = 100 || Math.min(2 ** Math.max((zoomFactor - 15), 1), 150);
+    const numberOfPoints = Math.min(Math.max(2 ** Math.max((zoomFactor - 14), 1), 5), 100);
     const step = (endDepth - startDepth) / numberOfPoints;
 
     return _.range(startDepth, endDepth + step, step, step);
@@ -2086,8 +2087,8 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken, wiApi) {
 
   function getDepthSpecsFromWell(well) {
     return {
-      topDepth: Number((well.well_headers.find(h => h.header == "STRT") || {}).value),
-      bottomDepth: Number((well.well_headers.find(h => h.header == "STOP") || {}).value)
+      topDepth: wiApi.convertUnit(Number((well.well_headers.find(h => h.header == "STRT") || {}).value), well.unit, "m"),
+      bottomDepth: wiApi.convertUnit(Number((well.well_headers.find(h => h.header == "STOP") || {}).value), well.unit, "m")
     }
   }
 
