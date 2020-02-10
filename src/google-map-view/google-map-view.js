@@ -1783,14 +1783,29 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken, wiApi) {
             if (Array.isArray(depth)) {
               const zeroProject = proj4(firstProjection, secondProjection, [0, 0]);
               depth.forEach((d, i) => {
+                const _originalXY = proj4(secondProjection, firstProjection, [_lng, _lat]);
+                x[i] = _originalXY[0] + _xOffset[i];
+                y[i] = _originalXY[1] + _yOffset[i];
+                const _destLatLng = proj4(firstProjection,secondProjection, [x[i], y[i]]);
+                lat[i] = _destLatLng[1];
+                lng[i] = _destLatLng[0];
+                /*
                 const offsetProject = proj4(firstProjection, secondProjection, [_xOffset[i], _yOffset[i]]);
                 lat[i] = _lat + (offsetProject[1] - zeroProject[1]);
                 lng[i] = _lng + (offsetProject[0] - zeroProject[0]);
                 const revertPrj = proj4(secondProjection, firstProjection, [lng[i], lat[i]]);
                 x[i] = revertPrj[0];
                 y[i] = revertPrj[1];
+                */
               })
             } else {
+              const _originalXY = proj4(secondProjection, firstProjection, [_lng, _lat]);
+              x = _originalXY[0] + _xOffset;
+              y = _originalXY[1] + _yOffset;
+              const _destLatLng = proj4(firstProjection,secondProjection, [x, y]);
+              lat = _destLatLng[1];
+              lng = _destLatLng[0];
+              /*
               const zeroProject = proj4(firstProjection, secondProjection, [0, 0]);
               const offsetProject = proj4(firstProjection, secondProjection, [_xOffset, _yOffset]);
               lat = _lat + (offsetProject[1] - zeroProject[1]);
@@ -1798,6 +1813,7 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken, wiApi) {
               const revertPrj = proj4(secondProjection, firstProjection, [lng, lat]);
               x = revertPrj[0];
               y = revertPrj[1];
+              */
             }
           } else if (_checkCoordResult == false) {
             // calculate new lat/lng from new x, y
