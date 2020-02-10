@@ -1314,6 +1314,7 @@ function baseMapController(
     });
   };
 
+  this.prepareWellInfoFn = prepareWellInfos;
   async function prepareWellInfos(well) {
     if (!well.datasets || !well.zone_sets || !well.marker_sets) {
       const wellInfo = await new Promise((resolve, reject) => {
@@ -1326,6 +1327,54 @@ function baseMapController(
     }
     return well;
   }
+
+  /*
+  let unitTable = null;
+  this.convertUnitFn = convertUnit;
+  async function updateUnitTable() {
+    $http({
+      method: "POST",
+      url: BASE_URL + "/family/all-unit",
+      data: {},
+      headers: {
+        Authorization: wiToken.getToken()
+      }
+    }).then(function (units) {
+      unitTable = units;
+    });
+  }
+  function convertUnit (value, fromUnit, destUnit) {
+    if ((!Array.isArray(value) && !_.isFinite(value)) || fromUnit === destUnit) return value;
+    if (!unitTable) {
+      updateUnitTable();
+      return value;
+    }
+
+    let startUnit = unitTable.find(u => u.name == fromUnit);
+    let endUnit = unitTable.find(u => u.name == destUnit);
+
+    if(!startUnit || !endUnit || startUnit.idUnitGroup != endUnit.idUnitGroup)
+        return value;
+    if (startUnit && endUnit) {
+        let sCoeffs = JSON.parse(startUnit.rate);
+        let eCoeffs = JSON.parse(endUnit.rate);
+        function convert(value) {
+            return eCoeffs[0]* (value - sCoeffs[1])/sCoeffs[0] + eCoeffs[1];
+        }
+        if (Array.isArray(value)) {
+            return value.map(convert);
+        } else {
+            return convert(value);
+        }
+        //return value * endUnit.rate / startUnit.rate;
+    }
+    else {
+        let errUnit = !startUnit ? fromUnit : destUnit;
+        console.error("convert unit error");
+        return null;
+    }
+  }
+  */
 
   function getUniqZones(zoneset) {
     const _clonedZones = angular.copy(zoneset.zones);

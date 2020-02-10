@@ -17,6 +17,7 @@ app.component(componentName, {
     theme: "<",
     allPopup: "<",
     focusWell: "<",
+    prepareWellInfoFn: "<",
     // contour
     focusCurve: "<",
     getCurveInfoFn: "<",
@@ -45,7 +46,7 @@ const ZONE_DEPTH_SPEC_MAP = {
   'zone-bottom': 'endDepth'
 }
 
-function googleMapViewController($scope, $timeout, ngDialog, wiToken) {
+function googleMapViewController($scope, $timeout, ngDialog, wiToken, wiApi) {
   let self = this;
   let map;
   let markers = [];
@@ -1722,12 +1723,12 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken) {
         const step = Number(indexDataset.step);
         const xOffsetData = await new Promise((res) => {
           self.getCurveRawDataFn(xOffsetCurve.idCurve, (err, data) => {
-            res(data.map(d => Object.assign(d, { depth: top + step * d.y })).filter(d => _.isFinite(d.x)));
+            res(data.filter(d => _.isFinite(d.x)).map(d => Object.assign({}, d, { depth: top + step * d.y, x: wiApi.convertUnit(d.x, xOffsetCurve.unit, "m")})));
           });
         });
         const yOffsetData = await new Promise((res) => {
           self.getCurveRawDataFn(yOffsetCurve.idCurve, (err, data) => {
-            res(data.map(d => Object.assign(d, { depth: top + step * d.y })).filter(d => _.isFinite(d.x)));
+            res(data.filter(d => _.isFinite(d.x)).map(d => Object.assign({}, d, { depth: top + step * d.y, x: wiApi.convertUnit(d.x, yOffsetCurve.unit, "m")})));
           });
         });
 
@@ -1869,6 +1870,7 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken) {
   function initAxes() {
     axes = new Axes("#axes", map);
     google.maps.event.addListener(map, 'bounds_changed', function () {
+      if (!axes) return;
       if (!self.showAxes) {
         axes.clearBoundsLayer();
         return axes.clearLayer();
@@ -1880,6 +1882,7 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken) {
   }
   const updateMapBoundsDebounced = _.debounce(updateMapBounds);
   function updateMapBounds() {
+    if (!axes) return;
     axes.clearBoundsLayer();
     if (_.isFinite(self.axesXLeft) && _.isFinite(self.axesXRight)
       && _.isFinite(self.axesYTop) && _.isFinite(self.axesYBottom)) {
@@ -2075,7 +2078,7 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken) {
 
   function getDepthsFromScale(startDepth, endDepth) {
     const zoomFactor = map.getZoom();
-    const numberOfPoints = 150 || Math.min(2 ** Math.max((zoomFactor - 15), 1), 150);
+    const numberOfPoints = 100 || Math.min(2 ** Math.max((zoomFactor - 15), 1), 150);
     const step = (endDepth - startDepth) / numberOfPoints;
 
     return _.range(startDepth, endDepth + step, step, step);
@@ -2091,6 +2094,7 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken) {
   async function calculatePathForWell(well) {
     const depthSpecs = getDepthSpecsFromWell(well);
     const depths = getDepthsFromScale(depthSpecs.topDepth, depthSpecs.bottomDepth);
+    await self.prepareWellInfoFn(well);
     const coords = await getCoordFromDepth(depths, well);
     /*
     for(let depth of depths) {
