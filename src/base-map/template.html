@@ -1,6 +1,9 @@
 <div ng-class="{'show-dashboard': self.showDashboard}" class="dialog">
   ${require('./dialog-dashboard.html')}
 </div>
+<div class="dialog-zone slim-scroller" ng-show="self.showZone">
+  ${require('./dialog-zone-utms.html')}
+</div>
 
 <script type="text/ng-template" id="dashboard-template-modal">
 ${require('./dashboard-template-modal.html')}
@@ -282,32 +285,11 @@ ${require('./dashboard-template-modal.html')}
           </div>
         </div>
       </div>
-      <div class="setting" style="flex: 1; overflow: hidden;">
+      <div class="setting">
         <div>
-          <div class="setting-title">Zone</div>
+          <div class="setting-title" ng-click="self.showZone = !self.showZone">Zone</div>
           <div class="setting-content" style="align-items: flex-start;">
             <span>{{ zoneMap }}</span>
-          </div>
-        </div>
-        <div class="filter-zone">
-          <div class="filter">
-            <div style="margin-left: 0" class="ti ti-search"></div>
-          </div>
-          <input class="searchInput" type="text" placeholder="Search zone" ng-model="searchProject" />
-          <div class="filter">
-            <div ng-click="self.showDetailZone = !self.showDetailZone"
-              ng-class="{'show-detail-zone': !self.showDetailZone}" class="ti ti-align-left" style="padding: 10px 0;"></div>
-          </div>
-        </div>
-        <div class="list-zone">
-          <div class="zone" ng-repeat="item in zoneFieldTable | filter:searchProject track by $index">
-            <div class="zone-title">
-              <div ng-class="{'selected-zone': zoneMap == item.output}" style="display: flex;">
-                <div ng-click="hasChanged(item)" class="icon apply-16x16"></div>
-                <span ng-click="hasChanged(item)" ng-bind="item.Name"></span>
-              </div>
-            </div>
-            <span ng-show="!self.showDetailZone" class="zone-name" ng-bind="item.output"></span>
           </div>
         </div>
       </div>
@@ -465,7 +447,7 @@ ${require('./dashboard-template-modal.html')}
   <div class="help-content" ng-show="self.showHelp">
     <div class="help-content-row">
       <div class="fa fa-map-marker" style="margin-right: 15px; margin-left: 2px; color: #000;"></div>
-      <span>Default</span>
+      <span>Undefined</span>
     </div>
     <div class="help-content-row">
       <div class="arrow"></div>
@@ -502,7 +484,7 @@ ${require('./dashboard-template-modal.html')}
     <div class="help-content-row">
       <div class="circle" style="background: rgb(238, 84, 84);
       border: 1px solid red;"></div>
-      <span>Default</span>
+      <span>Undefined</span>
     </div>
   </div>
 </div>
@@ -524,7 +506,7 @@ ${require('./dashboard-template-modal.html')}
   axes-unit="self.axesUnit" axes-x-left="self.XLeft" axes-x-right="self.XRight" axes-y-bottom="self.YBottom" axes-y-top="self.YTop"
   focus-marker-or-zone="focusMZ" zone-depth-spec="self.zoneDepthSpec" get-curve-info-fn="self.getCurveInfoFn"
   prepare-well-info-fn="self.prepareWellInfoFn" well-position="self.wellPosition" fit-to-bound="self.fitToBound"
-  get-curve-raw-data-fn="self.getCurveRawDataFn" zone-map="zoneMap">
+  get-curve-raw-data-fn="self.getCurveRawDataFn" zone-map="zoneMap" clear-clipboard-focus-well="self.clearClipboardFocusWell">
 </google-map-view>
 
 <file-explorer ng-hide="true"

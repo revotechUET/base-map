@@ -233,14 +233,18 @@ function baseMapController(
   self.noWell = true;
   $scope.wellSelect = [];
   $scope.focusWell = [];
+  self.clearClipboardFocusWell = true;
   $scope.allPopup = true;
   $scope.themeMap = 6;
   self.activeTheme = "Standard";
   self.controlPanel = true;
   self.point = false;
+  $timeout(()=>{
+    self.point = true;
+  },5000)
   self.showContour = false;
-  self.showTrajectory = false;
-  self.showAxes = false;
+  self.showTrajectory = true;
+  self.showAxes = true;
   self.axesUnitOptions = AxesUnitOptions;
   self.wellPositionOptions = WellPositionOptions;
   self.wellPosition = self.wellPositionOptions[0].value;
@@ -1239,7 +1243,7 @@ function baseMapController(
   };
 
   this.refresh = function () {
-    getZoneList();
+    // getZoneList();
     getCurveTree();
     // $scope.wellSelect = [];
     $scope.curveList = [];
@@ -1769,6 +1773,7 @@ function baseMapController(
     self.selectedWellNode = node;
     self.selectedIdsHash[node.idWell] = node;
     $scope.focusWell = node;
+    self.clearClipboardFocusWell = !self.clearClipboardFocusWell;
   };
   this.clickCurveFunction = function ($event, node) {
     $scope.focusCurve = node;

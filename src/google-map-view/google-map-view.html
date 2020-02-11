@@ -18,6 +18,26 @@
     #axes > canvas {
         position: absolute;
     }
+    #location-info {
+        height: 40px;
+        justify-content: space-between;
+        align-items: center;
+        background: #ffffffba;
+        backdrop-filter: blur(5px) brightness(1.2) saturate(1.1);
+        color: #333;
+        position: absolute;
+        top: unset !important;
+        bottom: 40px;
+        left: unset !important;
+        right: 500px;
+        border: 1px solid red;
+        margin: 0;
+        font-size: 12px;
+        line-height: 18px;
+        border-radius: 5px;
+        display: flex;
+        box-shadow: 0 4px 14px -2px rgba(0, 0, 0, 0.03);
+    }
 
     #coords {
         width: 440px;
@@ -37,7 +57,7 @@
         font-size: 12px;
         line-height: 18px;
         border-radius: 5px;
-        display: block;
+        display: flex;
         box-shadow: 0 4px 14px -2px rgba(0, 0, 0, 0.03);
     }
 
@@ -50,7 +70,13 @@
 <div class="map-container">
     <div id="map"></div>
     <div class="map-overlay" id="contour-map-container"></div>
-    <div id="coords"></div>
+    <div id="location-info">
+        <div id="coords"></div>
+        <div class="scale" style="margin: 0 20px; display: flex;">
+            <div id="scale"></div>
+            <div style="background: red; margin: 0 10px;" ng-style="{'width': self.scaleWidth}"></div>
+        </div>
+    </div>
     <div class="map-overlay" id="axes"></div>
 </div>
 <div class="dialog-error" ng-show="self.wellError">

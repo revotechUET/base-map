@@ -593,7 +593,7 @@ base-map {
                     align-items    : center;
                     justify-content: space-between;
                     margin         : 10px 0 10px;
-                    border-bottom  : 1px solid #0000000d;
+                    // border-bottom  : 1px solid #0000000d;
 
                     .filter {
                         display    : flex;
@@ -625,16 +625,26 @@ base-map {
 
 
                 .list-zone {
-                    overflow: auto;
+                    overflow: overlay;
+                    display: flex;
+                    flex-wrap: wrap;
 
                     .zone {
-                        display        : flex;
-                        flex-direction : column;
-                        align-items    : center;
-                        justify-content: space-between;
-                        color          : #909090;
-                        transition     : all ease-in 0.2s;
-                        border-radius  : 5px;
+                        display: flex;
+                        flex-direction: column;
+                        align-items: center;
+                        justify-content: center;
+                        color: #909090;
+                        /* border-radius: 2px; */
+                        border-right: 1px solid #ececec;
+                        border-bottom: 1px solid #ececec;
+                        /* background: #f1f1f1; */
+                        width: 51px;
+                        height: 50px;
+                        /* margin: 0 10px 10px 0; */
+                        transition: all ease-in 0.2s;
+                        cursor: pointer;
+
 
                         .zone-name {
                             // background   : #ffffff;
@@ -655,6 +665,11 @@ base-map {
                                 filter    : grayscale(0) saturate(2);
                                 transition: all ease-in 0.2s;
                             }
+                        }
+                        &:hover {
+                            background: #f1f1f1;
+                            transition: all ease-in 0.2s;
+                            color: #3e84ff;
                         }
                     }
 
@@ -679,20 +694,9 @@ base-map {
                     }
 
                     .selected-zone {
-                        color     : #3e84ff;
+                        color: #ffffff !important;
+                        background: #3e84ff !important;
                         transition: all ease-in 0.2s;
-
-                        .icon {
-                            filter      : hue-rotate(268deg);
-                            margin-right: 10px;
-                            opacity     : 1;
-                        }
-
-                        &:hover {
-                            color     : #3e84ff;
-                            background: #fff;
-                            transition: all ease-in 0.2s;
-                        }
                     }
                 }
             }

@@ -17,6 +17,7 @@ app.component(componentName, {
     theme: "<",
     allPopup: "<",
     focusWell: "<",
+    clearClipboardFocusWell: "<",
     prepareWellInfoFn: "<",
     // contour
     focusCurve: "<",
@@ -107,6 +108,14 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken, wiApi) {
     $scope.$watch(
       function () {
         return self.focusWell;
+      },
+      function () {
+        focusWell(self.focusWell);
+      }
+    );
+    $scope.$watch(
+      function () {
+        return self.clearClipboardFocusWell;
       },
       function () {
         focusWell(self.focusWell);
@@ -244,6 +253,8 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken, wiApi) {
     });
     map.addListener('zoom_changed', function (event) {
       updateTrajectoryDebounced();
+      self.scale = document.getElementsByClassName("gm-style-cc")[3].innerText;
+      document.getElementById("scale").innerText = self.scale;
     })
 
     //SHOW ZONE LINE
@@ -1505,12 +1516,19 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken, wiApi) {
   }
   //SHOW POINT LOCATION
   function showPointLocation() {
-    var x = document.getElementById("coords");
+    var x = document.getElementById("location-info");
     if (x.style.display === "none") {
       x.style.display = "flex";
     } else {
       x.style.display = "none";
     }
+    var y = document.getElementById("coords");
+    if (y.style.display === "none") {
+      y.style.display = "flex";
+    } else {
+      y.style.display = "none";
+    }
+    document.getElementById("scale").innerText = self.scale;
   }
   //SHOW ALL POPUP
   function showAllPopup(check) {
