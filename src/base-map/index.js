@@ -209,6 +209,11 @@ const AxesUnitOptions = [
   {label: "km", ratio: 1/1000}
 ]
 
+const WellPositionOptions = [
+  {label: "top", value: "top"},
+  {label: "base", value: "base"},
+]
+
 function baseMapController(
   $scope,
   $http,
@@ -237,6 +242,8 @@ function baseMapController(
   self.showTrajectory = false;
   self.showAxes = false;
   self.axesUnitOptions = AxesUnitOptions;
+  self.wellPositionOptions = WellPositionOptions;
+  self.wellPosition = self.wellPositionOptions[0].value;
   self.axesUnit = self.axesUnitOptions[0];
   self.selectedIdsHash = {};
   self.selectedNode = null;
@@ -461,6 +468,7 @@ function baseMapController(
       self.showContour = false;
       self.showTrajectory = false;
       self.showAxes = false;
+      self.wellPositionOptions = "top";
       self.darkMode = false;
       self.showZonesets = false;
       self.showMarkersets = false;
@@ -520,6 +528,7 @@ function baseMapController(
               self.showContour = data.showContour;
               self.showTrajectory = data.showTrajectory;
               self.showAxes = data.showAxes;
+              self.wellPosition = data.wellPosition; 
               self.darkMode = data.darkMode;
               setDarkMode(self.darkMode);
               self.showZonesets = data.showZonesets;
@@ -1293,6 +1302,7 @@ function baseMapController(
       showContour: self.showContour,
       showTrajectory: self.showTrajectory,
       showAxes: self.showAxes,
+      wellPosition: self.wellPosition,
       zoneMap: $scope.zoneMap,
       darkMode: self.darkMode,
       showZonesets: self.showZonesets,

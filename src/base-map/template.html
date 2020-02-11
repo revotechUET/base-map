@@ -133,6 +133,20 @@ ${require('./dashboard-template-modal.html')}
     <div style="flex: 1; margin: 15px; user-select: none; overflow: hidden ;display: flex; flex-direction: column;"
       onmouseover=this.style.overflow='overlay' onmouseout=this.style.overflow='hidden'>
       <div class="setting">
+        <div class="setting-title" style="margin-bottom: 10px;">Position</div>
+        <div class="complex-setting">
+          <div class="setting-content">
+            <span
+              class="setting-sub-title">Choose which position of well to display</span>
+          </div>
+          <div class="setting-content" style="margin-top: 12px;">
+            <select style="width: 100%;" ng-model="self.wellPosition">
+              <option ng-repeat="opt in self.wellPositionOptions" ng-value="opt.value">{{opt.label}}</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="setting">
         <div class="setting-title" style="margin-bottom: 10px;">Zonesets & Markersets</div>
         <div class="complex-setting" style="margin-bottom: 10px">
           <div class="setting-content">
@@ -506,7 +520,7 @@ ${require('./dashboard-template-modal.html')}
   focus-curve="focusCurve" show-contour="self.showContour" show-trajectory="self.showTrajectory" show-Axes="self.showAxes"
   axes-unit="self.axesUnit" axes-x-left="self.XLeft" axes-x-right="self.XRight" axes-y-bottom="self.YBottom" axes-y-top="self.YTop"
   focus-marker-or-zone="focusMZ" zone-depth-spec="self.zoneDepthSpec" get-curve-info-fn="self.getCurveInfoFn"
-  prepare-well-info-fn="self.prepareWellInfoFn"
+  prepare-well-info-fn="self.prepareWellInfoFn" well-position="self.wellPosition"
   get-curve-raw-data-fn="self.getCurveRawDataFn" zone-map="zoneMap">
 </google-map-view>
 

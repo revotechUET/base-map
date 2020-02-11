@@ -26,6 +26,7 @@ app.component(componentName, {
     getCurveRawDataFn: "<",
     focusMarkerOrZone: "<",
     zoneDepthSpec: '<',
+    wellPosition: '<',
     // draw geojson objects
     geoJson: '<',
     // draw trajectory map
@@ -137,6 +138,7 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken, wiApi) {
         drawMarkersDebounced();
         $timeout(() => {
           showAllPopup(self.allPopup);
+          updateCoordinateTable();
           updateContours();
           updateTrajectory();
         })
@@ -196,6 +198,12 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken, wiApi) {
     )
     $scope.$watch(
       () => self.zoneDepthSpec,
+      () => {
+        updateCoordinateTable();
+      }
+    )
+    $scope.$watch(
+      () => self.wellPosition,
       () => {
         updateCoordinateTable();
       }
@@ -1851,11 +1859,9 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken, wiApi) {
   }
   async function getCoordFromCurve(well) {
     const focusedMZ = self.focusMarkerOrZone;
-    if (!focusedMZ) {
-      return;
-    }
+    if (!focusedMZ && !self.wellPosition) { return; }
     let depth = null;
-    if (focusedMZ.idZone) {
+    if (focusedMZ && focusedMZ.idZone) {
       const matchZoneset = well.zone_sets.find(zs => zs.name == focusedMZ.zonesetName);
       if (matchZoneset) {
         const matchZone = matchZoneset.zones.find(z => z.zone_template.name == focusedMZ.name);
@@ -1866,12 +1872,19 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken, wiApi) {
             depth = matchZone[ZONE_DEPTH_SPEC_MAP[self.zoneDepthSpec || 'zone-top']];
           }
       }
-    } else if (focusedMZ.idMarker) {
+    } else if (focusedMZ && focusedMZ.idMarker) {
       const matchMarkerset = well.marker_sets.find(ms => ms.name == focusedMZ.markersetName);
       if (matchMarkerset) {
         const matchMarker = matchMarkerset.markers.find(m => m.marker_template.name == focusedMZ.name);
         if (matchMarker)
           depth = matchMarker.depth;
+      }
+    } else if (self.wellPosition) {
+      const wellDepthSpec = getDepthSpecsFromWell(well);
+      if ( self.wellPosition == "base" ) {
+        depth = wellDepthSpec.bottomDepth;
+      } else {
+        depth = wellDepthSpec.topDepth;
       }
     }
     if (_.isFinite(depth)) {
@@ -2158,7 +2171,7 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken, wiApi) {
 
   function getLat(wellIndex, forceFromHeader = false) {
     const wellInfo = wellIndex.find(wellHeader => wellHeader.header == "WELL");
-    if (!forceFromHeader && self.focusMarkerOrZone) {
+    if (!forceFromHeader && (self.focusMarkerOrZone || (self.wellPosition && self.wellPosition !== "top"))) {
       if (wellInfo && coordinateHash[wellInfo.idWell] && coordinateHash[wellInfo.idWell].lat)
         return coordinateHash[wellInfo.idWell].lat;
       // else return null;
@@ -2178,7 +2191,7 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken, wiApi) {
 
   function getLong(wellIndex, forceFromHeader = false) {
     const wellInfo = wellIndex.find(wellHeader => wellHeader.header == "WELL");
-    if (!forceFromHeader && self.focusMarkerOrZone) {
+    if (!forceFromHeader && (self.focusMarkerOrZone || (self.wellPosition && self.wellPosition !== "top"))) {
       if (wellInfo && coordinateHash[wellInfo.idWell] && coordinateHash[wellInfo.idWell].lng)
         return coordinateHash[wellInfo.idWell].lng;
       // else return null;
@@ -2198,7 +2211,7 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken, wiApi) {
 
   function getX(wellIndex, forceFromHeader = false) {
     const wellInfo = wellIndex.find(wellHeader => wellHeader.header == "WELL");
-    if (!forceFromHeader && self.focusMarkerOrZone) {
+    if (!forceFromHeader && (self.focusMarkerOrZone || (self.wellPosition && self.wellPosition !== "top"))) {
       if (wellInfo && coordinateHash[wellInfo.idWell] && coordinateHash[wellInfo.idWell].x)
         return coordinateHash[wellInfo.idWell].x;
       // else return -1;
@@ -2216,7 +2229,7 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken, wiApi) {
 
   function getY(wellIndex, forceFromHeader = false) {
     const wellInfo = wellIndex.find(wellHeader => wellHeader.header == "WELL");
-    if (!forceFromHeader && self.focusMarkerOrZone) {
+    if (!forceFromHeader && (self.focusMarkerOrZone || (self.wellPosition && self.wellPosition !== "top"))) {
       if (wellInfo && coordinateHash[wellInfo.idWell] && coordinateHash[wellInfo.idWell].y)
         return coordinateHash[wellInfo.idWell].y;
       // else return -1;
