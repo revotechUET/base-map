@@ -30,7 +30,6 @@
         bottom: 40px;
         left: unset !important;
         right: 500px;
-        border: 1px solid red;
         margin: 0;
         font-size: 12px;
         line-height: 18px;
@@ -72,9 +71,9 @@
     <div class="map-overlay" id="contour-map-container"></div>
     <div id="location-info">
         <div id="coords"></div>
-        <div class="scale" style="margin: 0 20px; display: flex;">
+        <div class="scale" style="margin: 0 20px; display: flex; align-items: center;">
             <div id="scale"></div>
-            <div style="background: red; margin: 0 10px;" ng-style="{'width': self.scaleWidth}"></div>
+            <div id="scaleWidth" style="background: black; margin: 0 10px; height: 2px;"></div>
         </div>
     </div>
     <div class="map-overlay" id="axes"></div>

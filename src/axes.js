@@ -105,7 +105,7 @@ function Axes(container, map) {
                 :"°";
         const projectFn = getProjectionFn();    
         const context = self.canvas.getContext("2d");
-        context.fillStyle = "black";
+        context.fillStyle = "#80b9e2";
         const southWest = map.getBounds().getSouthWest();
         const northEast = map.getBounds().getNorthEast();
         const xDiv = getDivisionsX();

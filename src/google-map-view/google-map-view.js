@@ -234,13 +234,31 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken, wiApi) {
     );
   };
 
-
+  function updateScaleMap () {
+    self.scale = document.getElementsByClassName("gm-style-cc")[3].innerText;
+    document.getElementById("scale").innerText = self.scale;
+    if(self.scale.length === 8) {
+      self.addWidth = 611;
+    }else if(self.scale.length === 7) {
+      self.addWidth = 611;
+    }else if(self.scale.length === 6) {
+      self.addWidth = 610;
+    }else if(self.scale.length === 5) {
+      self.addWidth = 609;
+    }else if(self.scale.length === 4) {
+      self.addWidth = 608;
+    }
+    self.scaleWidth = (document.getElementsByClassName("gm-style-cc")[3].innerHTML).substring((document.getElementsByClassName("gm-style-cc")[3].innerHTML).search("-1px; width:") + 12, self.addWidth);
+    document.getElementById("scaleWidth").style.width = self.scaleWidth;
+    console.log(self.scale);
+  }
   // SHOW MAP
   function drawMap() {
     map = new google.maps.Map(document.getElementById('map'), {
       zoom: 4,
       center: { lat: 21.344, lng: 107.036 },
       scaleControl: true,
+      mapTypeId: google.maps.MapTypeId.ROADMAP
 
     });
     map.setOptions({ minZoom: 3 });
@@ -253,9 +271,14 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken, wiApi) {
     });
     map.addListener('zoom_changed', function (event) {
       updateTrajectoryDebounced();
-      self.scale = document.getElementsByClassName("gm-style-cc")[3].innerText;
-      document.getElementById("scale").innerText = self.scale;
-    })
+      updateScaleMap();
+    });
+    map.addListener('mouseover',function(event) {
+      updateScaleMap();
+    });
+    map.addListener('mousemove',function(event) {
+      updateScaleMap();
+    });
 
     //SHOW ZONE LINE
     var zoneLayerCoordinates = 

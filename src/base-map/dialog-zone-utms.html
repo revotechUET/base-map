@@ -1,65 +1,17 @@
-<div class="display-dialog slim-scroller">
-    <div class="header-dialog">
-        <div style="display: flex;">
-            <div style=" color: #4085ff; font-size: 17px; margin-right: 20px;" class=" ti ti-world"> </div>
-            <div class="title-dialog">Select zone</div>
-        </div>
-        <div>
-            <div ng-click="self.showDialog = !self.showDialog"
-                style=" color: #99a3ba; font-size: 17px; cursor: pointer;" class=" ti ti-close"> </div>
-        </div>
-    </div>
-    <div class="gradient-top"></div>
-    <div class="main-dialog hide-scroller">
-        <div class="scroll">
-            <div class="scroll-block" style="margin: 0 6px 0 20px;">
-                <div>1</div>
-                <div>2</div>
-                <div>3</div>
-                <div>4</div>
-                <div>5</div>
-                <div>20N</div>
-                <div>20N</div>
-                <div>20N</div>
-                <div>20N</div>
-                <div>20N</div>
-                <div>20N</div>
-            </div>
-            <div class="scroll-block" style="margin: 0 20px 0 6px;">
-                <div>C</div>
-                <div>D</div>
-                <div>E</div>
-                <div>F</div>
-                <div>G</div>
-                <div>H</div>
-                <div>J</div>
-                <div>K</div>
-                <div>L</div>
-                <div>M</div>
-                <div>N</div>
-                <div>P</div>
-                <div>Q</div>
-                <div>R</div>
-                <div>S</div>
-                <div>T</div>
-                <div>U</div>
-                <div>V</div>
-                <div>W</div>
-                <div>X</div>
-               
-            </div>
 
-        </div>
 
-    </div>
-    <div class="gradient-bottom"></div>
-    <div class="footer-dialog">
-        <div style="display: flex;">
-            <div class="title-dialog">BACK</div>
+    <div class="dialog-header ">
+        <div style="display: flex; align-items: center;">
+            <div class="ti-world" style="color: #3e84ff; font-size: 15px;"></div>
+            <span>UTM Zone</span>
         </div>
-        <div class="next">
-            <div style="margin-right: 10px">APPLY </div>
-            <div class="ti ti-arrow-right"> </div>
+        <input class="searchInput" type="text" placeholder="Search zone" ng-model="searchProject" />
+        <div class="ti ti-close" ng-click="self.showZone = !self.showZone" style="cursor: pointer;"></div>
+    </div>
+    <div class="dialog-main">
+        <div class="list-zone">
+            <div class="zone" ng-repeat="item in zoneFieldTable | filter:searchProject track by $index" ng-click="hasChanged(item)" ng-class="{'selected-zone': zoneMap == item.output}" ng-hide="item.DisplayName===''">
+                <span ng-bind="item.DisplayName"></span>
+            </div>
         </div>
     </div>
-</div>

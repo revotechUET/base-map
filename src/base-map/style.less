@@ -125,7 +125,6 @@ base-map {
     .searchInput {
         border    : none;
         padding   : 8px 15px;
-        width     : 100%;
         background: none;
     }
 
@@ -588,118 +587,149 @@ base-map {
                     }
                 }
 
-                .filter-zone {
-                    display        : flex;
-                    align-items    : center;
-                    justify-content: space-between;
-                    margin         : 10px 0 10px;
-                    // border-bottom  : 1px solid #0000000d;
+                
+            }
+        }
+    }
+    .dialog-zone {
+        z-index: 1;
+        position: fixed;
+        width: 340px;
+        height: 330px;
+        margin: 40px auto auto 420px;
+        top: 0;
+        border-radius: 5px;
+        background: #fff;
+        box-shadow: 0 4px 50px -2px rgba(18, 22, 33, 0.19);
+        overflow: hidden;
+        animation          : showing-dialog-popup 0.5s;
+        animation-fill-mode: both;
+        .filter-zone {
+            display        : flex;
+            align-items    : center;
+            justify-content: space-between;
+            margin         : 10px 0 10px;
+            // border-bottom  : 1px solid #0000000d;
+            padding: 0px 25px;
 
-                    .filter {
-                        display    : flex;
-                        align-items: center;
-                        transition : all ease-in 0.1s;
+            .filter {
+                display    : flex;
+                align-items: center;
+                transition : all ease-in 0.1s;
 
 
-                        .show-detail-zone {
-                            color     : #3e84ff;
-                            transition: all ease-in 0.1s;
-                        }
-
-                        >div {
-                            cursor       : pointer;
-                            border-radius: 2px;
-                            font-size    : 15px;
-                            margin-left  : 15px;
-                            transition   : all ease-in 0.1s;
-
-                            &:hover {
-                                color     : #3e84ff;
-                                transition: all ease-in 0.1s;
-
-                            }
-                        }
-                    }
+                .show-detail-zone {
+                    color     : #3e84ff;
+                    transition: all ease-in 0.1s;
                 }
 
+                >div {
+                    cursor       : pointer;
+                    border-radius: 2px;
+                    font-size    : 15px;
+                    margin-left  : 15px;
+                    transition   : all ease-in 0.1s;
+
+                    &:hover {
+                        color     : #3e84ff;
+                        transition: all ease-in 0.1s;
+
+                    }
+                }
+            }
+        }
 
 
-                .list-zone {
-                    overflow: overlay;
-                    display: flex;
-                    flex-wrap: wrap;
 
-                    .zone {
-                        display: flex;
-                        flex-direction: column;
-                        align-items: center;
-                        justify-content: center;
-                        color: #909090;
-                        /* border-radius: 2px; */
-                        border-right: 1px solid #ececec;
-                        border-bottom: 1px solid #ececec;
-                        /* background: #f1f1f1; */
-                        width: 51px;
-                        height: 50px;
-                        /* margin: 0 10px 10px 0; */
+        .list-zone {
+            overflow: overlay;
+            display: grid;
+            grid-template-columns: auto auto auto auto auto auto;
+            height: 100%;
+
+            .zone {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                color: #909090;
+                /* border-radius: 2px; */
+                border-right: 1px solid #ececec;
+                border-bottom: 1px solid #ececec;
+                /* background: #f1f1f1; */
+                height: 56px;
+                /* margin: 0 10px 10px 0; */
+                transition: all ease-in 0.2s;
+                cursor: pointer;
+
+
+                .zone-name {
+                    // background   : #ffffff;
+                    color           : #656565;
+                    border-radius   : 2px;
+                    padding         : 5px 15px 25px 30px;
+                    // box-shadow   : 0 3px 4px #00000005;
+                }
+
+                .icon {
+                    margin-right: 15px;
+                    filter      : grayscale(1);
+                    cursor      : pointer;
+                    transition  : all ease-in 0.2s;
+
+                    &:hover {
+                        transform : scale(1.2);
+                        filter    : grayscale(0) saturate(2);
                         transition: all ease-in 0.2s;
-                        cursor: pointer;
-
-
-                        .zone-name {
-                            // background   : #ffffff;
-                            color           : #656565;
-                            border-radius   : 2px;
-                            padding         : 5px 15px 25px 30px;
-                            // box-shadow   : 0 3px 4px #00000005;
-                        }
-
-                        .icon {
-                            margin-right: 15px;
-                            filter      : grayscale(1);
-                            cursor      : pointer;
-                            transition  : all ease-in 0.2s;
-
-                            &:hover {
-                                transform : scale(1.2);
-                                filter    : grayscale(0) saturate(2);
-                                transition: all ease-in 0.2s;
-                            }
-                        }
-                        &:hover {
-                            background: #f1f1f1;
-                            transition: all ease-in 0.2s;
-                            color: #3e84ff;
-                        }
                     }
+                }
+                &:hover {
+                    background: #f1f1f1;
+                    transition: all ease-in 0.2s;
+                    color: #3e84ff;
+                }
+            }
 
-                    .zone-title {
-                        color          : #000;
-                        font-weight    : 500;
-                        display        : flex;
-                        width          : 100%;
-                        align-items    : center;
-                        justify-content: space-between;
-                        // margin         : 15px 0 0 0;
-                        transition     : all ease-in 0.2s;
+            .zone-title {
+                color          : #000;
+                font-weight    : 500;
+                display        : flex;
+                width          : 100%;
+                align-items    : center;
+                justify-content: space-between;
+                // margin         : 15px 0 0 0;
+                transition     : all ease-in 0.2s;
 
-                        >div {
-                            cursor: pointer;
+                >div {
+                    cursor: pointer;
 
-                            &:hover {
-                                color     : #3e84ff;
-                                transition: all ease-in 0.2s;
-                            }
-                        }
-                    }
-
-                    .selected-zone {
-                        color: #ffffff !important;
-                        background: #3e84ff !important;
+                    &:hover {
+                        color     : #3e84ff;
                         transition: all ease-in 0.2s;
                     }
                 }
             }
+
+            .selected-zone {
+                color: #ffffff !important;
+                background: #3e84ff !important;
+                transition: all ease-in 0.2s;
+            }
+        }
+        .dialog-header {
+            padding: 7px 20px;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid #c4c4c459;
+            justify-content: space-between;
+            &>div>span {
+                font-weight: bold; 
+                margin-left: 15px;
+            }
+        }
+        .dialog-main {
+            height:  calc(100% - 60px);
+            overflow: hidden;
         }
     }
 
