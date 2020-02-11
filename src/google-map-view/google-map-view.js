@@ -37,7 +37,8 @@ app.component(componentName, {
     axesXLeft: "<",
     axesXRight: "<",
     axesYTop: "<",
-    axesYBottom: "<"
+    axesYBottom: "<",
+    fitToBound: "<"
   },
   transclude: true
 });
@@ -171,23 +172,29 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken, wiApi) {
     $scope.$watch(
       () => self.showAxes,
       () => {
-        updateMapBoundsDebounced();
+        updateMapBoundsDebounced(false);
         updateAxes();
       }
     )
     $scope.$watch(
       () => self.axesUnit,
       () => {
-        updateMapBoundsDebounced();
-        updateAxes();
+        updateMapBoundsDebounced(true);
+        // updateAxes();
       }
     )
     $scope.$watch(
       () => [ self.axesXLeft, self.axesXRight, self.axesYTop, self.axesYBottom ],
       () => {
-        updateMapBounds();
+        updateMapBounds(true);
       },
       true
+    )
+    $scope.$watch(
+      () => self.fitToBound,
+      () => {
+        updateMapBoundsDebounced(true);
+      }
     )
     // VIEW BY ZONESET & MARKERSET
     $scope.$watch(
@@ -1905,15 +1912,22 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken, wiApi) {
         axes.clearBoundsLayer();
         return axes.clearLayer();
       }
-      updateMapBoundsDebounced();
+      // updateMapBoundsDebounced();
       axes.drawAxesDebounced();
     })
     updateAxes();
   }
   const updateMapBoundsDebounced = _.debounce(updateMapBounds);
-  function updateMapBounds() {
+  const mapBoundingLine = new google.maps.Polyline({
+    geodesic: true,
+    strokeColor: "#ff0000",
+    strokeOpacity: 1.0,
+    strokeWeight: 2
+  })
+  function updateMapBounds(fitView = false) {
     if (!axes) return;
     axes.clearBoundsLayer();
+    mapBoundingLine.setMap(null);
     if (_.isFinite(self.axesXLeft) && _.isFinite(self.axesXRight)
       && _.isFinite(self.axesYTop) && _.isFinite(self.axesYBottom)) {
       const secondProjection = "+proj=longlat +ellps=WGS84 +datum=WGS84 +units=degrees";
@@ -1931,23 +1945,34 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken, wiApi) {
           _bounds.extend(_sw);
           _bounds.extend(_ne);
           // console.log("Bounds", SW, NE);
-          map.fitBounds(_bounds);
+          if (fitView)
+            map.fitBounds(_bounds);
           // console.log("After Bounds",
           //   [map.getBounds().getSouthWest().lat(), map.getBounds().getSouthWest().lng()], 
           //   [map.getBounds().getNorthEast().lat(), map.getBounds().getNorthEast().lng()]
           // )
+          /*
           axes.drawBounds({
             southWest: {lat: _sw.lat(), lng: _sw.lng()},
             northEast: {lat: _ne.lat(), lng: _ne.lng()}
           })
+          */
+          drawMapBound({
+            southWest: {lat: _sw.lat(), lng: _sw.lng()},
+            northEast: {lat: _ne.lat(), lng: _ne.lng()}
+          });
       }
     }
+  }
+  function drawMapBound(bounds) {
+    const northWest = { lat: bounds.northEast.lat, lng: bounds.southWest.lng };
+    const southEast = { lat: bounds.southWest.lat, lng: bounds.northEast.lng };
+    mapBoundingLine.setPath([northWest, bounds.northEast, southEast, bounds.southWest, northWest]);
+    mapBoundingLine.setMap(map);
   }
   function updateAxesLayerSize() {
     axes.updateCanvasSize();
   }
-  // const LONGTITUDE_COMPENSTATION = 1.4887438843871905
-  const LONGTITUDE_COMPENSTATION = 0
   function updateAxes() {
     if (!axes) return;
     if (!self.showAxes) {
@@ -1957,7 +1982,7 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken, wiApi) {
     const firstProjection = "+proj=longlat +ellps=WGS84 +datum=WGS84 +units=degrees";
     const secondProjection = self.zoneMap;
     axes.latLng2XYFn = function(lat, lng) {
-      const result = proj4(firstProjection, secondProjection, [lng - LONGTITUDE_COMPENSTATION, lat]);
+      const result = proj4(firstProjection, secondProjection, [lng, lat]);
       if (self.axesUnit && _.isFinite(self.axesUnit.ratio)) {
         return {
           x: Number(result[0]) * self.axesUnit.ratio,

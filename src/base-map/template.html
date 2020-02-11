@@ -256,6 +256,9 @@ ${require('./dashboard-template-modal.html')}
               <input ng-model="self.YBottom "type="number" style="flex: 1">
               <input ng-model="self.YTop" type="number" style="flex: 1">
             </div>
+            <div style="display: flex; width: 100%">
+              <button class="btn btn-primary" style="width: 100%;" ng-click="self.fitToBound=!self.fitToBound">Fit To Bound</button>
+            </div>
           </div>
         </div>
       </div>
@@ -520,7 +523,7 @@ ${require('./dashboard-template-modal.html')}
   focus-curve="focusCurve" show-contour="self.showContour" show-trajectory="self.showTrajectory" show-Axes="self.showAxes"
   axes-unit="self.axesUnit" axes-x-left="self.XLeft" axes-x-right="self.XRight" axes-y-bottom="self.YBottom" axes-y-top="self.YTop"
   focus-marker-or-zone="focusMZ" zone-depth-spec="self.zoneDepthSpec" get-curve-info-fn="self.getCurveInfoFn"
-  prepare-well-info-fn="self.prepareWellInfoFn" well-position="self.wellPosition"
+  prepare-well-info-fn="self.prepareWellInfoFn" well-position="self.wellPosition" fit-to-bound="self.fitToBound"
   get-curve-raw-data-fn="self.getCurveRawDataFn" zone-map="zoneMap">
 </google-map-view>
 
