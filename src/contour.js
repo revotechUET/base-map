@@ -25,6 +25,15 @@ function Contour(container, map, data) {
             // .style('background-color', 'rgba(230, 230, 230, 1)');
     this.canvas = canvas.node();
 
+    let labelCanvas = this.container.select("canvas.label-canvas");
+    if (!labelCanvas.node())
+        labelCanvas = this.container
+            .append('canvas')
+            .attr("class", "label-canvas")
+            .attr('width', viewWidth)
+            .attr('height', viewHeight)
+    this.labelCanvas = labelCanvas.node();
+
     const DEBOUNCED_TIMEOUT = 1/MIN_COOR;
     this.drawGrid = drawGrid;
     this.drawContour = drawContour;
@@ -59,12 +68,18 @@ function Contour(container, map, data) {
         d3.select(self.canvas)
             .attr("width", viewWidth)
             .attr("height", viewHeight)
+        d3.select(self.labelCanvas)
+            .attr("width", viewWidth)
+            .attr("height", viewHeight)
     }
 
     function clearLayer() {
         requestAnimationFrame(() => {
             const context = self.canvas.getContext('2d');
             context.clearRect(0, 0, viewWidth, viewHeight);
+
+            const lContext = self.labelCanvas.getContext('2d');
+            lContext.clearRect(0, 0, viewWidth, viewHeight);
         })
     }
 
@@ -366,7 +381,7 @@ function Contour(container, map, data) {
             (contourData.values)
             .map(transformToPx);
         context.strokeStyle = 'black';
-        context.globalAlpha = 0.3;
+        // context.globalAlpha = 0.3;
         contours.forEach(contour => {
             const path = d3.geoPath()(contour);
             const path2D = new Path2D(path);
@@ -389,5 +404,28 @@ function Contour(container, map, data) {
                 context.fillText(d.toFixed(2), x + (next.x - x) / 2, y + (next.y - y) / 2);
             })
         }
+
+        // create gradient
+        const labelContext = self.labelCanvas.getContext("2d");
+        const NUM_OF_COLORSTOP = 10;
+        const OFFSET_FROM_RIGHT = 500;
+        const WIDTH = 200;
+        const OFFSET_FROM_BOTTOM = 50;
+        const HEIGHT = 20;
+        const grd = labelContext.createLinearGradient(viewWidth - OFFSET_FROM_RIGHT, viewHeight - OFFSET_FROM_BOTTOM, viewWidth - (OFFSET_FROM_BOTTOM - WIDTH), viewHeight - OFFSET_FROM_BOTTOM);
+        const colorDomainRange = Math.abs(color.domain()[1] - color.domain()[0]);
+        const colorDomainStart = Math.min(color.domain()[0], color.domain()[1]);
+        d3.range(0, NUM_OF_COLORSTOP + 1).forEach(colorStop => {
+            const proportion = colorStop / NUM_OF_COLORSTOP;
+            grd.addColorStop(proportion, color(colorDomainStart + proportion * colorDomainRange));
+        })
+        labelContext.fillStyle = grd;
+        labelContext.fillRect(viewWidth - OFFSET_FROM_RIGHT, viewHeight - OFFSET_FROM_BOTTOM, WIDTH, HEIGHT);
+        labelContext.strokeStyle = "black";
+        labelContext.strokeRect(viewWidth - OFFSET_FROM_RIGHT, viewHeight - OFFSET_FROM_BOTTOM, WIDTH, HEIGHT);
+        labelContext.fillStyle = "black";
+        labelContext.textAlign = "center";
+        labelContext.fillText(colorDomainStart, viewWidth - OFFSET_FROM_RIGHT, viewHeight - OFFSET_FROM_BOTTOM);
+        labelContext.fillText(colorDomainStart + colorDomainRange, viewWidth - (OFFSET_FROM_RIGHT - WIDTH), viewHeight - OFFSET_FROM_BOTTOM);
     }
 }
