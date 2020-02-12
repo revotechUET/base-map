@@ -124,7 +124,7 @@ base-map {
 
     .searchInput {
         border    : none;
-        padding   : 8px 15px;
+        padding   : 0px 15px;
         background: none;
     }
 
@@ -593,7 +593,7 @@ base-map {
             }
         }
     }
-    .dialog-zone {
+    .dialog-setting {
         z-index: 1;
         position: fixed;
         width: 340px;
@@ -720,7 +720,7 @@ base-map {
             }
         }
         .dialog-header {
-            padding: 7px 20px;
+            padding: 15px 20px;
             display: flex;
             align-items: center;
             border-bottom: 1px solid #c4c4c459;
@@ -733,6 +733,18 @@ base-map {
         .dialog-main {
             height:  calc(100% - 60px);
             overflow: hidden;
+            input {
+                width: 100%;
+                border: none;
+                background: transparent;
+            }
+            .cell {
+                background: #f7f7f7;
+                margin: 5px;
+                border-radius: 2px;
+                padding: 5px;
+                border: 1px solid #ececec;
+            }
         }
     }
 

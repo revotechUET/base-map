@@ -250,7 +250,6 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken, wiApi) {
     }
     self.scaleWidth = (document.getElementsByClassName("gm-style-cc")[3].innerHTML).substring((document.getElementsByClassName("gm-style-cc")[3].innerHTML).search("-1px; width:") + 12, self.addWidth);
     document.getElementById("scaleWidth").style.width = self.scaleWidth;
-    console.log(self.scale);
   }
   // SHOW MAP
   function drawMap() {
@@ -278,6 +277,9 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken, wiApi) {
     });
     map.addListener('mousemove',function(event) {
       updateScaleMap();
+      // metersPerPx = 156543.03392 * Math.cos(map.getCenter().lat() * Math.PI / 180) / Math.pow(2, map.getZoom());
+      // console.log(metersPerPx)
+
     });
 
     //SHOW ZONE LINE

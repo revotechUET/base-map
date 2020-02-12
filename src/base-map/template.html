@@ -1,10 +1,12 @@
 <div ng-class="{'show-dashboard': self.showDashboard}" class="dialog">
   ${require('./dialog-dashboard.html')}
 </div>
-<div class="dialog-zone slim-scroller" ng-show="self.showZone">
+<div class="dialog-setting slim-scroller" ng-show="self.showZone">
   ${require('./dialog-zone-utms.html')}
 </div>
-
+<div class="dialog-setting slim-scroller" ng-show="self.showAxesDialog" style="height: auto;">
+  ${require('./dialog-axes.html')}
+</div>
 <script type="text/ng-template" id="dashboard-template-modal">
 ${require('./dashboard-template-modal.html')}
 </script>
@@ -139,18 +141,17 @@ ${require('./dashboard-template-modal.html')}
         <div class="setting-title" style="margin-bottom: 10px;">Position</div>
         <div class="complex-setting">
           <div class="setting-content">
-            <span
-              class="setting-sub-title">Choose which position of well to display</span>
-          </div>
-          <div class="setting-content" style="margin-top: 12px;">
-            <select style="width: 100%;" ng-model="self.wellPosition">
-              <option ng-repeat="opt in self.wellPositionOptions" ng-value="opt.value">{{opt.label}}</option>
-            </select>
+            <span class="setting-sub-title">Choose which position of well to display</span>
+              <div class="setting-content">
+                <select style="width: 100%;border: none; background: none;" ng-model="self.wellPosition">
+                  <option ng-repeat="opt in self.wellPositionOptions" ng-value="opt.value">{{opt.label}}</option>
+                </select>
+              </div>
           </div>
         </div>
       </div>
       <div class="setting">
-        <div class="setting-title" style="margin-bottom: 10px;">Zonesets & Markersets</div>
+        <div class="setting-title" style="margin-bottom: 10px;">Zonesets & markersets</div>
         <div class="complex-setting" style="margin-bottom: 10px">
           <div class="setting-content">
             <span
@@ -192,7 +193,7 @@ ${require('./dashboard-template-modal.html')}
         </div>
       </div>
       <div class="setting">
-        <div class="setting-title" style="margin-bottom: 10px;">Show Contour</div>
+        <div class="setting-title" style="margin-bottom: 10px;">Show contour</div>
         <div class="complex-setting">
           <div class="setting-content">
             <span
@@ -213,7 +214,7 @@ ${require('./dashboard-template-modal.html')}
       <div class="setting">
         <div>
           <div class="setting-title">
-            <div>Show Zone dialog</div>
+            <div>Show zone dialog</div>
           </div>
           <div class="setting-content" style="align-items: flex-start;">
             <span style="line-height: 2;">Zone active:{{ zoneMap }}</span>
@@ -225,7 +226,7 @@ ${require('./dashboard-template-modal.html')}
         </div>
       </div>
       <div class="setting">
-        <div class="setting-title" style="margin-bottom: 10px;">Show Trajectory</div>
+        <div class="setting-title" style="margin-bottom: 10px;">Show trajectory</div>
         <div class="complex-setting">
           <div class="setting-content">
             <span
@@ -246,36 +247,15 @@ ${require('./dashboard-template-modal.html')}
         </div>
       </div>
       <div class="setting">
-        <div class="setting-title" style="margin-bottom: 10px;">Show Axes</div>
+        <div class="setting-title" style="margin-bottom: 10px;">Show dialog axes properties </div>
         <div class="complex-setting">
           <div class="setting-content">
             <span
-              class="setting-sub-title">{{self.showAxes?"Displaying Axes":"Displays Axes layer"}}</span>
+              class="setting-sub-title">{{self.showAxesDialog?"Displaying Dialog Axes":"Displays Dialog Axes Properties"}}</span>
             <label class="switch">
-              <input type="checkbox" ng-checked="self.showAxes" ng-click="self.toggleAxes()" />
+              <input type="checkbox" ng-checked="self.showAxesDialog" ng-click="self.showAxesDialog = !self.showAxesDialog" />
               <span class="slider round"></span>
             </label>
-          </div>
-          <div ng-if="self.showAxes" class="setting-content" style="margin-top: 12px; flex-direction: column;">
-            <div style="display: flex; width: 100%">
-              <label style="flex: 1">Unit</label>
-              <select style="flex: 2" ng-model="self.axesUnit">
-                <option ng-repeat="opt in self.axesUnitOptions" ng-value="opt">{{opt.label}}</option>
-              </select>
-            </div>
-            <div style="display: flex; width: 100%">
-              <label style="flex: 1">X</label>
-              <input ng-model="self.XLeft" type="number" style="flex: 1">
-              <input ng-model="self.XRight" type="number" style="flex: 1">
-            </div>
-            <div style="display: flex; width: 100%">
-              <label style="flex: 1">Y</label>
-              <input ng-model="self.YBottom "type="number" style="flex: 1">
-              <input ng-model="self.YTop" type="number" style="flex: 1">
-            </div>
-            <div style="display: flex; width: 100%">
-              <button class="btn btn-primary" style="width: 100%;" ng-click="self.fitToBound=!self.fitToBound">Fit To Bound</button>
-            </div>
           </div>
         </div>
       </div>

@@ -98,6 +98,7 @@ function Axes(container, map) {
     }
 
     function _drawAxes() {
+        if (!map.getBounds()) return;
         const unit = typeof(self.latLng2XYFn) === "function" 
                 ? typeof(self.getUnitLabel) === "function"
                     ? self.getUnitLabel()
@@ -105,7 +106,7 @@ function Axes(container, map) {
                 :"°";
         const projectFn = getProjectionFn();    
         const context = self.canvas.getContext("2d");
-        context.fillStyle = "#80b9e2";
+        context.fillStyle = "#4c81c6";
         const southWest = map.getBounds().getSouthWest();
         const northEast = map.getBounds().getNorthEast();
         const xDiv = getDivisionsX();
@@ -138,7 +139,7 @@ function Axes(container, map) {
 
         // context.textBaseline = "middle";
         context.textAlign = "center"
-        context.font = "14px Sans-serif";
+        context.font = "300 12px Sans-serif";
 
         const yStep = (northEast.lat() - southWest.lat()) / yDiv;
         const yMinorStep = yStep / yMinorDiv;

@@ -1,0 +1,73 @@
+<div class="dialog-header ">
+    <div style="display: flex; align-items: center;">
+        <div class="ti-widgetized" style="color: #3e84ff; font-size: 15px;"></div>
+        <span>Axes properties</span>
+    </div>
+    <div class="ti ti-close" ng-click="self.showAxesDialog = !self.showAxesDialog" style="cursor: pointer;"></div>
+</div>
+<div class="dialog-main" style="padding: 20px;">
+    <div style="display: flex; justify-content: space-between; align-items: center;margin-bottom: 20px;">
+        <span style="font-weight: bold;">{{self.showAxes?"Displaying axes":"Displays axes layer"}}</span>
+        <label class="switch">
+            <input type="checkbox" ng-checked="self.showAxes" ng-click="self.toggleAxes()" />
+            <span class="slider round"></span>
+        </label>
+    </div>
+    <div style="display: flex; justify-content: space-between; align-items: center;margin-bottom: 20px;">
+        <span style="font-weight: bold;">Fit to bound</span>
+        <span class="ti-arrow-right" ng-click="self.fitToBound=!self.fitToBound" style="color: #3f85ff; cursor: pointer;"></span>
+    </div>
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <span style="font-weight: bold;">Select unit</span>
+        <select style="border: none; background: none;" ng-model="self.axesUnit">
+            <option ng-repeat="opt in self.axesUnitOptions" ng-value="opt">{{opt.label}}</option>
+        </select>
+    </div>
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <span style="font-weight: bold;">Position:</span>
+    </div>
+    <div style=" display: flex;     margin: 0 -6px;">
+        <div class="cell" style="flex: 1; cursor: not-allowed;">X</div>
+        <div class="cell" style="flex: 1;">
+            <input ng-model="self.XLeft" type="number">
+        </div>
+        <div class="cell" style="flex: 1;">
+            <input ng-model="self.XRight" type="number">
+        </div>
+    </div>
+    <div style=" display: flex;    margin: 0 -6px;">
+        <div class="cell" style="flex: 1; cursor: not-allowed;">Y</div>
+        <div class="cell" style="flex: 1;">
+            <input ng-model="self.YBottom " type="number">
+        </div>
+        <div class="cell" style="flex: 1;">
+            <input ng-model="self.YTop" type="number">
+        </div>
+    </div>
+    <!-- <label class="switch">
+        <input type="checkbox" ng-checked="self.showAxes" ng-click="self.toggleAxes()" />
+        <span class="slider round"></span>
+    </label>
+    <div ng-if="self.showAxes" class="setting-content" style="margin-top: 12px; flex-direction: column;">
+        <div style="display: flex; width: 100%">
+            <label style="flex: 1">Unit</label>
+            <select style="flex: 2" ng-model="self.axesUnit">
+                <option ng-repeat="opt in self.axesUnitOptions" ng-value="opt">{{opt.label}}</option>
+            </select>
+        </div>
+        <div style="display: flex; width: 100%">
+            <label style="flex: 1">X</label>
+            <input ng-model="self.XLeft" type="number" style="flex: 1">
+            <input ng-model="self.XRight" type="number" style="flex: 1">
+        </div>
+        <div style="display: flex; width: 100%">
+            <label style="flex: 1">Y</label>
+            <input ng-model="self.YBottom " type="number" style="flex: 1">
+            <input ng-model="self.YTop" type="number" style="flex: 1">
+        </div>
+        <div style="display: flex; width: 100%">
+            <button class="btn btn-primary" style="width: 100%;" ng-click="self.fitToBound=!self.fitToBound">Fit To
+                Bound</button>
+        </div>
+    </div> -->
+</div>
