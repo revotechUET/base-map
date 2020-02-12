@@ -211,6 +211,20 @@ ${require('./dashboard-template-modal.html')}
         </div>
       </div>
       <div class="setting">
+        <div>
+          <div class="setting-title">
+            <div>Show Zone dialog</div>
+          </div>
+          <div class="setting-content" style="align-items: flex-start;">
+            <span style="line-height: 2;">Zone active:{{ zoneMap }}</span>
+            <label class="switch">
+              <input type="checkbox" ng-checked="self.showZone" ng-click="self.showZone = !self.showZone" />
+              <span class="slider round"></span>
+            </label>
+          </div>
+        </div>
+      </div>
+      <div class="setting">
         <div class="setting-title" style="margin-bottom: 10px;">Show Trajectory</div>
         <div class="complex-setting">
           <div class="setting-content">
@@ -285,14 +299,7 @@ ${require('./dashboard-template-modal.html')}
           </div>
         </div>
       </div>
-      <div class="setting">
-        <div>
-          <div class="setting-title" ng-click="self.showZone = !self.showZone">Zone</div>
-          <div class="setting-content" style="align-items: flex-start;">
-            <span>{{ zoneMap }}</span>
-          </div>
-        </div>
-      </div>
+     
     </div>
   </div>
   <div ng-show="isSet(2) && !self.hideMain" class="content">

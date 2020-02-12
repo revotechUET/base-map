@@ -496,6 +496,8 @@ base-map {
                     margin-bottom: 10px;
                     font-weight: bold;
                     color      : #000;
+                    display: flex;
+                    justify-content: space-between;
                 }
 
                 .setting-content {
@@ -642,7 +644,7 @@ base-map {
 
 
         .list-zone {
-            overflow: overlay;
+            overflow: hidden overlay;
             display: grid;
             grid-template-columns: auto auto auto auto auto auto;
             height: 100%;
@@ -685,8 +687,9 @@ base-map {
                 }
                 &:hover {
                     background: #f1f1f1;
-                    transition: all ease-in 0.2s;
+                    transition: all ease-in 0.1s;
                     color: #3e84ff;
+                    transform: scale(1.2);
                 }
             }
 
