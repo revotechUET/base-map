@@ -409,8 +409,8 @@ function Contour(container, map, data) {
         const labelContext = self.labelCanvas.getContext("2d");
         const NUM_OF_COLORSTOP = 10;
         const OFFSET_FROM_RIGHT = 500;
-        const WIDTH = 200;
-        const OFFSET_FROM_BOTTOM = 50;
+        const WIDTH = 400;
+        const OFFSET_FROM_BOTTOM = 100;
         const HEIGHT = 20;
         const grd = labelContext.createLinearGradient(viewWidth - OFFSET_FROM_RIGHT, viewHeight - OFFSET_FROM_BOTTOM, viewWidth - (OFFSET_FROM_BOTTOM - WIDTH), viewHeight - OFFSET_FROM_BOTTOM);
         const colorDomainRange = Math.abs(color.domain()[1] - color.domain()[0]);
@@ -425,7 +425,8 @@ function Contour(container, map, data) {
         labelContext.strokeRect(viewWidth - OFFSET_FROM_RIGHT, viewHeight - OFFSET_FROM_BOTTOM, WIDTH, HEIGHT);
         labelContext.fillStyle = "black";
         labelContext.textAlign = "center";
-        labelContext.fillText(colorDomainStart, viewWidth - OFFSET_FROM_RIGHT, viewHeight - OFFSET_FROM_BOTTOM);
-        labelContext.fillText(colorDomainStart + colorDomainRange, viewWidth - (OFFSET_FROM_RIGHT - WIDTH), viewHeight - OFFSET_FROM_BOTTOM);
+        labelContext.font = "300 12px";
+        labelContext.fillText(colorDomainStart, viewWidth - OFFSET_FROM_RIGHT, viewHeight - OFFSET_FROM_BOTTOM - 5);
+        labelContext.fillText(colorDomainStart + colorDomainRange, viewWidth - (OFFSET_FROM_RIGHT - WIDTH), viewHeight - OFFSET_FROM_BOTTOM - 5);
     }
 }
