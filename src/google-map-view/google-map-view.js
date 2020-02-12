@@ -1945,12 +1945,19 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken, wiApi) {
 
   // ======================== DRAWING AXES ========================
   let axes = null
+  const mapBoundingLine = new google.maps.Polyline({
+    geodesic: true,
+    strokeColor: "#ff0000",
+    strokeOpacity: 1.0,
+    strokeWeight: 2
+  })
   function initAxes() {
     axes = new Axes("#axes", map);
     google.maps.event.addListener(map, 'bounds_changed', function () {
       if (!axes) return;
       if (!self.showAxes) {
         axes.clearBoundsLayer();
+        mapBoundingLine.setMap(null);
         return axes.clearLayer();
       }
       // updateMapBoundsDebounced();
@@ -1959,12 +1966,6 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken, wiApi) {
     updateAxes();
   }
   const updateMapBoundsDebounced = _.debounce(updateMapBounds);
-  const mapBoundingLine = new google.maps.Polyline({
-    geodesic: true,
-    strokeColor: "#ff0000",
-    strokeOpacity: 1.0,
-    strokeWeight: 2
-  })
   function updateMapBounds(fitView = false) {
     if (!axes) return;
     axes.clearBoundsLayer();
@@ -2018,6 +2019,7 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken, wiApi) {
     if (!axes) return;
     if (!self.showAxes) {
       axes.clearBoundsLayer();
+      mapBoundingLine.setMap(null);
       return axes.clearLayer();
     }
     const firstProjection = "+proj=longlat +ellps=WGS84 +datum=WGS84 +units=degrees";
