@@ -235,6 +235,7 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken, wiApi) {
   };
 
   function updateScaleMap () {
+    if(!document.getElementsByClassName("gm-style-cc")[3]) return;
     self.scale = document.getElementsByClassName("gm-style-cc")[3].innerText;
     document.getElementById("scale").innerText = self.scale;
     if(self.scale.length === 8) {
@@ -250,6 +251,10 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken, wiApi) {
     }
     self.scaleWidth = (document.getElementsByClassName("gm-style-cc")[3].innerHTML).substring((document.getElementsByClassName("gm-style-cc")[3].innerHTML).search("-1px; width:") + 12, self.addWidth);
     document.getElementById("scaleWidth").style.width = self.scaleWidth;
+    self.ratioMap = 100000 * 156543.03392 * Math.cos(map.getCenter().lat() * Math.PI / 180) / Math.pow(2, map.getZoom());
+    document.getElementById("ratio-map").innerText = "1:" + Math.ceil(self.ratioMap);
+    console.log(self.ratioMap);
+    console.log(map.getZoom());
   }
   // SHOW MAP
   function drawMap() {
@@ -277,9 +282,6 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken, wiApi) {
     });
     map.addListener('mousemove',function(event) {
       updateScaleMap();
-      // metersPerPx = 156543.03392 * Math.cos(map.getCenter().lat() * Math.PI / 180) / Math.pow(2, map.getZoom());
-      // console.log(metersPerPx)
-
     });
 
     //SHOW ZONE LINE
@@ -1682,7 +1684,7 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken, wiApi) {
           }
 
         } else {
-          console.log(lat, long, x, y)
+          self.wellNameError = getName(self.wells[index].well_headers);
         }
         if (aMarker) {
           markers[self.wells[index].idWell] = aMarker;
@@ -2312,6 +2314,15 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken, wiApi) {
       if (wellIndex[index].header === "Y") {
         const value = Number(wellIndex[index].value);
         return isNaN(value) ? 0 : value;
+      }
+    }
+    return 0;
+  }
+  function getName(wellIndex) {
+    if (!(wellIndex || []).length) return 0;
+    for (let index = 0; index < wellIndex.length; index++) {
+      if (wellIndex[index].header === "WELL") {
+        return String(wellIndex[index].value);
       }
     }
     return 0;

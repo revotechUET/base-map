@@ -120,7 +120,7 @@ ${require('./dashboard-template-modal.html')}
 
 
   </div>
-  <div ng-show="isSet(3) && !self.hideMain" class="content">
+  <div ng-show="isSet(3) && !self.hideMain" class="content" id="isSet3">
 
     <wi-tree-view-virtual tree-root="wellSelect" get-label="self.getLabel" get-icon="self.getIcon"
       get-children="self.getChildren" run-match="self.runMatchWell" hide-unmatched="true"
