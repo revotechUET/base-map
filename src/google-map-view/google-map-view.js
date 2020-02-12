@@ -90,7 +90,7 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken, wiApi) {
         $timeout(() => {
           showAllPopup(self.allPopup);
           updateContours();
-          updateTrajectory();
+          updateTrajectoryDebounced();
           updateAxes();
         })
       },
@@ -148,9 +148,9 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken, wiApi) {
         drawMarkersDebounced();
         $timeout(() => {
           showAllPopup(self.allPopup);
-          updateCoordinateTable();
+          updateCoordinateTableDebounced();
           updateContours();
-          updateTrajectory();
+          updateTrajectoryDebounced();
         })
       },
       true
@@ -161,7 +161,7 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken, wiApi) {
       () => self.focusCurve,
       () => {
         updateContours();
-        updateTrajectory();
+        updateTrajectoryDebounced();
       }
     );
     $scope.$watch(
@@ -174,7 +174,7 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken, wiApi) {
     $scope.$watch(
       () => self.showTrajectory,
       () => {
-        updateTrajectory();
+        updateTrajectoryDebounced();
       }
     )
     // AXES
@@ -209,19 +209,19 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken, wiApi) {
     $scope.$watch(
       () => self.focusMarkerOrZone,
       () => {
-        updateCoordinateTable();
+        updateCoordinateTableDebounced();
       }
     )
     $scope.$watch(
       () => self.zoneDepthSpec,
       () => {
-        updateCoordinateTable();
+        updateCoordinateTableDebounced();
       }
     )
     $scope.$watch(
       () => self.wellPosition,
       () => {
-        updateCoordinateTable();
+        updateCoordinateTableDebounced();
       }
     )
 
@@ -1753,6 +1753,7 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken, wiApi) {
       scope: Object.assign($scope.$new(), { message: message })
     })
   }, 1000);
+  const updateCoordinateTableDebounced = _.debounce(updateCoordinateTable, 1000);
   function updateCoordinateTable() {
     async.eachSeries(self.wells, (well, next) => {
       getCoordFromCurve(well)
