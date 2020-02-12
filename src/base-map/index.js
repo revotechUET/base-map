@@ -278,6 +278,7 @@ function baseMapController(
   }
 
   $('#map-upfile-1-btn').bind("click", function () {
+    $('#map-upfile-1').val("");
     $('#map-upfile-1').click();
   });
   $scope.GetFileSizeNameAndType = function () {
@@ -297,6 +298,7 @@ function baseMapController(
     }
   }
   $('#map-upfile-2-btn').bind("click", function () {
+    $('#map-upfile-2').val("");
     $('#map-upfile-2').click();
   });
   $scope.GetFileSizeNameAndType2 = function () {

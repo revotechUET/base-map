@@ -219,6 +219,7 @@ function Contour(container, map, data) {
             return Math.sqrt( lat ** 2 + lng ** 2);
         }));
     }
+    /*
     function calcValueFromDistance(value, distance) {
         // return value * ((PROPAGATE_RATE) ** (distance*MIN_COOR));
         return value - value * distance * MIN_COOR * (1 - PROPAGATE_RATE);
@@ -226,6 +227,7 @@ function Contour(container, map, data) {
     function getWeightFromDistance(distance, datum, grid) {
         return distance / maxDistanceFromGrid(datum, grid);
     }
+    */
     function calcValue(index, contourData, data, maxLat, minLng) {
         const lat = maxLat - Math.floor(index / contourData.width) * MIN_COOR;
         const lng = minLng + (index % contourData.width) * MIN_COOR;
