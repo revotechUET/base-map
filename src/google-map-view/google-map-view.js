@@ -2022,6 +2022,7 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken, wiApi) {
     if (!self.showAxes) {
       axes.clearBoundsLayer();
       mapBoundingLine.setMap(null);
+      map.panTo(map.getCenter());
       return axes.clearLayer();
     }
     const firstProjection = "+proj=longlat +ellps=WGS84 +datum=WGS84 +units=degrees";
