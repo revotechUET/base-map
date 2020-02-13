@@ -243,7 +243,7 @@ function baseMapController(
     self.point = true;
   },5000)
   self.showContour = false;
-  self.showTrajectory = true;
+  self.showTrajectory = false;
   self.showAxes = true;
   self.axesUnitOptions = AxesUnitOptions;
   self.wellPositionOptions = WellPositionOptions;
@@ -1218,7 +1218,7 @@ function baseMapController(
       headers: {}
     }).then(
       function (response) {
-        $scope.zoneFieldTable = response.data;
+        $scope.zoneFieldTable = _.orderBy(response.data,'DisplayName',true);
         // Show display value
         $scope.zoneSelected = $scope.zoneFieldTable.find(function (zone) {
           return zone.Name === self.zoneDefault;
@@ -2007,24 +2007,6 @@ function baseMapController(
         }
       }
     )
-  }
-  function dynamicSort(property) {
-		var sortOrder = 1;
-	
-		if(property[0] === "-") {
-			sortOrder = -1;
-			property = property.substr(1);
-		}
-	
-		return function (a,b) {
-			const compareValOfA = a[property] || ''
-			const compareValOfB = b[property] || ''
-			if(sortOrder == -1){
-				return compareValOfB.localeCompare(compareValOfA);
-			}else{
-				return compareValOfA.localeCompare(compareValOfB);
-			}        
-		}
   }
   this.setContainerFileBrowser = function(container) {
     self.fileBrowserController = container;
