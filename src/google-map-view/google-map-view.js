@@ -1937,7 +1937,8 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken, wiApi) {
       if ( self.wellPosition == "base" ) {
         depth = wellDepthSpec.bottomDepth;
       } else {
-        depth = wellDepthSpec.topDepth;
+        // depth = wellDepthSpec.topDepth;
+        depth = null;
       }
     }
     if (_.isFinite(depth)) {
