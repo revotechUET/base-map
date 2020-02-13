@@ -1263,20 +1263,20 @@ function baseMapController(
     $scope.focusCurve = null;
     self.noWell = true;
   };
-
   this.deleteWell = function () {
     node = self.selectedWellNode;
     console.log("delete selected wells");
     let deleteNodes = Object.values(self.selectedIdsHash);
-    for (let deleteNode of deleteNodes) {
-      let idx = $scope.wellSelect.findIndex(node => node === deleteNode);
-      $scope.wellSelect.splice(idx, 1);
-    }
+//    for (let deleteNode of deleteNodes) {
+//      let idx = $scope.wellSelect.findIndex(node => self.nodeComparator(node, deleteNode));
+//      $scope.wellSelect.splice(idx, 1);
+//    }
+		$scope.wellSelect = $scope.wellSelect.filter(w => !w._selected)
     $timeout(() => {
       self.selectedIdsHash = {};
       $scope.focusWell.length = 0;
     })
-
+		
     updateCurveList()
       .then(updateZoneList)
       .then(updateMarkerList);
