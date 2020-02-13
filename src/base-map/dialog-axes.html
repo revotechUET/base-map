@@ -27,6 +27,10 @@
     </div>
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
         <span style="font-weight: bold;">Position:</span>
+        <span style="font-weight: bold; opacity: 0.6; display: flex; align-items: center; cursor: pointer;" ng-click="self.XLeft = null; self.XRight = null; self.YBottom = null; self.YTop = null;">
+            Clear values
+            <div  style="margin-left: 10px;" class="ti-trash"></div>
+        </span>
     </div>
     <div style=" display: flex;     margin: 0 -6px;">
         <div class="cell" style="flex: 1; cursor: not-allowed;">X</div>
@@ -46,13 +50,8 @@
             <input ng-model="self.YTop" type="number">
         </div>
     </div>
-    <div style="display: flex; justify-content: space-between; align-items: center;margin-bottom: 20px;">
-        <span style="font-weight: bold;">Clear XY Boundary Values</span>
-        <span class="ti-arrow-right" ng-click="self.XLeft = null; self.XRight = null; self.YBottom = null; self.YTop = null;" style="color: #3f85ff; cursor: pointer;"></span>
-    </div>
-    <div style="display: flex; justify-content: space-between; align-items: center;margin-bottom: 20px;">
+    <div style="display: flex; justify-content: center; align-items: center; padding: 10px; border: 1px solid #c1c1c1; border-radius: 2px; cursor: pointer;" ng-click="self.fitToBound=!self.fitToBound">
         <span style="font-weight: bold;">Apply XY Boundary To Map</span>
-        <span class="ti-arrow-right" ng-click="self.fitToBound=!self.fitToBound" style="color: #3f85ff; cursor: pointer;"></span>
     </div>
     <!-- <label class="switch">
         <input type="checkbox" ng-checked="self.showAxes" ng-click="self.toggleAxes()" />

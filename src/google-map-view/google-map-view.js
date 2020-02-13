@@ -1708,12 +1708,10 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken, wiApi) {
       let lngY = proj4(firstProjection, secondProjection, [x, y])[0];
       if (checkCoordinate(lat, long, x, y) === true) {
         map.panTo(new google.maps.LatLng(lat, long));
-        // self.allPopup = false;
  
       }
       else if (checkCoordinate(lat, long, x, y) === false) {
         map.panTo(new google.maps.LatLng(latX, lngY));
-        // self.allPopup = false;
     
       } 
       else {
@@ -2215,24 +2213,24 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken, wiApi) {
 
   // =======================  END DRAWING TRAJECTORY ============================
   function getColorIconMarker(wellHeader) {
-    if (getFluidCode(wellHeader) === 'Gas') {
+    if (getFluidCode(wellHeader) === 'gas') {
       return '#ff6868'
-    } else if (getFluidCode(wellHeader) === 'Water') {
+    } else if (getFluidCode(wellHeader) === 'water') {
       return '#559bf3'
-    } else if (getFluidCode(wellHeader) === 'Condensate') {
+    } else if (getFluidCode(wellHeader) === 'condensate') {
       return '#a0a0a0'
-    } else if (getFluidCode(wellHeader) === 'Oil') {
+    } else if (getFluidCode(wellHeader) === 'oil') {
       return '#15b153'
     } else {
       return '#585858'
     }
   }
   function getImageIconMarker(wellHeader) {
-    if (getType(wellHeader) === 'Exploration') {
+    if (getType(wellHeader) === 'exploration') {
       return icon_search
-    } else if (getType(wellHeader) === 'Production') {
+    } else if (getType(wellHeader) === 'production') {
       return icon_arrow_up
-    } else if (getType(wellHeader) === 'Injection') {
+    } else if (getType(wellHeader) === 'injection') {
       return icon_arrow_down
     } else {
       return icon_circle;
@@ -2334,8 +2332,8 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken, wiApi) {
   function getFluidCode(wellIndex) {
     if (!(wellIndex || []).length) return 0;
     for (let index = 0; index < wellIndex.length; index++) {
-      if (wellIndex[index].header === "TYPE") {
-        return wellIndex[index].value.split(' ').pop();
+      if (wellIndex[index].header === "FLUID") {
+        return wellIndex[index].value.replace(/\s+/g, '').toLowerCase();
       }
     }
     return 0;
@@ -2344,13 +2342,9 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken, wiApi) {
   function getType(wellIndex) {
     if (!(wellIndex || []).length) return 0;
     for (let index = 0; index < wellIndex.length; index++) {
-      if (wellIndex[index].header === "TYPE") {
-        if(wellIndex[index].value.split(' ').shift() !== '')
-        return wellIndex[index].value.split(' ').shift();
-      }  else if (wellIndex[index].header === "WTYPE") {
-        if(wellIndex[index].value.split(' ').shift() !== '')
-        return wellIndex[index].value.split(' ').shift();
-      }
+      if (wellIndex[index].header === "WTYPE") {
+        return wellIndex[index].value.replace(/\s+/g, '').toLowerCase();
+      } 
     }
     return 0;
   }
