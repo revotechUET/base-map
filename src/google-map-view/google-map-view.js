@@ -1676,7 +1676,7 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken, wiApi) {
             aMarker.setIcon({
               path: getImageIconMarker(self.wells[index].well_headers),
               fillColor: getColorIconMarker(self.wells[index].well_headers),
-              fillOpacity: .6,
+              fillOpacity: 1,
               anchor: new google.maps.Point(270, 530),
               strokeWeight: 1,
               strokeColor: getColorIconMarker(self.wells[index].well_headers),
@@ -1706,14 +1706,14 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken, wiApi) {
       let y = getY(well.well_headers);
       let latX = proj4(firstProjection, secondProjection, [x, y])[1];
       let lngY = proj4(firstProjection, secondProjection, [x, y])[0];
-
       if (checkCoordinate(lat, long, x, y) === true) {
         map.panTo(new google.maps.LatLng(lat, long));
-      
+        // self.allPopup = false;
  
       }
       else if (checkCoordinate(lat, long, x, y) === false) {
         map.panTo(new google.maps.LatLng(latX, lngY));
+        // self.allPopup = false;
     
       } 
       else {

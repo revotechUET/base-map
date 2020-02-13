@@ -243,7 +243,7 @@ function baseMapController(
     self.point = true;
   },5000)
   self.showContour = false;
-  self.showTrajectory = false;
+  self.showTrajectory = true;
   self.showAxes = true;
   self.axesUnitOptions = AxesUnitOptions;
   self.wellPositionOptions = WellPositionOptions;
