@@ -2013,7 +2013,7 @@ function baseMapController(
         list = list.filter(e => !e.shared).map(e => {
           return {
             data: {
-              label: e.name
+              label: e.alias || e.name
             },  
             icon: "project-normal-16x16",
             properties: e
@@ -2058,7 +2058,7 @@ function baseMapController(
         list = list.filter(e => !e.shared).map(e => {
           return {
             data: {
-              label: e.name
+              label: e.alias || e.name
             },  
             icon: "project-normal-16x16",
             properties: e
@@ -2149,73 +2149,6 @@ function baseMapController(
                       $scope.$digest();
                     });
                   });
-                  // if (/(.zip)/.exec(file.name)) {
-                  //   console.log(".zip file upzip");
-                  //   JSZip.loadAsync(file)
-                  //     .then(function (zip) {
-                  //       return {
-                  //         contour: zip.file("contour.json").async("string"),
-                  //         mapSetting: zip.file("mapsetting.json").async("string"),
-                  //         blocks: zip.file("blocks.geojson").async("string")
-                  //       };
-                  //     })
-                  //     .then(async function (result) {
-                  //       await result.contour.then(function (data) {
-                  //         return new Promise(res => {
-                  //           data = JSON.parse(data);
-                  //           $scope.wellSelect = data.selectWell || [];
-                  //           $scope.curveList = data.selectCurve || [];
-                  //           $scope.zoneList = data.selectedZone || [];
-                  //           $scope.markerList = data.selectedMarker || [];
-                  //           self.noWell = false;
-                  //           $scope.focusCurve = $scope.curveList.find(c => c._selected);
-                  //           let selectedZoneset = $scope.zoneList.find(zs => zs.zones.find(z => z._selected));
-                  //           let selectedMarkerset = $scope.markerList.find(ms => ms.markers.find(m => m._selected));
-                  //           $scope.focusMZ = selectedZoneset
-                  //               ? selectedZoneset.zones.find(z => z._selected)
-                  //               : selectedMarkerset ? selectedMarkerset.markers.find(m => m._selected) : null
-                  //           if (!$scope.$$phase) {
-                  //             $scope.$apply();
-                  //             $timeout(res, 500);
-                  //           }
-                  //         })
-                  //       });
-                  //       result.mapSetting.then(function (data) {
-                  //         data = JSON.parse(data);
-                  //         $scope.themeMap = data.themeMap;
-                  //         $scope.allPopup = data.allPopup;
-                  //         self.activeTheme = data.activeTheme;
-                  //         self.controlPanel = data.controlPanel;
-                  //         self.point = data.point;
-                  //         self.showContour = data.showContour;
-                  //         self.showTrajectory = data.showTrajectory;
-                  //         self.darkMode = data.darkMode;
-                  //         setDarkMode(self.darkMode);
-                  //         self.showZonesets = data.showZonesets;
-                  //         self.showMarkersets = data.showMarkersets;
-                  //         $scope.zoneMap = data.zoneMap;
-                  //         $timeout(() => {
-                  //           if (!$scope.$$phase) {
-                  //             $scope.$apply();
-                  //           };
-                  //         })
-                  //       });
-                  //       result.blocks.then(function (data) {
-                  //         data = JSON.parse(data);
-                  //         self.geoJson = data;
-                  //         $scope.$digest();
-                  //       });
-                  //     });
-                  // } else {
-                  //   const reader = new FileReader();
-                  //   reader.onload = function (event) {
-                  //     shp(event.target.result).catch(e => console.error(e));
-                  //   };
-                  //   reader.onerror = function (event) {
-                  //     console.error(event);
-                  //   };
-                  //   reader.readAsArrayBuffer(file);
-                  // }
                 }
             });
           });
