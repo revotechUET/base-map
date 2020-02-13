@@ -225,6 +225,7 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken, wiApi) {
       () => self.wellPosition,
       () => {
         updateCoordinateTableDebounced();
+        updateTrajectoryDebounced();
       }
     )
 
@@ -2158,6 +2159,7 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken, wiApi) {
 
   // ========================= DRAWING TRAJECTORY ========================
   const wellPathHash = {};
+  const wellPointHash = {};
   const updateTrajectoryDebounced = _.debounce(updateTrajectory, 1000);
   function updateTrajectory() {
     clearTrajectoryMap();
@@ -2170,15 +2172,28 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken, wiApi) {
           strokeOpacity: 1.0,
           strokeWeight: 2
         });
+      if (!wellPointHash[well.idWell])
+        wellPointHash[well.idWell] = new google.maps.Circle({
+          strokeOpacity: 0.6,
+          fillOpacity: 0.6,
+          strokeColor: well.color || "#ff0000",
+          fillColor: well.color || "#ff0000",
+          radius: 1 
+        })
       const path = await calculatePathForWell(well);
       wellPathHash[well.idWell].setPath(path);
       wellPathHash[well.idWell].setMap(map);
+      wellPointHash[well.idWell].setCenter(path[self.wellPosition == "top" ? (path.length - 1):0]);
+      wellPointHash[well.idWell].setMap(map);
     })
   }
 
   function clearTrajectoryMap() {
     Object.values(wellPathHash).forEach((path) => {
       path.setMap(null);
+    })
+    Object.values(wellPointHash).forEach((point) => {
+      point.setMap(null);
     })
   }
 
