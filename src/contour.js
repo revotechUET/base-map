@@ -420,10 +420,10 @@ function Contour(container, map, data) {
         // create gradient
         const labelContext = self.labelCanvas.getContext("2d");
         const NUM_OF_COLORSTOP = 10;
-        const OFFSET_FROM_RIGHT = 500;
-        const WIDTH = 400;
-        const OFFSET_FROM_BOTTOM = 100;
-        const HEIGHT = 20;
+        const OFFSET_FROM_RIGHT = 360;
+        const WIDTH = 320;
+        const OFFSET_FROM_BOTTOM = 120;
+        const HEIGHT = 10;
         const grd = labelContext.createLinearGradient(viewWidth - OFFSET_FROM_RIGHT, viewHeight - OFFSET_FROM_BOTTOM, viewWidth - (OFFSET_FROM_BOTTOM - WIDTH), viewHeight - OFFSET_FROM_BOTTOM);
         const colorDomainRange = Math.abs(color.domain()[1] - color.domain()[0]);
         const colorDomainStart = Math.min(color.domain()[0], color.domain()[1]);
@@ -433,12 +433,12 @@ function Contour(container, map, data) {
         })
         labelContext.fillStyle = grd;
         labelContext.fillRect(viewWidth - OFFSET_FROM_RIGHT, viewHeight - OFFSET_FROM_BOTTOM, WIDTH, HEIGHT);
-        labelContext.strokeStyle = "black";
+        labelContext.strokeStyle = "transparent";
         labelContext.strokeRect(viewWidth - OFFSET_FROM_RIGHT, viewHeight - OFFSET_FROM_BOTTOM, WIDTH, HEIGHT);
         labelContext.fillStyle = "black";
-        labelContext.textAlign = "center";
-        labelContext.font = "300 12px";
-        labelContext.fillText(colorDomainStart, viewWidth - OFFSET_FROM_RIGHT, viewHeight - OFFSET_FROM_BOTTOM - 5);
-        labelContext.fillText(colorDomainStart + colorDomainRange, viewWidth - (OFFSET_FROM_RIGHT - WIDTH), viewHeight - OFFSET_FROM_BOTTOM - 5);
+        labelContext.textAlign = "left";
+        labelContext.font = "300 12px Sans-serif";
+        labelContext.fillText(colorDomainStart, viewWidth - OFFSET_FROM_RIGHT, viewHeight - OFFSET_FROM_BOTTOM - 10);
+        labelContext.fillText(colorDomainStart + colorDomainRange, viewWidth - (OFFSET_FROM_RIGHT - WIDTH + 120), viewHeight - OFFSET_FROM_BOTTOM - 10);
     }
 }
