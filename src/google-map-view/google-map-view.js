@@ -54,7 +54,7 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken, wiApi) {
   let map;
   let markers = [];
   var drawMarkersDebounced = _.debounce(drawMarkers, 500);
-  let icon_circle = 'M-20,0a20,20 0 1,0 40,0a20,20 0 1,0 -40,0';
+  let icon_well = 'M413.9,455.1h-9.6L319.2,37.7h1.9c7.1,0,12.9-5.8,12.9-12.9V14.7c0-7.1-5.8-12.9-12.9-12.9H170.9c-7.1,0-12.9,5.8-12.9,12.9  v10.1c0,7.1,5.8,12.9,12.9,12.9h0.9L86.8,455.1H76.6c-7.1,0-12.9,5.8-12.9,12.9v10.1c0,7.1,5.8,12.9,12.9,12.9h48.6  c7.1,0,12.9-5.8,12.9-12.9v-10.1c0-7.1-5.8-12.9-12.9-12.9h-1.8l20-98.3H228v98.3h-6.3c-7.1,0-12.9,5.8-12.9,12.9v10.1  c0,7.1,5.8,12.9,12.9,12.9h48.6c7.1,0,12.9-5.8,12.9-12.9v-10.1c0-7.1-5.8-12.9-12.9-12.9H264v-98.3h83.6l20,98.3h-2.3  c-7.1,0-12.9,5.8-12.9,12.9v10.1c0,7.1,5.8,12.9,12.9,12.9h48.6c7.1,0,12.9-5.8,12.9-12.9v-10.1C426.8,460.9,421,455.1,413.9,455.1z   M310.1,172.8H264V37.7h18.6L310.1,172.8z M228,37.7v135.2H181l27.6-135.2H228z M150.8,320.9l22.9-112.2H228v112.2H150.8z   M264,320.9V208.7h53.4l22.9,112.2H264z';
   let icon_arrow_up = 'M442.627,185.388L265.083,7.844C260.019,2.78,253.263,0,245.915,0c-7.204,0-13.956,2.78-19.02,7.844L49.347,185.388    c-10.488,10.492-10.488,27.568,0,38.052l16.12,16.128c5.064,5.06,11.82,7.844,19.028,7.844c7.204,0,14.192-2.784,19.252-7.844    l103.808-103.584v329.084c0,14.832,11.616,26.932,26.448,26.932h22.8c14.832,0,27.624-12.1,27.624-26.932V134.816l104.396,104.752    c5.06,5.06,11.636,7.844,18.844,7.844s13.864-2.784,18.932-7.844l16.072-16.128C453.163,212.952,453.123,195.88,442.627,185.388z';
   let icon_arrow_down = 'M49.4,306.6l177.5,177.5c5.1,5.1,11.8,7.8,19.2,7.8c7.2,0,14-2.8,19-7.8l177.5-177.5c10.5-10.5,10.5-27.6,0-38.1    l-16.1-16.1c-5.1-5.1-11.8-7.8-19-7.8c-7.2,0-14.2,2.8-19.3,7.8L284.4,356V26.9C284.4,12.1,272.8,0,258,0h-22.8    c-14.8,0-27.6,12.1-27.6,26.9v330.3L103.2,252.4c-5.1-5.1-11.6-7.8-18.8-7.8s-13.9,2.8-18.9,7.8l-16.1,16.1    C38.8,279,38.9,296.1,49.4,306.6z';
   // let icon_default = 'M38.853,5.324L38.853,5.324c-7.098-7.098-18.607-7.098-25.706,0h0  C6.751,11.72,6.031,23.763,11.459,31L26,52l14.541-21C45.969,23.763,45.249,11.72,38.853,5.324z M26.177,24c-3.314,0-6-2.686-6-6  s2.686-6,6-6s6,2.686,6,6S29.491,24,26.177,24z';
@@ -1611,15 +1611,15 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken, wiApi) {
             // map.setCenter(new google.maps.LatLng(lat, long));
 
           }
-          else if (getImageIconMarker(self.wells[index].well_headers) == icon_circle) {
+          else if (getImageIconMarker(self.wells[index].well_headers) == icon_well) {
             aMarker.setIcon({
               path: getImageIconMarker(self.wells[index].well_headers),
               fillColor: getColorIconMarker(self.wells[index].well_headers),
               fillOpacity: 1,
-              anchor: new google.maps.Point(0, 0),
+              anchor: new google.maps.Point(270, 530),
               strokeWeight: 1,
               strokeColor: getColorIconMarker(self.wells[index].well_headers),
-              scale: 0.5,
+              scale: 0.05,
             });
             // map.setCenter(new google.maps.LatLng(lat, long));
 
@@ -1659,15 +1659,15 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken, wiApi) {
             });
             // map.setCenter(new google.maps.LatLng(latX, lngY));
           }
-          else if (getImageIconMarker(self.wells[index].well_headers) == icon_circle) {
+          else if (getImageIconMarker(self.wells[index].well_headers) == icon_well) {
             aMarker.setIcon({
               path: getImageIconMarker(self.wells[index].well_headers),
               fillColor: getColorIconMarker(self.wells[index].well_headers),
               fillOpacity: 1,
-              anchor: new google.maps.Point(0, 0),
+              anchor: new google.maps.Point(270, 530),
               strokeWeight: 1,
               strokeColor: getColorIconMarker(self.wells[index].well_headers),
-              scale: 0.5,
+              scale: 0.05,
             });
             // map.setCenter(new google.maps.LatLng(latX, lngY));
 
@@ -2233,7 +2233,7 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken, wiApi) {
     } else if (getType(wellHeader) === 'injection') {
       return icon_arrow_down
     } else {
-      return icon_circle;
+      return icon_well;
     }
   }
   function checkCoordinate(lat, long, x, y) {
