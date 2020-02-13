@@ -2168,7 +2168,7 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken, wiApi) {
       if (!wellPathHash[well.idWell])
         wellPathHash[well.idWell] = new google.maps.Polyline({
           geodesic: true,
-          strokeColor: well.color || "#ff0000",
+          strokeColor: Array.isArray(well.color) ? well.color[0] : (well.color || "#ff0000"),
           strokeOpacity: 1.0,
           strokeWeight: 2
         });
@@ -2176,8 +2176,8 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken, wiApi) {
         wellPointHash[well.idWell] = new google.maps.Circle({
           strokeOpacity: 0.6,
           fillOpacity: 0.6,
-          strokeColor: well.color || "#ff0000",
-          fillColor: well.color || "#ff0000",
+          strokeColor: Array.isArray(well.color) ? well.color[0] : (well.color || "#ff0000"),
+          fillColor: Array.isArray(well.color) ? well.color[0] : (well.color || "#ff0000"),
           radius: 1 
         })
       const path = await calculatePathForWell(well);
