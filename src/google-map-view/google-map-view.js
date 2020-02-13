@@ -193,6 +193,7 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken, wiApi) {
         // updateAxes();
       }
     )
+    /*
     $scope.$watch(
       () => [ self.axesXLeft, self.axesXRight, self.axesYTop, self.axesYBottom ],
       () => {
@@ -200,6 +201,7 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken, wiApi) {
       },
       true
     )
+    */
     $scope.$watch(
       () => self.fitToBound,
       () => {

@@ -13,10 +13,12 @@
             <span class="slider round"></span>
         </label>
     </div>
+    <!--
     <div style="display: flex; justify-content: space-between; align-items: center;margin-bottom: 20px;">
         <span style="font-weight: bold;">Fit to bound</span>
         <span class="ti-arrow-right" ng-click="self.fitToBound=!self.fitToBound" style="color: #3f85ff; cursor: pointer;"></span>
     </div>
+    -->
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
         <span style="font-weight: bold;">Select unit</span>
         <select style="border: none; background: none;" ng-model="self.axesUnit">
@@ -43,6 +45,14 @@
         <div class="cell" style="flex: 1;">
             <input ng-model="self.YTop" type="number">
         </div>
+    </div>
+    <div style="display: flex; justify-content: space-between; align-items: center;margin-bottom: 20px;">
+        <span style="font-weight: bold;">Clear XY Boundary Values</span>
+        <span class="ti-arrow-right" ng-click="self.XLeft = null; self.XRight = null; self.YBottom = null; self.YTop = null;" style="color: #3f85ff; cursor: pointer;"></span>
+    </div>
+    <div style="display: flex; justify-content: space-between; align-items: center;margin-bottom: 20px;">
+        <span style="font-weight: bold;">Apply XY Boundary To Map</span>
+        <span class="ti-arrow-right" ng-click="self.fitToBound=!self.fitToBound" style="color: #3f85ff; cursor: pointer;"></span>
     </div>
     <!-- <label class="switch">
         <input type="checkbox" ng-checked="self.showAxes" ng-click="self.toggleAxes()" />
