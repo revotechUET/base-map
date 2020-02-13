@@ -209,6 +209,11 @@ const AxesUnitOptions = [
   {label: "km", ratio: 1/1000}
 ]
 
+const WellPositionOptions = [
+  {label: "top", value: "top"},
+  {label: "base", value: "base"},
+]
+
 function baseMapController(
   $scope,
   $http,
@@ -228,15 +233,21 @@ function baseMapController(
   self.noWell = true;
   $scope.wellSelect = [];
   $scope.focusWell = [];
+  self.clearClipboardFocusWell = true;
   $scope.allPopup = true;
   $scope.themeMap = 6;
   self.activeTheme = "Standard";
   self.controlPanel = true;
   self.point = false;
+  $timeout(()=>{
+    self.point = true;
+  },5000)
   self.showContour = false;
-  self.showTrajectory = false;
-  self.showAxes = false;
+  self.showTrajectory = true;
+  self.showAxes = true;
   self.axesUnitOptions = AxesUnitOptions;
+  self.wellPositionOptions = WellPositionOptions;
+  self.wellPosition = self.wellPositionOptions[0].value;
   self.axesUnit = self.axesUnitOptions[0];
   self.selectedIdsHash = {};
   self.selectedNode = null;
@@ -267,6 +278,7 @@ function baseMapController(
   }
 
   $('#map-upfile-1-btn').bind("click", function () {
+    $('#map-upfile-1').val("");
     $('#map-upfile-1').click();
   });
   $scope.GetFileSizeNameAndType = function () {
@@ -286,6 +298,7 @@ function baseMapController(
     }
   }
   $('#map-upfile-2-btn').bind("click", function () {
+    $('#map-upfile-2').val("");
     $('#map-upfile-2').click();
   });
   $scope.GetFileSizeNameAndType2 = function () {
@@ -461,6 +474,7 @@ function baseMapController(
       self.showContour = false;
       self.showTrajectory = false;
       self.showAxes = false;
+      self.wellPositionOptions = "top";
       self.darkMode = false;
       self.showZonesets = false;
       self.showMarkersets = false;
@@ -520,6 +534,7 @@ function baseMapController(
               self.showContour = data.showContour;
               self.showTrajectory = data.showTrajectory;
               self.showAxes = data.showAxes;
+              self.wellPosition = data.wellPosition; 
               self.darkMode = data.darkMode;
               setDarkMode(self.darkMode);
               self.showZonesets = data.showZonesets;
@@ -1203,7 +1218,7 @@ function baseMapController(
       headers: {}
     }).then(
       function (response) {
-        $scope.zoneFieldTable = response.data;
+        $scope.zoneFieldTable = _.orderBy(response.data,'DisplayName',true);
         // Show display value
         $scope.zoneSelected = $scope.zoneFieldTable.find(function (zone) {
           return zone.Name === self.zoneDefault;
@@ -1230,7 +1245,7 @@ function baseMapController(
   };
 
   this.refresh = function () {
-    getZoneList();
+    // getZoneList();
     getCurveTree();
     // $scope.wellSelect = [];
     $scope.curveList = [];
@@ -1293,6 +1308,7 @@ function baseMapController(
       showContour: self.showContour,
       showTrajectory: self.showTrajectory,
       showAxes: self.showAxes,
+      wellPosition: self.wellPosition,
       zoneMap: $scope.zoneMap,
       darkMode: self.darkMode,
       showZonesets: self.showZonesets,
@@ -1314,6 +1330,7 @@ function baseMapController(
     });
   };
 
+  this.prepareWellInfoFn = prepareWellInfos;
   async function prepareWellInfos(well) {
     if (!well.datasets || !well.zone_sets || !well.marker_sets) {
       const wellInfo = await new Promise((resolve, reject) => {
@@ -1326,6 +1343,54 @@ function baseMapController(
     }
     return well;
   }
+
+  /*
+  let unitTable = null;
+  this.convertUnitFn = convertUnit;
+  async function updateUnitTable() {
+    $http({
+      method: "POST",
+      url: BASE_URL + "/family/all-unit",
+      data: {},
+      headers: {
+        Authorization: wiToken.getToken()
+      }
+    }).then(function (units) {
+      unitTable = units;
+    });
+  }
+  function convertUnit (value, fromUnit, destUnit) {
+    if ((!Array.isArray(value) && !_.isFinite(value)) || fromUnit === destUnit) return value;
+    if (!unitTable) {
+      updateUnitTable();
+      return value;
+    }
+
+    let startUnit = unitTable.find(u => u.name == fromUnit);
+    let endUnit = unitTable.find(u => u.name == destUnit);
+
+    if(!startUnit || !endUnit || startUnit.idUnitGroup != endUnit.idUnitGroup)
+        return value;
+    if (startUnit && endUnit) {
+        let sCoeffs = JSON.parse(startUnit.rate);
+        let eCoeffs = JSON.parse(endUnit.rate);
+        function convert(value) {
+            return eCoeffs[0]* (value - sCoeffs[1])/sCoeffs[0] + eCoeffs[1];
+        }
+        if (Array.isArray(value)) {
+            return value.map(convert);
+        } else {
+            return convert(value);
+        }
+        //return value * endUnit.rate / startUnit.rate;
+    }
+    else {
+        let errUnit = !startUnit ? fromUnit : destUnit;
+        console.error("convert unit error");
+        return null;
+    }
+  }
+  */
 
   function getUniqZones(zoneset) {
     const _clonedZones = angular.copy(zoneset.zones);
@@ -1710,6 +1775,7 @@ function baseMapController(
     self.selectedWellNode = node;
     self.selectedIdsHash[node.idWell] = node;
     $scope.focusWell = node;
+    self.clearClipboardFocusWell = !self.clearClipboardFocusWell;
   };
   this.clickCurveFunction = function ($event, node) {
     $scope.focusCurve = node;
@@ -1941,24 +2007,6 @@ function baseMapController(
         }
       }
     )
-  }
-  function dynamicSort(property) {
-		var sortOrder = 1;
-	
-		if(property[0] === "-") {
-			sortOrder = -1;
-			property = property.substr(1);
-		}
-	
-		return function (a,b) {
-			const compareValOfA = a[property] || ''
-			const compareValOfB = b[property] || ''
-			if(sortOrder == -1){
-				return compareValOfB.localeCompare(compareValOfA);
-			}else{
-				return compareValOfA.localeCompare(compareValOfB);
-			}        
-		}
   }
   this.setContainerFileBrowser = function(container) {
     self.fileBrowserController = container;

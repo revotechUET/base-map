@@ -1,7 +1,12 @@
 <div ng-class="{'show-dashboard': self.showDashboard}" class="dialog">
   ${require('./dialog-dashboard.html')}
 </div>
-
+<div class="dialog-setting slim-scroller" ng-show="self.showZone">
+  ${require('./dialog-zone-utms.html')}
+</div>
+<div class="dialog-setting slim-scroller" ng-show="self.showAxesDialog" style="height: auto;">
+  ${require('./dialog-axes.html')}
+</div>
 <script type="text/ng-template" id="dashboard-template-modal">
 ${require('./dashboard-template-modal.html')}
 </script>
@@ -115,7 +120,7 @@ ${require('./dashboard-template-modal.html')}
 
 
   </div>
-  <div ng-show="isSet(3) && !self.hideMain" class="content">
+  <div ng-show="isSet(3) && !self.hideMain" class="content" id="isSet3">
 
     <wi-tree-view-virtual tree-root="wellSelect" get-label="self.getLabel" get-icon="self.getIcon"
       get-children="self.getChildren" run-match="self.runMatchWell" hide-unmatched="true"
@@ -133,7 +138,20 @@ ${require('./dashboard-template-modal.html')}
     <div style="flex: 1; margin: 15px; user-select: none; overflow: hidden ;display: flex; flex-direction: column;"
       onmouseover=this.style.overflow='overlay' onmouseout=this.style.overflow='hidden'>
       <div class="setting">
-        <div class="setting-title" style="margin-bottom: 10px;">Zonesets & Markersets</div>
+        <div class="setting-title" style="margin-bottom: 10px;">Position</div>
+        <div class="complex-setting">
+          <div class="setting-content">
+            <span class="setting-sub-title">Choose which position of well to display</span>
+              <div class="setting-content">
+                <select style="width: 100%;border: none; background: none;" ng-model="self.wellPosition">
+                  <option ng-repeat="opt in self.wellPositionOptions" ng-value="opt.value">{{opt.label}}</option>
+                </select>
+              </div>
+          </div>
+        </div>
+      </div>
+      <div class="setting">
+        <div class="setting-title" style="margin-bottom: 10px;">Zonesets & markersets</div>
         <div class="complex-setting" style="margin-bottom: 10px">
           <div class="setting-content">
             <span
@@ -175,7 +193,7 @@ ${require('./dashboard-template-modal.html')}
         </div>
       </div>
       <div class="setting">
-        <div class="setting-title" style="margin-bottom: 10px;">Show Contour</div>
+        <div class="setting-title" style="margin-bottom: 10px;">Show contour</div>
         <div class="complex-setting">
           <div class="setting-content">
             <span
@@ -194,7 +212,21 @@ ${require('./dashboard-template-modal.html')}
         </div>
       </div>
       <div class="setting">
-        <div class="setting-title" style="margin-bottom: 10px;">Show Trajectory</div>
+        <div>
+          <div class="setting-title">
+            <div>Show zone dialog</div>
+          </div>
+          <div class="setting-content" style="align-items: flex-start;">
+            <span style="line-height: 2;">Zone active:{{ zoneMap }}</span>
+            <label class="switch">
+              <input type="checkbox" ng-checked="self.showZone" ng-click="self.showZone = !self.showZone" />
+              <span class="slider round"></span>
+            </label>
+          </div>
+        </div>
+      </div>
+      <div class="setting">
+        <div class="setting-title" style="margin-bottom: 10px;">Show trajectory</div>
         <div class="complex-setting">
           <div class="setting-content">
             <span
@@ -215,35 +247,15 @@ ${require('./dashboard-template-modal.html')}
         </div>
       </div>
       <div class="setting">
-        <div class="setting-title" style="margin-bottom: 10px;">Show Axes</div>
+        <div class="setting-title" style="margin-bottom: 10px;">Show dialog axes properties </div>
         <div class="complex-setting">
           <div class="setting-content">
             <span
-              class="setting-sub-title">{{self.showAxes?"Displaying Axes":"Displays Axes layer"}}</span>
+              class="setting-sub-title">{{self.showAxesDialog?"Displaying Dialog Axes":"Displays Dialog Axes Properties"}}</span>
             <label class="switch">
-              <input type="checkbox" ng-checked="self.showAxes" ng-click="self.toggleAxes()" />
+              <input type="checkbox" ng-checked="self.showAxesDialog" ng-click="self.showAxesDialog = !self.showAxesDialog" />
               <span class="slider round"></span>
             </label>
-          </div>
-          <div ng-if="self.showAxes" class="setting-content" style="margin-top: 12px;">
-            <div style="display: flex; width: 100%">
-              <label style="flex: 1">Unit</label>
-              <select style="flex: 2" ng-model="self.axesUnit">
-                <option ng-repeat="opt in self.axesUnitOptions" ng-value="opt">{{opt.label}}</option>
-              </select>
-            </div>
-            <!--
-            <div style="display: flex; width: 100%">
-              <label style="flex: 1">X</label>
-              <input ng-model="self.XLeft" type="number" style="flex: 1">
-              <input ng-model="self.XRight" type="number" style="flex: 1">
-            </div>
-            <div style="display: flex; width: 100%">
-              <label style="flex: 1">Y</label>
-              <input ng-model="self.YBottom "type="number" style="flex: 1">
-              <input ng-model="self.YTop" type="number" style="flex: 1">
-            </div>
-            -->
           </div>
         </div>
       </div>
@@ -267,35 +279,7 @@ ${require('./dashboard-template-modal.html')}
           </div>
         </div>
       </div>
-      <div class="setting" style="flex: 1; overflow: hidden;">
-        <div>
-          <div class="setting-title">Zone</div>
-          <div class="setting-content" style="align-items: flex-start;">
-            <span>{{ zoneMap }}</span>
-          </div>
-        </div>
-        <div class="filter-zone">
-          <div class="filter">
-            <div style="margin-left: 0" class="ti ti-search"></div>
-          </div>
-          <input class="searchInput" type="text" placeholder="Search zone" ng-model="searchProject" />
-          <div class="filter">
-            <div ng-click="self.showDetailZone = !self.showDetailZone"
-              ng-class="{'show-detail-zone': !self.showDetailZone}" class="ti ti-align-left" style="padding: 10px 0;"></div>
-          </div>
-        </div>
-        <div class="list-zone">
-          <div class="zone" ng-repeat="item in zoneFieldTable | filter:searchProject track by $index">
-            <div class="zone-title">
-              <div ng-class="{'selected-zone': zoneMap == item.output}" style="display: flex;">
-                <div ng-click="hasChanged(item)" class="icon apply-16x16"></div>
-                <span ng-click="hasChanged(item)" ng-bind="item.Name"></span>
-              </div>
-            </div>
-            <span ng-show="!self.showDetailZone" class="zone-name" ng-bind="item.output"></span>
-          </div>
-        </div>
-      </div>
+     
     </div>
   </div>
   <div ng-show="isSet(2) && !self.hideMain" class="content">
@@ -449,45 +433,45 @@ ${require('./dashboard-template-modal.html')}
   <i class="fa fa-question-circle" style="font-size: 18px;"></i>
   <div class="help-content" ng-show="self.showHelp">
     <div class="help-content-row">
-      <div class="fa fa-map-marker" style="margin-right: 15px; margin-left: 2px; color: #000;"></div>
-      <span>Default</span>
+      <div class="circle"></div>
+      <span>Undefined</span>
     </div>
     <div class="help-content-row">
-      <div class="arrow"></div>
+      <div class="arrow" style="transform: rotate(180deg);"></div>
       <span>Production</span>
     </div>
     <div class="help-content-row">
-      <div class="circle"></div>
+      <div class="search"></div>
       <span>Exploration</span>
     </div>
-    <div class="help-content-row" style="border-bottom: 1px solid #e2e2e273; padding-bottom: 15px; margin-bottom: 5px;">
-      <div class="arrow" style="transform: rotate(180deg);"></div>
+    <div class="help-content-row" style="border-bottom: 1px solid #e2e2e273; padding-bottom: 25px; margin-bottom: 15px;">
+      <div class="arrow" ></div>
       <span>Injection</span>
     </div>
     <div class="help-content-row">
-      <div class="circle" style="background: rgba(54, 54, 54, 0.541);
-      border: 1px solid #929292;"></div>
+      <div class="circle" style="background: #15b153;
+      border: 1px solid #8fd0ac;"></div>
       <span>Oil</span>
     </div>
     <div class="help-content-row">
-      <div class="circle" style="background: rgba(0, 253, 21, 0.541);
-      border: 1px solid #00681f;"></div>
+      <div class="circle" style="background: #7d7d7d8a;
+      border: 1px solid #cccccc;"></div>
       <span>Condensate</span>
     </div>
     <div class="help-content-row">
-      <div class="circle" style="background: #ff9d1d8a;
-      border: 1px solid #f98521;"></div>
+      <div class="circle" style="background: #ff6868;
+      border: 1px solid #ffcece;"></div>
       <span>Gas</span>
     </div>
     <div class="help-content-row">
-      <div class="circle" style="background: rgba(0, 139, 253, 0.541);
-      border: 1px solid #096aaf;"></div>
+      <div class="circle" style="background: #0072ffa6;
+      border: 1px solid #9cd5fd;"></div>
       <span>Water</span>
     </div>
     <div class="help-content-row">
-      <div class="circle" style="background: rgb(238, 84, 84);
-      border: 1px solid red;"></div>
-      <span>Default</span>
+      <div class="circle" style="background: #585858;
+      border: 1px solid #9c9c9c;"></div>
+      <span>Undefined</span>
     </div>
   </div>
 </div>
@@ -508,7 +492,8 @@ ${require('./dashboard-template-modal.html')}
   focus-curve="focusCurve" show-contour="self.showContour" show-trajectory="self.showTrajectory" show-Axes="self.showAxes"
   axes-unit="self.axesUnit" axes-x-left="self.XLeft" axes-x-right="self.XRight" axes-y-bottom="self.YBottom" axes-y-top="self.YTop"
   focus-marker-or-zone="focusMZ" zone-depth-spec="self.zoneDepthSpec" get-curve-info-fn="self.getCurveInfoFn"
-  get-curve-raw-data-fn="self.getCurveRawDataFn" zone-map="zoneMap">
+  prepare-well-info-fn="self.prepareWellInfoFn" well-position="self.wellPosition" fit-to-bound="self.fitToBound"
+  get-curve-raw-data-fn="self.getCurveRawDataFn" zone-map="zoneMap" clear-clipboard-focus-well="self.clearClipboardFocusWell">
 </google-map-view>
 
 <file-explorer ng-hide="true"

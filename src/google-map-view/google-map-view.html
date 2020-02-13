@@ -1,6 +1,10 @@
 <style>
-    #contour-map-container {
+    #contour-map-container canvas {
         opacity: 0.6;
+        position: absolute;
+    }
+    #contour-map-container canvas.label-canvas {
+        opacity: 1;
     }
 
     .map-overlay {
@@ -11,8 +15,31 @@
         overflow: hidden;
     }
 
+    #axes > canvas {
+        position: absolute;
+    }
+    #location-info {
+        height: 40px;
+        justify-content: space-between;
+        align-items: center;
+        background: #ffffffba;
+        backdrop-filter: blur(5px) brightness(1.2) saturate(1.1);
+        color: #333;
+        position: absolute;
+        top: unset !important;
+        bottom: 40px;
+        left: unset !important;
+        right: 400px;
+        margin: 0;
+        font-size: 12px;
+        line-height: 18px;
+        border-radius: 5px;
+        display: flex;
+        box-shadow: 0 4px 14px -2px rgba(0, 0, 0, 0.03);
+    }
+
     #coords {
-        width: 440px;
+        width: 320px;
         height: 40px;
         justify-content: space-between;
         align-items: center;
@@ -29,7 +56,7 @@
         font-size: 12px;
         line-height: 18px;
         border-radius: 5px;
-        display: block;
+        display: flex;
         box-shadow: 0 4px 14px -2px rgba(0, 0, 0, 0.03);
     }
 
@@ -42,7 +69,14 @@
 <div class="map-container">
     <div id="map"></div>
     <div class="map-overlay" id="contour-map-container"></div>
-    <div id="coords"></div>
+    <div id="location-info">
+        <div id="coords"></div>
+        <div class="scale" style="margin: 0 20px; display: flex; align-items: center;">
+            <div id="scale"></div>
+            <div id="scaleWidth" style="background: black; margin: 0 10px; height: 2px;"></div>
+            <div id="ratio-map"></div>
+        </div>
+    </div>
     <div class="map-overlay" id="axes"></div>
 </div>
 <div class="dialog-error" ng-show="self.wellError">
