@@ -190,7 +190,7 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken, wiApi) {
       () => self.axesUnit,
       () => {
         updateMapBoundsDebounced(true);
-        // updateAxes();
+        updateAxes();
       }
     )
     /*
