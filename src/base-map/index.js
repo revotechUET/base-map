@@ -1587,6 +1587,14 @@ function baseMapController(
     for (let i=0; i < self.selectedNodes.length; i++) {
       self.showLoading = true;
       let node = self.selectedNodes[i];
+      let lat = getLat(node.well_headers);
+      let long = getLong(node.well_headers);
+      let x = getX(node.well_headers);
+      let y = getY(node.well_headers);
+      // let latX = proj4(firstProjection, secondProjection, [x, y])[1];
+      // let lngY = proj4(firstProjection, secondProjection, [x, y])[0];
+      console.log(lat, long)
+      console.log(node);
       if (node.idWell) {
         let wellId = node.idWell;
         let foundWell = $scope.wellSelect.find(function (item) {
@@ -1875,7 +1883,35 @@ function baseMapController(
     );
   }
 
-  function getWells(projectId, projectNodeChildren, cb) {
+  async function getWells(projectId, projectNodeChildren, cb) {
+    // console.log(projectId)
+    if(projectNodeChildren.shared){
+      await $http({
+        method: "POST",
+        url: BASE_URL + "/project/fullinfo",
+        data: {
+          idProject: projectId,
+          name: projectNodeChildren.name,
+          shared: true,
+          owner: projectNodeChildren.owner
+        },
+        headers: {
+          Authorization: wiToken.getToken()
+        }
+      })
+    } else {
+      await $http({
+        method: "POST",
+        url: BASE_URL + "/project/fullinfo",
+        data: {
+          idProject: projectId,
+          name: projectNodeChildren.name,
+        },
+        headers: {
+          Authorization: wiToken.getToken()
+        }
+      })
+    }
     $http({
       method: "POST",
       url: BASE_URL + "/project/well/list",
@@ -2223,5 +2259,91 @@ function baseMapController(
           // + '<b>File Size: </b>' + Math.round((fsize / 1024)) + 'KB </br>'
           // + '<b>File Type: </b>' + file.type + "</br>";
     }
+  }
+
+  //===========================Check well moving======================
+  function checkCoordinate(lat, long, x, y) {
+    if ((!lat || !long) && (x && y)) {
+      return false;
+    } else if ((!lat || !long) && (!x || !y)) {
+      return undefined;
+    }
+    return true;
+  }
+
+  function getLat(wellIndex, forceFromHeader = false) {
+    const wellInfo = wellIndex.find(wellHeader => wellHeader.header == "WELL");
+    if (!forceFromHeader && (self.focusMarkerOrZone || (self.wellPosition && self.wellPosition !== "top"))) {
+      if (wellInfo && coordinateHash[wellInfo.idWell] && coordinateHash[wellInfo.idWell].lat)
+        return coordinateHash[wellInfo.idWell].lat;
+      // else return null;
+    }
+
+    if (!(wellIndex || []).length) return 0;
+    for (let index = 0; index < wellIndex.length; index++) {
+      if (wellIndex[index].header === "LATI") {
+        if (isNaN(wellIndex[index].value)) {
+          return Number(ConvertDMSToDD(wellIndex[index].value));
+        }
+        return Number(wellIndex[index].value);
+      }
+    }
+    return 0;
+  }
+
+  function getLong(wellIndex, forceFromHeader = false) {
+    const wellInfo = wellIndex.find(wellHeader => wellHeader.header == "WELL");
+    if (!forceFromHeader && (self.focusMarkerOrZone || (self.wellPosition && self.wellPosition !== "top"))) {
+      if (wellInfo && coordinateHash[wellInfo.idWell] && coordinateHash[wellInfo.idWell].lng)
+        return coordinateHash[wellInfo.idWell].lng;
+      // else return null;
+    }
+
+    if (!(wellIndex || []).length) return 0;
+    for (let index = 0; index < wellIndex.length; index++) {
+      if (wellIndex[index].header === "LONG") {
+        if (isNaN(wellIndex[index].value)) {
+          return Number(ConvertDMSToDD(wellIndex[index].value));
+        }
+        return Number(wellIndex[index].value);
+      }
+    }
+    return 0;
+  }
+
+  function getX(wellIndex, forceFromHeader = false) {
+    const wellInfo = wellIndex.find(wellHeader => wellHeader.header == "WELL");
+    if (!forceFromHeader && (self.focusMarkerOrZone || (self.wellPosition && self.wellPosition !== "top"))) {
+      if (wellInfo && coordinateHash[wellInfo.idWell] && coordinateHash[wellInfo.idWell].x)
+        return coordinateHash[wellInfo.idWell].x;
+      // else return -1;
+    }
+
+    if (!(wellIndex || []).length) return 0;
+    for (let index = 0; index < wellIndex.length; index++) {
+      if (wellIndex[index].header === "X") {
+        const value = Number(wellIndex[index].value);
+        return isNaN(value) ? 0 : value;
+      }
+    }
+    return 0;
+  }
+
+  function getY(wellIndex, forceFromHeader = false) {
+    const wellInfo = wellIndex.find(wellHeader => wellHeader.header == "WELL");
+    if (!forceFromHeader && (self.focusMarkerOrZone || (self.wellPosition && self.wellPosition !== "top"))) {
+      if (wellInfo && coordinateHash[wellInfo.idWell] && coordinateHash[wellInfo.idWell].y)
+        return coordinateHash[wellInfo.idWell].y;
+      // else return -1;
+    }
+
+    if (!(wellIndex || []).length) return 0;
+    for (let index = 0; index < wellIndex.length; index++) {
+      if (wellIndex[index].header === "Y") {
+        const value = Number(wellIndex[index].value);
+        return isNaN(value) ? 0 : value;
+      }
+    }
+    return 0;
   }
 }
