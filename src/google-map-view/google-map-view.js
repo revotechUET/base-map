@@ -2168,7 +2168,12 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken, wiApi) {
 
   // ========================= DRAWING TRAJECTORY ========================
   const wellPathHash = {};
-  const wellPointHash = {};
+  const lineSymbol = {
+    path: google.maps.SymbolPath.CIRCLE,
+    scale: 3,
+    strokeColor: "#585858"
+  };
+  // const wellPointHash = {};
   const updateTrajectoryDebounced = _.debounce(updateTrajectory, 1000);
   function updateTrajectory() {
     clearTrajectoryMap();
@@ -2179,8 +2184,10 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken, wiApi) {
           geodesic: true,
           strokeColor: "#585858",
           strokeOpacity: 1.0,
-          strokeWeight: 2
+          strokeWeight: 2,
+          icons: [{ icon: lineSymbol }]
         });
+      /*
       if (!wellPointHash[well.idWell])
         wellPointHash[well.idWell] = new google.maps.Circle({
           strokeOpacity: 0.6,
@@ -2189,9 +2196,13 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken, wiApi) {
           fillColor: "#9c9c9c",
           radius: 0 
         })
+      */
       const path = await calculatePathForWell(well);
+      const icons = wellPathHash[well.idWell].get("icons");
+      icons[0].offset = self.wellPosition == "top" ? "100%" : "0%";
       wellPathHash[well.idWell].setPath(path);
       wellPathHash[well.idWell].setMap(map);
+      /*
       wellPointHash[well.idWell].setCenter(path[self.wellPosition == "top" ? (path.length - 1):0]);
       if (map.getZoom() >= 20) {
         wellPointHash[well.idWell].setRadius(1 / (2 ** (map.getZoom() - 20)));
@@ -2199,6 +2210,7 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken, wiApi) {
         wellPointHash[well.idWell].setRadius(1);
       }
       wellPointHash[well.idWell].setMap(map);
+      */
     })
   }
 
@@ -2206,9 +2218,11 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken, wiApi) {
     Object.values(wellPathHash).forEach((path) => {
       path.setMap(null);
     })
+    /*
     Object.values(wellPointHash).forEach((point) => {
       point.setMap(null);
     })
+    */
   }
 
   function getDepthsFromScale(startDepth, endDepth) {
