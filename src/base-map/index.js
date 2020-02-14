@@ -1586,17 +1586,18 @@ function baseMapController(
     node = self.selectedNode;
     for (let i=0; i < self.selectedNodes.length; i++) {
       self.showLoading = true;
-      let node = self.selectedNodes[i];
-      let lat = getLat(node.well_headers);
-      let long = getLong(node.well_headers);
-      let x = getX(node.well_headers);
-      let y = getY(node.well_headers);
-      // let latX = proj4(firstProjection, secondProjection, [x, y])[1];
-      // let lngY = proj4(firstProjection, secondProjection, [x, y])[0];
-      console.log(lat, long)
-      console.log(node);
       if (node.idWell) {
-        let wellId = node.idWell;
+        let wellId = self.selectedNode.idWell;
+        let node = self.selectedNodes[i];
+        let lat = getLat(self.selectedNode.well_headers);
+        let long = getLong(self.selectedNode.well_headers);
+        let x = getX(self.selectedNode.well_headers);
+        let y = getY(self.selectedNode.well_headers);
+        if (checkCoordinate(lat, long, x, y) === undefined) {
+          self.wellError = self.selectedNode.name;
+          self.showLoading = false;
+          continue;
+        }
         let foundWell = $scope.wellSelect.find(function (item) {
           return item.idWell === wellId;
         });
@@ -1627,6 +1628,15 @@ function baseMapController(
           //let countWell = 0;
           for (let index = 0; index < wells.length; index++) {
             let wellId = wells[index].idWell;
+            let lat = getLat(wells[index].well_headers);
+            let long = getLong(wells[index].well_headers);
+            let x = getX(wells[index].well_headers);
+            let y = getY(wells[index].well_headers);
+            if (checkCoordinate(lat, long, x, y) === undefined) {
+              self.wellError = wells[index].name;
+              self.showLoading = false;
+              continue;
+            }
             let foundWell = $scope.wellSelect.find(function (item) {
               return item.idWell === wellId;
             });
@@ -2344,5 +2354,22 @@ function baseMapController(
       }
     }
     return 0;
+  }
+  function ConvertDMSToDD(input) {
+    let parts = input.split(/[^\d+(\,\d+)\d+(\.\d+)?\w]+/);
+    let degrees = parseFloat(parts[0]);
+    let minutes = parseFloat(parts[1]);
+    let seconds = parseFloat(parts[2].replace(",", "."));
+    let direction = parts[3];
+    let dd = degrees + minutes / 60 + seconds / (60 * 60);
+    if (
+      direction == "S" ||
+      direction == "South" ||
+      direction == "W" ||
+      direction == "West"
+    ) {
+      dd = dd * -1;
+    }
+    return dd;
   }
 }
