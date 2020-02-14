@@ -2079,7 +2079,7 @@ function baseMapController(
         });
         console.log(list);
         wiDialog.promptListDialog({
-          title: "Select project to save",
+          title: "Save Configuration File to Project Database",
           inputName: "Project",
           iconBtn: "project-normal-16x16",
           hideButtonDelete: true,
@@ -2124,7 +2124,7 @@ function baseMapController(
         });
         console.log(list);
         wiDialog.promptListDialog({
-          title: "Select project to save",
+          title: "Open Configuration File from Project Database",
           inputName: "Project",
           iconBtn: "project-normal-16x16",
           hideButtonDelete: true,
