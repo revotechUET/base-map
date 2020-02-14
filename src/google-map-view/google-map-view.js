@@ -87,7 +87,8 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken, wiApi) {
       },
       function () {
         // console.log(self.zoneMap)
-        drawMarkersDebounced();
+        // drawMarkersDebounced();
+        updateCoordinateTableDebounced();
         $timeout(() => {
           showAllPopup(self.allPopup);
           updateContours();
@@ -2184,6 +2185,11 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken, wiApi) {
       wellPathHash[well.idWell].setPath(path);
       wellPathHash[well.idWell].setMap(map);
       wellPointHash[well.idWell].setCenter(path[self.wellPosition == "top" ? (path.length - 1):0]);
+      if (map.getZoom() >= 20) {
+        wellPointHash[well.idWell].setRadius(1 / (2 ** (map.getZoom() - 20)));
+      } else {
+        wellPointHash[well.idWell].setRadius(1);
+      }
       wellPointHash[well.idWell].setMap(map);
     })
   }
