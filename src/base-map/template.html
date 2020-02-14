@@ -318,25 +318,25 @@ ${require('./dashboard-template-modal.html')}
         <div class="setting-content">
           <span>Theme actived: {{ self.activeTheme }} </span>
         </div>
-        <div style="display: flex; margin-top: 10px;justify-content: space-between;">
+        <div style="display: flex; margin-top: 10px;justify-content: space-between;" class="theme-list">
           <div ng-class="{'active fa fa-check': self.activeTheme === 'Dark'}"
-            ng-click="self.changeStyleMap(1); self.activeTheme = 'Dark'" class="theme" style="background: #353535">
+            ng-click="self.changeStyleMap(1); self.activeTheme = 'Dark'" class="theme" ng-style="{'background': !self.darkMode ? '#353535' : '#888888'}">
           </div>
           <div ng-class="{'active fa fa-check': self.activeTheme === 'Standard'}"
-            ng-click="self.changeStyleMap(2); self.activeTheme = 'Standard'" class="theme" style="background: #4CAF50">
+            ng-click="self.changeStyleMap(2); self.activeTheme = 'Standard'" class="theme" ng-style="{'background': !self.darkMode ? '#4CAF50' : '#88a789'}">
           </div>
           <div ng-class="{'active fa fa-check': self.activeTheme === 'Retro'}"
-            ng-click="self.changeStyleMap(3); self.activeTheme = 'Retro'" class="theme" style="background:  #e0d5b3">
+            ng-click="self.changeStyleMap(3); self.activeTheme = 'Retro'" class="theme" ng-style="{'background': !self.darkMode ? '#e0d5b3' : '#b7b3a5'}">
           </div>
           <div ng-class="{'active fa fa-check': self.activeTheme === 'Night'}"
-            ng-click="self.changeStyleMap(4); self.activeTheme = 'Night'" class="theme" style="background: #12448c">
+            ng-click="self.changeStyleMap(4); self.activeTheme = 'Night'" class="theme" ng-style="{'background': !self.darkMode ? '#12448c' : '#7293a0'}">
           </div>
           <div ng-class="{'active fa fa-check': self.activeTheme === 'Aubergine'}"
-            ng-click="self.changeStyleMap(5); self.activeTheme = 'Aubergine'" class="theme" style="background: #1ea2d8">
+            ng-click="self.changeStyleMap(5); self.activeTheme = 'Aubergine'" class="theme" ng-style="{'background': !self.darkMode ? '#1ea2d8' : '#82b9d0'}">
           </div>
           <div ng-class="{'active fa fa-check': self.activeTheme === 'Silver'}"
             ng-click="self.changeStyleMap(6); self.activeTheme = 'Silver'" class="theme"
-            style="background: #cccccc;margin-right: 0;"></div>
+            style="margin-right: 0;" ng-style="{'background': !self.darkMode ? '#cccccc' : '#bdbdbd'}"></div>
         </div>
       </div>
       <div class="setting" ng-class="{'disable': !self.showMap}">

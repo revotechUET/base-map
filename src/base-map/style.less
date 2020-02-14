@@ -113,11 +113,21 @@ base-map {
         }
     }
     .dark-mode {
-        filter    : invert(1) hue-rotate(180deg) brightness(2.2) saturate(2);
+        filter    : invert(1) hue-rotate(180deg) brightness(1.8) saturate(1);
         transition: all ease-in 0.3s;
         backdrop-filter: none !important;
         background: #eaeaea !important;
+        .theme-list {
+            filter    : invert(1) hue-rotate(180deg) brightness(1.8) saturate(1);
+        }
+        &.main {
+            box-shadow: 0 4px 50px -2px rgba(255, 255, 255, 0.33) !important;
+        }
     }
+    // .theme {
+    //     border: transparent !important;
+    // }
+ 
     .disable {
         user-select: none;
         pointer-events: none;
