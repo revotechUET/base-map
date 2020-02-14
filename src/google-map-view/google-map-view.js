@@ -12,6 +12,7 @@ app.component(componentName, {
   bindings: {
     wells: "<",
     zoneMap: "<",
+    displayMode: "<",
     controlPanel: "<",
     point: "<",
     theme: "<",
@@ -125,12 +126,11 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken, wiApi) {
     );
     $scope.$watch(
       function () {
-        return [self.point];
+        return self.point;
       },
       function () {
-        showPointLocation();
-      },
-      true
+        showPointLocation(self.point);
+      }
     );
     $scope.$watch(
       function () {
@@ -278,6 +278,9 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken, wiApi) {
     map.addListener('mousemove', function (event) {
       coordsDiv.innerHTML = "<div>Latitude: <strong>" + (+event.latLng.lat()).toFixed(6) + "</strong></div><div>Longtitude: <strong>" + (+event.latLng.lng()).toFixed(6) + "</strong></div>";
     });
+    $timeout(()=>{
+      map.setZoom(6);
+    },1000)
     map.addListener('zoom_changed', function (event) {
       updateTrajectoryDebounced();
       updateScaleMap();
@@ -286,6 +289,9 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken, wiApi) {
       updateScaleMap();
     });
     map.addListener('mousemove',function(event) {
+      updateScaleMap();
+    });
+    map.addListener('mouseout',function(event) {
       updateScaleMap();
     });
 
@@ -1547,19 +1553,21 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken, wiApi) {
     $(".gmnoprint").toggleClass("showControl");
   }
   //SHOW POINT LOCATION
-  function showPointLocation() {
-    var x = document.getElementById("location-info");
-    if (x.style.display === "none") {
+  function showPointLocation(point) {
+    let x = document.getElementById("location-info");
+    if(point) {
       x.style.display = "flex";
     } else {
-      x.style.display = "none";
+      x.style.display = "none"
     }
-    var y = document.getElementById("coords");
-    if (y.style.display === "none") {
+    
+    let y = document.getElementById("coords");
+    if(point) {
       y.style.display = "flex";
     } else {
-      y.style.display = "none";
+      y.style.display = "none"
     }
+    if(!self.scale) return;
     document.getElementById("scale").innerText = self.scale;
   }
   //SHOW ALL POPUP

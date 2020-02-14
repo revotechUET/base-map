@@ -238,10 +238,10 @@ function baseMapController(
   $scope.themeMap = 6;
   self.activeTheme = "Standard";
   self.controlPanel = true;
-  self.point = false;
-  $timeout(()=>{
-    self.point = true;
-  },5000)
+  self.point = true;
+  // $timeout(()=>{
+  //   self.point = true;
+  // },5000)
   self.showContour = false;
   self.showTrajectory = true;
   self.showAxes = true;
@@ -1218,7 +1218,11 @@ function baseMapController(
       headers: {}
     }).then(
       function (response) {
-        $scope.zoneFieldTable = _.orderBy(response.data,'DisplayName',true);
+        $scope.zoneFieldTable = response.data.sort((a, b) => {
+          let nameA = a.DisplayName;
+          let nameB = b.DisplayName;
+          return nameA.localeCompare(nameB, undefined, { numeric: true, sensitivity: "accent" });
+        });
         // Show display value
         $scope.zoneSelected = $scope.zoneFieldTable.find(function (zone) {
           return zone.Name === self.zoneDefault;
