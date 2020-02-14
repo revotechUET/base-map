@@ -1821,11 +1821,13 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken, wiApi) {
   // ===================== DRAWING BY ZONE AND MARKER SET ===================
   let coordinateHash = {};
   const alertDebounce = _.debounce(function (message) {
-    ngDialog.open({
-      template: "templateError",
-      className: "ngdialog-theme-default",
-      scope: Object.assign($scope.$new(), { message: message })
-    })
+    self.showError = true;
+    $scope.message = message;
+    // ngDialog.open({
+    //   template: "templateError",
+    //   className: "ngdialog-theme-default",
+    //   scope: Object.assign($scope.$new(), { message: message })
+    // })
   }, 1000);
   const updateCoordinateTableDebounced = _.debounce(updateCoordinateTable, 1000);
   function updateCoordinateTable() {
