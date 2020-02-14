@@ -151,6 +151,19 @@ ${require('./dashboard-template-modal.html')}
         </div>
       </div>
       <div class="setting">
+        <div class="setting-title" style="margin-bottom: 10px;">Display Well Mode</div>
+        <div class="complex-setting">
+          <div class="setting-content">
+            <span class="setting-sub-title">Choose which icon of well to display</span>
+              <div class="setting-content">
+                <select style="width: 100%;border: none; background: none;" ng-model="self.wellDisplayMode">
+                  <option ng-repeat="opt in self.wellDisplayModeOptions" ng-value="opt.value">{{opt.label}}</option>
+                </select>
+              </div>
+          </div>
+        </div>
+      </div>
+      <div class="setting">
         <div class="setting-title" style="margin-bottom: 10px;">Zonesets & markersets</div>
         <div class="complex-setting" style="margin-bottom: 10px">
           <div class="setting-content">
@@ -494,7 +507,7 @@ ${require('./dashboard-template-modal.html')}
   focus-marker-or-zone="focusMZ" zone-depth-spec="self.zoneDepthSpec" get-curve-info-fn="self.getCurveInfoFn"
   prepare-well-info-fn="self.prepareWellInfoFn" well-position="self.wellPosition" fit-to-bound="self.fitToBound"
   get-curve-raw-data-fn="self.getCurveRawDataFn" zone-map="zoneMap" clear-clipboard-focus-well="self.clearClipboardFocusWell"
-  display-mode="self.displayMode">
+  display-mode="self.wellDisplayMode">
 </google-map-view>
 
 <file-explorer ng-hide="true"

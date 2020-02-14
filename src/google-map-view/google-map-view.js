@@ -229,7 +229,12 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken, wiApi) {
         updateTrajectoryDebounced();
       }
     )
-
+    $scope.$watch(
+      () => self.displayMode,
+      () => {
+        drawMarkersDebounced();
+      }
+    )
     //DRAW GEOJSON OBJECT
     $scope.$watch(
       () => self.geoJson,
@@ -1592,115 +1597,171 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken, wiApi) {
     if (self.zoneMap) {
       // markers.length = 0;
       if (!(self.wells || []).length) return 0;
-      for (let index = 0; index < self.wells.length; index++) {
-        let lat = getLat(self.wells[index].well_headers);
-        let long = getLong(self.wells[index].well_headers);
-        let x = getX(self.wells[index].well_headers);
-        let y = getY(self.wells[index].well_headers);
-        let latX = proj4(firstProjection, secondProjection, [x, y])[1];
-        let lngY = proj4(firstProjection, secondProjection, [x, y])[0];
-        let aMarker;
-        if (checkCoordinate(lat, long, x, y) === true) {
-          aMarker = new google.maps.Marker({ position: { lat: lat, lng: long }, map: map });
-          let markername = '<div id="firstHeading" class="firstHeading">' + self.wells[index].name + '</div>';
-          let infowindow = new google.maps.InfoWindow({
-            content: markername,
-            disableAutoPan: true
-          });
-          infowindow.open(map, aMarker);
-          if (getImageIconMarker(self.wells[index].well_headers) == icon_search) {
-            aMarker.setIcon({
-              path: getImageIconMarker(self.wells[index].well_headers),
-              fillColor: getColorIconMarker(self.wells[index].well_headers),
-              fillOpacity: 1,
-              anchor: new google.maps.Point(55, 50),
-              strokeWeight: 1,
-              strokeColor: getColorIconMarker(self.wells[index].well_headers),
-              scale: 0.19,
+      if(self.displayMode === "status") {
+        for (let index = 0; index < self.wells.length; index++) {
+          let lat = getLat(self.wells[index].well_headers);
+          let long = getLong(self.wells[index].well_headers);
+          let x = getX(self.wells[index].well_headers);
+          let y = getY(self.wells[index].well_headers);
+          let latX = proj4(firstProjection, secondProjection, [x, y])[1];
+          let lngY = proj4(firstProjection, secondProjection, [x, y])[0];
+          let aMarker;
+          if (checkCoordinate(lat, long, x, y) === true) {
+            aMarker = new google.maps.Marker({ position: { lat: lat, lng: long }, map: map });
+            let markername = '<div id="firstHeading" class="firstHeading">' + self.wells[index].name + '</div>';
+            let infowindow = new google.maps.InfoWindow({
+              content: markername,
+              disableAutoPan: true
             });
-            // map.setCenter(new google.maps.LatLng(lat, long));
-
+            infowindow.open(map, aMarker);
+            if (getImageIconMarker(self.wells[index].well_headers) == icon_search) {
+              aMarker.setIcon({
+                path: getImageIconMarker(self.wells[index].well_headers),
+                fillColor: getColorIconMarker(self.wells[index].well_headers),
+                fillOpacity: 1,
+                anchor: new google.maps.Point(55, 50),
+                strokeWeight: 1,
+                strokeColor: getColorIconMarker(self.wells[index].well_headers),
+                scale: 0.19,
+              });
+              // map.setCenter(new google.maps.LatLng(lat, long));
+  
+            }
+            else if (getImageIconMarker(self.wells[index].well_headers) == icon_well) {
+              aMarker.setIcon({
+                path: getImageIconMarker(self.wells[index].well_headers),
+                fillColor: getColorIconMarker(self.wells[index].well_headers),
+                fillOpacity: 1,
+                anchor: new google.maps.Point(270, 530),
+                strokeWeight: 1,
+                strokeColor: getColorIconMarker(self.wells[index].well_headers),
+                scale: 0.05,
+              });
+              // map.setCenter(new google.maps.LatLng(lat, long));
+  
+            } 
+            else {
+              aMarker.setIcon({
+                path: getImageIconMarker(self.wells[index].well_headers),
+                fillColor: getColorIconMarker(self.wells[index].well_headers),
+                fillOpacity: 1,
+                anchor: new google.maps.Point(270, 530),
+                strokeWeight: 1,
+                strokeColor: getColorIconMarker(self.wells[index].well_headers),
+                scale: 0.05,
+              });
+              // map.setCenter(new google.maps.LatLng(lat, long));
+  
+            }
           }
-          else if (getImageIconMarker(self.wells[index].well_headers) == icon_well) {
-            aMarker.setIcon({
-              path: getImageIconMarker(self.wells[index].well_headers),
-              fillColor: getColorIconMarker(self.wells[index].well_headers),
-              fillOpacity: 1,
-              anchor: new google.maps.Point(270, 530),
-              strokeWeight: 1,
-              strokeColor: getColorIconMarker(self.wells[index].well_headers),
-              scale: 0.05,
+          else if (checkCoordinate(lat, long, x, y) === false) {
+            aMarker = new google.maps.Marker({ position: { lat: latX, lng: lngY }, map: map });
+            let markername = '<div id="firstHeading" class="firstHeading">' + self.wells[index].name + '</div>';
+            let infowindow = new google.maps.InfoWindow({
+              content: markername,
+              disableAutoPan: true
             });
-            // map.setCenter(new google.maps.LatLng(lat, long));
-
-          } 
-          else {
-            aMarker.setIcon({
-              path: getImageIconMarker(self.wells[index].well_headers),
-              fillColor: getColorIconMarker(self.wells[index].well_headers),
-              fillOpacity: 1,
-              anchor: new google.maps.Point(270, 530),
-              strokeWeight: 1,
-              strokeColor: getColorIconMarker(self.wells[index].well_headers),
-              scale: 0.05,
-            });
-            // map.setCenter(new google.maps.LatLng(lat, long));
-
+            // aMarker.addListener('click', function () {
+            infowindow.open(map, aMarker);
+            if (getImageIconMarker(self.wells[index].well_headers) == icon_search) {
+              aMarker.setIcon({
+                path: getImageIconMarker(self.wells[index].well_headers),
+                fillColor: getColorIconMarker(self.wells[index].well_headers),
+                fillOpacity: 1,
+                anchor: new google.maps.Point(55, 50),
+                strokeWeight: 1,
+                strokeColor: getColorIconMarker(self.wells[index].well_headers),
+                scale: 0.19,
+              });
+              // map.setCenter(new google.maps.LatLng(latX, lngY));
+            }
+            else if (getImageIconMarker(self.wells[index].well_headers) == icon_well) {
+              aMarker.setIcon({
+                path: getImageIconMarker(self.wells[index].well_headers),
+                fillColor: getColorIconMarker(self.wells[index].well_headers),
+                fillOpacity: 1,
+                anchor: new google.maps.Point(270, 530),
+                strokeWeight: 1,
+                strokeColor: getColorIconMarker(self.wells[index].well_headers),
+                scale: 0.05,
+              });
+              // map.setCenter(new google.maps.LatLng(latX, lngY));
+  
+            }
+            else {
+              aMarker.setIcon({
+                path: getImageIconMarker(self.wells[index].well_headers),
+                fillColor: getColorIconMarker(self.wells[index].well_headers),
+                fillOpacity: 1,
+                anchor: new google.maps.Point(270, 530),
+                strokeWeight: 1,
+                strokeColor: getColorIconMarker(self.wells[index].well_headers),
+                scale: 0.05,
+              });
+              // map.setCenter(new google.maps.LatLng(latX, lngY));
+  
+            }
+  
+          } else {
+            self.wellNameError = getName(self.wells[index].well_headers);
+          }
+          if (aMarker) {
+            markers[self.wells[index].idWell] = aMarker;
           }
         }
-        else if (checkCoordinate(lat, long, x, y) === false) {
-          aMarker = new google.maps.Marker({ position: { lat: latX, lng: lngY }, map: map });
-          let markername = '<div id="firstHeading" class="firstHeading">' + self.wells[index].name + '</div>';
-          let infowindow = new google.maps.InfoWindow({
-            content: markername,
-            disableAutoPan: true
-          });
-          // aMarker.addListener('click', function () {
-          infowindow.open(map, aMarker);
-          if (getImageIconMarker(self.wells[index].well_headers) == icon_search) {
-            aMarker.setIcon({
-              path: getImageIconMarker(self.wells[index].well_headers),
-              fillColor: getColorIconMarker(self.wells[index].well_headers),
-              fillOpacity: 1,
-              anchor: new google.maps.Point(55, 50),
-              strokeWeight: 1,
-              strokeColor: getColorIconMarker(self.wells[index].well_headers),
-              scale: 0.19,
+      }
+      if(self.displayMode === "derrick") {
+        for (let index = 0; index < self.wells.length; index++) {
+          let lat = getLat(self.wells[index].well_headers);
+          let long = getLong(self.wells[index].well_headers);
+          let x = getX(self.wells[index].well_headers);
+          let y = getY(self.wells[index].well_headers);
+          let latX = proj4(firstProjection, secondProjection, [x, y])[1];
+          let lngY = proj4(firstProjection, secondProjection, [x, y])[0];
+          let aMarker;
+          if (checkCoordinate(lat, long, x, y) === true) {
+            aMarker = new google.maps.Marker({ position: { lat: lat, lng: long }, map: map });
+            let markername = '<div id="firstHeading" class="firstHeading">' + self.wells[index].name + '</div>';
+            let infowindow = new google.maps.InfoWindow({
+              content: markername,
+              disableAutoPan: true
             });
-            // map.setCenter(new google.maps.LatLng(latX, lngY));
-          }
-          else if (getImageIconMarker(self.wells[index].well_headers) == icon_well) {
+            infowindow.open(map, aMarker);
             aMarker.setIcon({
-              path: getImageIconMarker(self.wells[index].well_headers),
-              fillColor: getColorIconMarker(self.wells[index].well_headers),
+              path: icon_well,
+              fillColor: "#585858",
               fillOpacity: 1,
               anchor: new google.maps.Point(270, 530),
               strokeWeight: 1,
-              strokeColor: getColorIconMarker(self.wells[index].well_headers),
+              strokeColor: "#585858",
               scale: 0.05,
             });
-            // map.setCenter(new google.maps.LatLng(latX, lngY));
-
           }
-          else {
+          else if (checkCoordinate(lat, long, x, y) === false) {
+            aMarker = new google.maps.Marker({ position: { lat: latX, lng: lngY }, map: map });
+            let markername = '<div id="firstHeading" class="firstHeading">' + self.wells[index].name + '</div>';
+            let infowindow = new google.maps.InfoWindow({
+              content: markername,
+              disableAutoPan: true
+            });
+            // aMarker.addListener('click', function () {
+            infowindow.open(map, aMarker);
             aMarker.setIcon({
-              path: getImageIconMarker(self.wells[index].well_headers),
-              fillColor: getColorIconMarker(self.wells[index].well_headers),
+              path: icon_well,
+              fillColor: "#585858",
               fillOpacity: 1,
               anchor: new google.maps.Point(270, 530),
               strokeWeight: 1,
-              strokeColor: getColorIconMarker(self.wells[index].well_headers),
+              strokeColor: "#585858",
               scale: 0.05,
             });
-            // map.setCenter(new google.maps.LatLng(latX, lngY));
-
+  
+          } else {
+            self.wellNameError = getName(self.wells[index].well_headers);
           }
-
-        } else {
-          self.wellNameError = getName(self.wells[index].well_headers);
-        }
-        if (aMarker) {
-          markers[self.wells[index].idWell] = aMarker;
+          if (aMarker) {
+            markers[self.wells[index].idWell] = aMarker;
+          }
         }
       }
     }
