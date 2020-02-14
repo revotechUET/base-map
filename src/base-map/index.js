@@ -2101,7 +2101,6 @@ function baseMapController(
                   directory: sd.input_directory,
                   whereami: "WI_BASE_MAP"
                 })
-
               }, Upload, (res) => {
                 console.log(res);
             });
