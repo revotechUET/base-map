@@ -34,7 +34,10 @@ function Axes(container, map) {
         var bottomLeft = map.getProjection().fromLatLngToPoint(map.getBounds().getSouthWest());
         var scale = Math.pow(2, map.getZoom());
         var worldPoint = map.getProjection().fromLatLngToPoint(latLng);
-        return new google.maps.Point((worldPoint.x - bottomLeft.x) * scale, (worldPoint.y - topRight.y) * scale);
+        // return new google.maps.Point((worldPoint.x - bottomLeft.x) * scale, (worldPoint.y - topRight.y) * scale);
+        return new google.maps.Point(
+            ((worldPoint.x > bottomLeft.x) ? (worldPoint.x - bottomLeft.x):(256 - bottomLeft.x + worldPoint.x)) * scale,
+            (worldPoint.y - topRight.y) * scale)
     }
     function getLatLngObj(lat, lng) {
         if (map instanceof google.maps.Map) {
