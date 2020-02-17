@@ -1607,7 +1607,6 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken, wiApi) {
               disableAutoPan: true
             });
             infowindow.open(map, aMarker);
-            aMarker.setZIndex(-index + 1000000);
 
             if (getImageIconMarker(self.wells[index].well_headers) == icon_search) {
               aMarker.setIcon({
