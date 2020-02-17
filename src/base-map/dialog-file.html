@@ -1,10 +1,26 @@
 <div class="dialog-header ">
     <div style="display: flex; align-items: center;">
         <div class="ti-folder" style="color: #3e84ff; font-size: 15px;"></div>
-        <span>Files</span>
+        <span>Load/Save Configuration File</span>
     </div>
     <div class="ti ti-close" ng-click="self.showFileDialog = !self.showFileDialog" style="cursor: pointer;"></div>
 </div>
 <div class="dialog-main" style="padding: 20px;">
-
+    <div style="display: flex;">
+        <div style="margin-right: 20px; flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: 2px; background-color: #efefef;">
+            <div style="display: flex; align-items: center; justify-content: center;width: -webkit-fill-available;flex-basis: 80px; font-size: 300%; color: #1a63e2" class="ti-desktop"></div>
+            <div id="map-upfile-2-btn" class="dialog-btn" style="cursor: pointer;    font-weight: bold;width: -webkit-fill-available;margin: 10px 20px 0 20px;padding: 10px; border-radius: 2px; background-color: #fff; display: flex; align-items: center; justify-content: center;">Open</div>
+            <input type="file" id="map-upfile-2" class="file-upload" accept=".zip" placeholder="choose a file .zip"
+              onblur="angular.element(this).scope().clearSelectedConfigFile()"
+              onchange="angular.element(this).scope().onZipFileChange(), angular.element(this).scope().GetFileSizeNameAndType2()" />
+            <div ng-click="self.downloadZipFile()" class="dialog-btn" style="cursor: pointer;    font-weight: bold;width: -webkit-fill-available;margin: 20px;padding: 10px; border-radius: 2px; background-color: #fff; display: flex; align-items: center; justify-content: center;">Save</div>
+        </div>
+        <div style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: 2px; background-color: #efefef;">
+            <div style="display: flex; align-items: center; justify-content: center;width: -webkit-fill-available;flex-basis: 80px; font-size: 300%; color: #1a63e2;" class="ti-cloud"></div>
+            <div ng-click="self.downloadConfig()" class="dialog-btn" style="cursor: pointer;    font-weight: bold;width: -webkit-fill-available;margin: 10px 20px 0 20px;padding: 10px; border-radius: 2px; background-color: #fff; display: flex; align-items: center; justify-content: center;">Open</div>
+            <div ng-click="self.uploadZipFileDatabase()" class="dialog-btn" style="cursor: pointer;    font-weight: bold;width: -webkit-fill-available;margin: 20px;padding: 10px; border-radius: 2px; background-color: #fff; display: flex; align-items: center; justify-content: center;">Save</div>
+        </div>
+    </div>
+    <div id="fp2" style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis; margin-top: 15px;">
+    </div>
 </div>
