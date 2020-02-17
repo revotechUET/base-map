@@ -108,6 +108,7 @@
               },
               function (errorResponse) {
                 console.error(errorResponse);
+                wiToken.removeToken();
               }
             );
           }
