@@ -18,6 +18,11 @@ ${require('./dashboard-template-modal.html')}
       </div>
       <div class="ti ti-close" ng-click="self.wellError = !self.wellError" style="cursor: pointer;"></div>
   </div>
+  <div class="loading">
+    <div class="loading-bar-error">
+      <span class="bar-animation-error" ng-style="{'animation-duration': self.showingTimeDialogError + 's'}"></span>
+    </div>
+  </div>
   <div class="dialog-main">
       <span>
           <b>Well: {{self.wellError}}</b><br>

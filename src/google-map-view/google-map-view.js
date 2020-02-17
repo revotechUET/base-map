@@ -60,7 +60,7 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken, wiApi) {
   let icon_arrow_down = 'M49.4,306.6l177.5,177.5c5.1,5.1,11.8,7.8,19.2,7.8c7.2,0,14-2.8,19-7.8l177.5-177.5c10.5-10.5,10.5-27.6,0-38.1    l-16.1-16.1c-5.1-5.1-11.8-7.8-19-7.8c-7.2,0-14.2,2.8-19.3,7.8L284.4,356V26.9C284.4,12.1,272.8,0,258,0h-22.8    c-14.8,0-27.6,12.1-27.6,26.9v330.3L103.2,252.4c-5.1-5.1-11.6-7.8-18.8-7.8s-13.9,2.8-18.9,7.8l-16.1,16.1    C38.8,279,38.9,296.1,49.4,306.6z';
   // let icon_default = 'M38.853,5.324L38.853,5.324c-7.098-7.098-18.607-7.098-25.706,0h0  C6.751,11.72,6.031,23.763,11.459,31L26,52l14.541-21C45.969,23.763,45.249,11.72,38.853,5.324z M26.177,24c-3.314,0-6-2.686-6-6  s2.686-6,6-6s6,2.686,6,6S29.491,24,26.177,24z';
   let icon_search = 'M 93.148438 80.832031 C 109.5 57.742188 104.03125 25.769531 80.941406 9.421875 C 57.851562 -6.925781 25.878906 -1.460938 9.53125 21.632812 C -6.816406 44.722656 -1.351562 76.691406 21.742188 93.039062 C 38.222656 104.707031 60.011719 105.605469 77.394531 95.339844 L 115.164062 132.882812 C 119.242188 137.175781 126.027344 137.347656 130.320312 133.269531 C 134.613281 129.195312 134.785156 122.410156 130.710938 118.117188 C 130.582031 117.980469 130.457031 117.855469 130.320312 117.726562 Z M 51.308594 84.332031 C 33.0625 84.335938 18.269531 69.554688 18.257812 51.308594 C 18.253906 33.0625 33.035156 18.269531 51.285156 18.261719 C 69.507812 18.253906 84.292969 33.011719 84.328125 51.234375 C 84.359375 69.484375 69.585938 84.300781 51.332031 84.332031 C 51.324219 84.332031 51.320312 84.332031 51.308594 84.332031 Z M 51.308594 84.332031';
-
+  self.showingTimeDialogError = 3;
 
   this.$onInit = function () {
     $timeout(function () {
@@ -288,16 +288,9 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken, wiApi) {
     },1000)
     map.addListener('zoom_changed', function (event) {
       updateTrajectoryDebounced();
-      updateScaleMap();
-    });
-    map.addListener('mouseover',function(event) {
-      updateScaleMap();
-    });
-    map.addListener('mousemove',function(event) {
-      updateScaleMap();
-    });
-    map.addListener('mouseout',function(event) {
-      updateScaleMap();
+      $timeout(()=>{
+        updateScaleMap();
+      })
     });
 
     //SHOW ZONE LINE
@@ -1823,6 +1816,9 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken, wiApi) {
   const alertDebounce = _.debounce(function (message) {
     self.showError = true;
     $scope.message = message;
+    $timeout(()=>{
+      self.showError = false;
+    },self.showingTimeDialogError*1000)
     // ngDialog.open({
     //   template: "templateError",
     //   className: "ngdialog-theme-default",

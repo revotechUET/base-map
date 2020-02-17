@@ -243,9 +243,7 @@ function baseMapController(
   self.activeTheme = "Standard";
   self.controlPanel = true;
   self.point = true;
-  // $timeout(()=>{
-  //   self.point = true;
-  // },5000)
+  self.showingTimeDialogError = 5;
   self.showContour = false;
   self.showTrajectory = true;
   self.showAxes = true;
@@ -1596,6 +1594,9 @@ function baseMapController(
         if (checkCoordinate(lat, long, x, y) === undefined) {
           self.wellError = self.selectedNode.name;
           self.showLoading = false;
+          $timeout(()=>{
+            self.wellError = false;
+          },self.showingTimeDialogError*1000)
           continue;
         }
         let foundWell = $scope.wellSelect.find(function (item) {
@@ -1635,6 +1636,9 @@ function baseMapController(
             if (checkCoordinate(lat, long, x, y) === undefined) {
               self.wellError = wells[index].name;
               self.showLoading = false;
+              $timeout(()=>{
+                self.wellError = false;
+              },self.showingTimeDialogError*1000)
               continue;
             }
             let foundWell = $scope.wellSelect.find(function (item) {
