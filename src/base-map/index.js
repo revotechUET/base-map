@@ -1803,6 +1803,12 @@ function baseMapController(
     if (!$event.shiftKey && !$event.ctrlKey && !$event.metaKey) {
       self.selectedIdsHash = {};
       self.selectedWellNode = null;
+
+      for(const w of $scope.wellSelect) {
+        if(!self.nodeComparator(node, w)) {
+          w._selected = false
+        }
+      }
     }
     self.selectedWellNode = node;
     self.selectedIdsHash[node.idWell] = node;
