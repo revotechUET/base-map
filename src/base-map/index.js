@@ -1832,6 +1832,22 @@ function baseMapController(
     self.selectedNode = node;
     self.selectedNodes = selectedNodes.map((e)=>e.data);
     console.log(node)
+			
+    if (!$event.shiftKey && !$event.ctrlKey && !$event.metaKey) {
+			
+			for (const project of $scope.treeConfig) {
+
+				const wells = project.wells || []
+				for (const well of wells) {
+					well._selected = false
+				}
+
+				project._selected = false
+			}
+
+			node._selected = true
+		}
+
     if (node.idCurve) {
       // console.log("Curve clicked");
     } else if (node.idDataset) {
