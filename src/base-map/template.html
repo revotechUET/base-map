@@ -7,6 +7,9 @@
 <div class="dialog-setting slim-scroller" ng-show="self.showAxesDialog" style="height: auto;">
   ${require('./dialog-axes.html')}
 </div>
+<div class="dialog-setting slim-scroller" ng-show="self.showFileDialog" style="height: auto;">
+  ${require('./dialog-file.html')}
+</div>
 <script type="text/ng-template" id="dashboard-template-modal">
 ${require('./dashboard-template-modal.html')}
 </script>
@@ -394,71 +397,16 @@ ${require('./dashboard-template-modal.html')}
           </label>
         </div>
       </div>
-      <div class="upload">
-        <div class="upload-header">
-          <div>
-            <div style="font-weight: bold; margin-bottom: 10px;">Open configuration file</div>
-            <span>Upload a zip file.</span>
-          </div>
-          <div class="btn-add" id="map-upfile-2-btn">
-            <span class="ti ti-plus"></span>
-          </div>
-        </div>
-        <div class="upload-content">
-          <p>
-            <input type="file" id="map-upfile-2" class="file-upload" accept=".zip" placeholder="choose a file .zip"
-              onblur="angular.element(this).scope().clearSelectedConfigFile()"
-              onchange="angular.element(this).scope().onZipFileChange(), angular.element(this).scope().GetFileSizeNameAndType2()" />
-          </p>
-          <div id="fp2" style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis; margin-top: 15px;">
-          </div>
+      <div class="setting">
+        <div class="setting-title">File manager dialog</div>
+        <div class="setting-content">
+          <span>Load/Save configuration file for Basemap</span>
+          <label class="switch">
+            <input type="checkbox" ng-checked="self.showFileDialog" ng-click="self.showFileDialog = !self.showFileDialog" />
+            <span class="slider round"></span>
+          </label>
         </div>
       </div>
-      <div class="upload">
-        <div class="upload-header">
-          <div>
-            <div style="font-weight: bold; margin-bottom: 10px;">Open configuration file</div>
-            <span>Get file from database.</span>
-          </div>
-          <div class="btn-add" ng-click="self.downloadConfig()">
-            <span class="ti ti-plus"></span>
-          </div>
-        </div>
-        <div class="upload-content">
-          <div id="fp3" style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis; margin-top: 15px;">
-          </div>
-        </div>
-      </div>
-      <!--
-      <div class="upload">
-        <div class="upload-header">
-          <div>
-            <div style="font-weight: bold; margin-bottom: 10px;">Open Grid file</div>
-            <span>Upload a grid file.</span>
-          </div>
-          <div class="btn-add" id="map-upfile-2-btn">
-            <span class="ti ti-plus"></span>
-          </div>
-        </div>
-        <div class="upload-content">
-          <p>
-            <input type="file" id="map-upfile-text" class="file-upload" accept=".Zmap | ." placeholder="choose a file .zip"
-              onchange="angular.element(this).scope().onGridFileChange()" />
-          </p>
-          <div id="fp2" style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis; margin-top: 15px;">
-          </div>
-        </div>
-      </div>
-      -->
-      <div class="export" >
-        <div ng-click="self.downloadZipFile()">
-          Save Configuration
-        </div>
-        <div ng-click="self.uploadZipFileDatabase()" style="margin-left: 15px;">
-          Save to Database
-        </div>
-      </div>
-      
     </div>
   </div>
 </div>

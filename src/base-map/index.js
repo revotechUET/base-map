@@ -826,8 +826,13 @@ function baseMapController(
             scales: {
               yAxes: [{
                 ticks: {
-                  // stepSize: 1.0
-                  maxTicksLimit: 10
+                  maxTicksLimit: 10,
+                  min: 0
+                }
+              }],
+              xAxes: [{
+                ticks: {
+                  min: 0
                 }
               }]
             }
