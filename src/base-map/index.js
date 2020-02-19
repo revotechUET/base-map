@@ -2291,10 +2291,10 @@ function baseMapController(
   }
   this.GetFileSizeNameAndType3 = function (file) {
     if (file) {
-      document.getElementById('fp3').innerHTML = '';
+      document.getElementById('fp2').innerHTML = '';
         let fsize = file.size;
-        document.getElementById('fp3').innerHTML =
-          document.getElementById('fp3').innerHTML
+        document.getElementById('fp2').innerHTML =
+          document.getElementById('fp2').innerHTML
           + '<b>File Name: </b>' + file.name + '</br>'
           // + '<b>File Size: </b>' + Math.round((fsize / 1024)) + 'KB </br>'
           // + '<b>File Type: </b>' + file.type + "</br>";
