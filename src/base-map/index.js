@@ -325,7 +325,8 @@ function baseMapController(
 
   self.geoJson = geoJsonDefault;
   $scope.clearSelectedFile = function (event) {
-    const files = $element.find("input.file-upload")[0].files;
+    // const files = $element.find("input.file-upload")[0].files;
+    const files = $element.find("input#map-upfile-1")[0].files;
     if (!files || files.length == 0) {
       self.geoJson = geoJsonDefault;
       $scope.$digest();
@@ -340,7 +341,8 @@ function baseMapController(
   //   console.log(response);
   // });
   $scope.onFileChange = function () {
-    const files = $element.find("input.file-upload")[0].files;
+    // const files = $element.find("input.file-upload")[0].files;
+    const files = $element.find("input#map-upfile-1")[0].files;
     const file = files[0];
     if (file) {
       console.log(file);
@@ -463,7 +465,8 @@ function baseMapController(
   }
 
   $scope.clearSelectedConfigFile = function (event) {
-    const files = $element.find("input.file-upload")[1].files;
+    // const files = $element.find("input.file-upload")[1].files;
+    const files = $element.find("input#map-upfile-2")[0].files;
     if (!files || files.length == 0) {
       $scope.wellSelect = [];
       $scope.curveList = [];
@@ -492,7 +495,9 @@ function baseMapController(
   };
 
   $scope.onZipFileChange = function () {
-    const files = $element.find("input.file-upload")[1].files;
+    // const files = $element.find("input.file-upload")[1].files;
+    const files = $element.find("input#map-upfile-2")[0].files;
+  
     console.log(files);
     const file = files[0];
     if (file) {
@@ -509,23 +514,78 @@ function baseMapController(
           })
           .then(async function (result) {
             await result.contour.then(function (data) {
-              return new Promise(res => {
+              return new Promise(response => {
                 data = JSON.parse(data);
-                $scope.wellSelect = data.selectWell || [];
-                $scope.curveList = data.selectCurve || [];
-                $scope.zoneList = data.selectedZone || [];
-                $scope.markerList = data.selectedMarker || [];
-                self.noWell = false;
-                $scope.focusCurve = $scope.curveList.find(c => c._selected);
-                let selectedZoneset = $scope.zoneList.find(zs => zs.zones.find(z => z._selected));
-                let selectedMarkerset = $scope.markerList.find(ms => ms.markers.find(m => m._selected));
-                $scope.focusMZ = selectedZoneset
-                    ? selectedZoneset.zones.find(z => z._selected)
-                    : selectedMarkerset ? selectedMarkerset.markers.find(m => m._selected) : null
-                if (!$scope.$$phase) {
-                  $scope.$apply();
-                  $timeout(res, 500);
-                }
+                let wells = [];
+                async.each(data.selectWell, (w, next) => {
+                  if(w.shared) {
+                    $http({
+                      method: "POST",
+                      url: BASE_URL + "/project/fullinfo",
+                      data: {
+                        idProject: w.idProject,
+                        name: w.nameOwner,
+                        shared: true,
+                        owner: w.owner
+                      },
+                      headers: {
+                        Authorization: wiToken.getToken()
+                      }
+                    })
+                    .then((res) => {
+                      console.log(res)
+                      project = res.data.content;
+                      proWells = project.wells;
+                      wll = proWells.find(wl => wl.idWell == w.idWell)
+                      wll ? wells.push(wll) : null
+                      next()
+                    })
+                  }else {
+                    $http({
+                          method: "POST",
+                          url: BASE_URL + "/project/fullinfo",
+                          data: {
+                            idProject: w.idProject,
+                            name: w.nameOwner,
+                          },
+                          headers: {
+                            Authorization: wiToken.getToken()
+                          }
+                        })  
+                    .then((res) => {
+                      console.log(res)
+                      project = res.data.content;
+                      proWells = project.wells;
+                      wll = proWells.find(wl => wl.idWell == w.idWell)
+                      wll ? wells.push(wll) : null
+                      next()
+                    })
+                  }
+                }, (err) => {
+                  console.log(wells)
+                  data.selectWell = wells;
+                  $scope.wellSelect = data.selectWell || [];
+                  $scope.curveList = data.selectCurve || [];
+                  $scope.zoneList = data.selectedZone || [];
+                  $scope.markerList = data.selectedMarker || [];
+                  self.noWell = false;
+                  $scope.focusCurve = $scope.curveList.find(c => c._selected);
+                  let selectedZoneset = $scope.zoneList.find(zs => zs.zones.find(z => z._selected));
+                  let selectedMarkerset = $scope.markerList.find(ms => ms.markers.find(m => m._selected));
+                  $scope.focusMZ = selectedZoneset
+                      ? selectedZoneset.zones.find(z => z._selected)
+                      : selectedMarkerset ? selectedMarkerset.markers.find(m => m._selected) : null
+                  // if (!$scope.$$phase) {
+                  //   $scope.$apply();
+                  //   $timeout(response, 500);
+                  // }
+                  $timeout(async () => {
+                    await updateCurveList();
+                    await updateZoneList();
+                    await updateMarkerList();
+                    response();
+                  });
+                })
               })
             });
             result.mapSetting.then(function (data) {
@@ -1964,7 +2024,13 @@ function baseMapController(
       }
     }).then(
       function (response) {
-        cb(null, response.data.content, projectNodeChildren);
+        wells = response.data.content.map( e => {
+          e.shared = projectNodeChildren.shared;
+          e.owner = projectNodeChildren.owner;
+          e.nameOwner = projectNodeChildren.name;
+          return e;
+        })
+        cb(null, wells, projectNodeChildren);
       },
       function (err) {
         cb(err);
@@ -2238,23 +2304,78 @@ function baseMapController(
                   })
                   .then(async function (result) {
                     await result.contour.then(function (data) {
-                      return new Promise(res => {
+                      return new Promise(response => {
                         data = JSON.parse(data);
-                        $scope.wellSelect = data.selectWell || [];
-                        $scope.curveList = data.selectCurve || [];
-                        $scope.zoneList = data.selectedZone || [];
-                        $scope.markerList = data.selectedMarker || [];
-                        self.noWell = false;
-                        $scope.focusCurve = $scope.curveList.find(c => c._selected);
-                        let selectedZoneset = $scope.zoneList.find(zs => zs.zones.find(z => z._selected));
-                        let selectedMarkerset = $scope.markerList.find(ms => ms.markers.find(m => m._selected));
-                        $scope.focusMZ = selectedZoneset
-                            ? selectedZoneset.zones.find(z => z._selected)
-                            : selectedMarkerset ? selectedMarkerset.markers.find(m => m._selected) : null
-                        if (!$scope.$$phase) {
-                          $scope.$apply();
-                          $timeout(res, 500);
-                        }
+                        let wells = [];
+                        async.each(data.selectWell, (w, next) => {
+                          if(w.shared) {
+                            $http({
+                              method: "POST",
+                              url: BASE_URL + "/project/fullinfo",
+                              data: {
+                                idProject: w.idProject,
+                                name: w.nameOwner,
+                                shared: true,
+                                owner: w.owner
+                              },
+                              headers: {
+                                Authorization: wiToken.getToken()
+                              }
+                            })
+                            .then((res) => {
+                              console.log(res)
+                              project = res.data.content;
+                              proWells = project.wells;
+                              wll = proWells.find(wl => wl.idWell == w.idWell)
+                              wll ? wells.push(wll) : null
+                              next()
+                            })
+                          }else {
+                            $http({
+                                  method: "POST",
+                                  url: BASE_URL + "/project/fullinfo",
+                                  data: {
+                                    idProject: w.idProject,
+                                    name: w.nameOwner,
+                                  },
+                                  headers: {
+                                    Authorization: wiToken.getToken()
+                                  }
+                                })  
+                            .then((res) => {
+                              console.log(res)
+                              project = res.data.content;
+                              proWells = project.wells;
+                              wll = proWells.find(wl => wl.idWell == w.idWell)
+                              wll ? wells.push(wll) : null
+                              next()
+                            })
+                          }
+                        }, (err) => {
+                          console.log(wells)
+                          data.selectWell = wells;
+                          $scope.wellSelect = data.selectWell || [];
+                          $scope.curveList = data.selectCurve || [];
+                          $scope.zoneList = data.selectedZone || [];
+                          $scope.markerList = data.selectedMarker || [];
+                          self.noWell = false;
+                          $scope.focusCurve = $scope.curveList.find(c => c._selected);
+                          let selectedZoneset = $scope.zoneList.find(zs => zs.zones.find(z => z._selected));
+                          let selectedMarkerset = $scope.markerList.find(ms => ms.markers.find(m => m._selected));
+                          $scope.focusMZ = selectedZoneset
+                              ? selectedZoneset.zones.find(z => z._selected)
+                              : selectedMarkerset ? selectedMarkerset.markers.find(m => m._selected) : null
+                          // if (!$scope.$$phase) {
+                          //   $scope.$apply();
+                          //   $timeout(res, 500);
+                          // }
+                          $timeout(async () => {
+                            await updateCurveList();
+                            await updateZoneList();
+                            await updateMarkerList();
+                            response();
+                          });
+                        })
                       })
                     });
                     result.mapSetting.then(function (data) {
