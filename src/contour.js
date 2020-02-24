@@ -439,6 +439,7 @@ function Contour(container, map, data) {
         labelContext.textAlign = "left";
         labelContext.font = "300 12px Sans-serif";
         labelContext.fillText(colorDomainStart, viewWidth - OFFSET_FROM_RIGHT, viewHeight - OFFSET_FROM_BOTTOM - 10);
-        labelContext.fillText(colorDomainStart + colorDomainRange, viewWidth - (OFFSET_FROM_RIGHT - WIDTH + 120), viewHeight - OFFSET_FROM_BOTTOM - 10);
+        labelContext.textAlign = "right";
+        labelContext.fillText(colorDomainStart + colorDomainRange, viewWidth - (OFFSET_FROM_RIGHT - WIDTH), viewHeight - OFFSET_FROM_BOTTOM - 10);
     }
 }
