@@ -473,7 +473,7 @@ function Contour(container, map, data) {
         const WIDTH = 320;
         const OFFSET_FROM_BOTTOM = 120;
         const HEIGHT = 10;
-        const grd = labelContext.createLinearGradient(viewWidth - OFFSET_FROM_RIGHT, viewHeight - OFFSET_FROM_BOTTOM, viewWidth - (OFFSET_FROM_BOTTOM - WIDTH), viewHeight - OFFSET_FROM_BOTTOM);
+        const grd = labelContext.createLinearGradient(viewWidth - OFFSET_FROM_RIGHT, viewHeight - OFFSET_FROM_BOTTOM, viewWidth - (OFFSET_FROM_RIGHT - WIDTH), viewHeight - OFFSET_FROM_BOTTOM);
         const colorDomainRange = Math.abs(color.domain()[1] - color.domain()[0]);
         const colorDomainStart = Math.min(color.domain()[0], color.domain()[1]);
         d3.range(0, NUM_OF_COLORSTOP + 1).forEach(colorStop => {
