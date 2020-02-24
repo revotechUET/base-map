@@ -12,8 +12,8 @@ function Contour(container, map, data) {
     this.map = map;
     this.data = data;
 
-    const viewWidth = this.container.node().offsetWidth;
-    const viewHeight = this.container.node().offsetHeight;
+    let viewWidth = this.container.node().offsetWidth;
+    let viewHeight = this.container.node().offsetHeight;
 
     // create canvas
     let canvas = this.container.select('canvas');
@@ -67,10 +67,10 @@ function Contour(container, map, data) {
         viewHeight = self.container.node().offsetHeight;
         d3.select(self.canvas)
             .attr("width", viewWidth)
-            .attr("height", viewHeight)
+            .attr("height", viewHeight);
         d3.select(self.labelCanvas)
             .attr("width", viewWidth)
-            .attr("height", viewHeight)
+            .attr("height", viewHeight);
     }
 
     function clearLayer() {

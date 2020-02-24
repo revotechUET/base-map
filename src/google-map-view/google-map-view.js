@@ -68,7 +68,7 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken, wiApi) {
       initContours();
       initAxes();
       window.onresize = function() {
-        updateContours();
+        updateContourLayerSize();
         updateAxesLayerSize();
       }
       // console.log('Draw map')
@@ -2138,6 +2138,7 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken, wiApi) {
     if (!map || !contour) return;
     if (!self.showContour) {
       contour.data = [];
+      contour.drawContourDebounced();
       return;
     }
     if (contour) {
