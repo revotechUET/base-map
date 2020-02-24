@@ -240,6 +240,14 @@ ${require('./dashboard-template-modal.html')}
             </label>
           </div>
           <div ng-if="self.showContour" class="setting-content" style="margin-top: 12px;">
+            <span
+              class="setting-sub-title">Show Text Label</span>
+            <label class="switch">
+              <input type="checkbox" ng-checked="self.showContourText" ng-click="self.showContourText = !self.showContourText" />
+              <span class="slider round"></span>
+            </label>
+          </div>
+          <div ng-if="self.showContour" class="setting-content" style="margin-top: 12px;">
             <wi-tree-view-virtual tree-root="curveList" get-label="self.getLabel" get-icon="self.getIcon" class="customize-tree-view"
               click-fn="self.clickCurveFunction" get-children="self.getChildren" run-match="self.runMatchCurve"
               hide-unmatched="true" no-drag="true">
@@ -470,7 +478,8 @@ ${require('./dashboard-template-modal.html')}
 -->
 <google-map-view theme="themeMap" ng-if="checkGoogleApi()" ng-show="self.showMap" all-popup="allPopup" class="mapView"
   wells="wellSelect" geo-json="self.geoJson" control-panel="self.controlPanel" point="self.point" focus-well='focusWell'
-  focus-curve="focusCurve" show-contour="self.showContour" show-trajectory="self.showTrajectory" show-Axes="self.showAxes"
+  focus-curve="focusCurve" show-contour="self.showContour" show-contour-text="self.showContourText"
+  show-trajectory="self.showTrajectory" show-Axes="self.showAxes"
   axes-unit="self.axesUnit" axes-x-left="self.XLeft" axes-x-right="self.XRight" axes-y-bottom="self.YBottom" axes-y-top="self.YTop"
   focus-marker-or-zone="focusMZ" zone-depth-spec="self.zoneDepthSpec" get-curve-info-fn="self.getCurveInfoFn"
   prepare-well-info-fn="self.prepareWellInfoFn" well-position="self.wellPosition" fit-to-bound="self.fitToBound"

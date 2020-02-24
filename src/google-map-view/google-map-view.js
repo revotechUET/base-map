@@ -24,6 +24,7 @@ app.component(componentName, {
     focusCurve: "<",
     getCurveInfoFn: "<",
     showContour: "<",
+    showContourText: "<",
     // view by marker or zone
     getCurveRawDataFn: "<",
     focusMarkerOrZone: "<",
@@ -168,6 +169,12 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken, wiApi) {
     );
     $scope.$watch(
       () => self.showContour,
+      () => {
+        updateContours();
+      }
+    );
+    $scope.$watch(
+      () => self.showContourText,
       () => {
         updateContours();
       }
@@ -2142,6 +2149,7 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken, wiApi) {
       return;
     }
     if (contour) {
+      contour.showContourText = self.showContourText;
       contour.data = await genContourData();
       contour.drawContourDebounced();
     }
@@ -2171,7 +2179,8 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken, wiApi) {
                     _data.push({
                       lng: long,
                       lat,
-                      value: wellData
+                      value: wellData,
+                      wellName: self.wells[index].name
                     });
                     res();
                   })
@@ -2182,7 +2191,8 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken, wiApi) {
                     _data.push({
                       lng: lngY,
                       lat: latX,
-                      value: wellData
+                      value: wellData,
+                      wellName: self.wells[index].name
                     });
                     res();
                   })

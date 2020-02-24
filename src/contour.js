@@ -180,13 +180,18 @@ function Contour(container, map, data) {
             context.stroke();
         })
     }
+    /*
     function getColorScale(contourData) {
         interpolateTerrain = (() => {
             const i0 = d3.interpolateHsvLong(d3.hsv(120, 1, 0.65), d3.hsv(60, 1, 0.90));
-            const i1 = d3.interpolateHsvLong(d3.hsv(60, 1, 0.90), d3.hsv(0, 0, 0.95));
+            const i1 = d3.interpolateHsvLong(d3.hsv(60, 1, 0.90), d3.hsv(0, 1, 0.95));
             return t => t < getMinCoord() ? i0(t * 2) : i1((t - getMinCoord()) * 2);
         })();
         return d3.scaleSequential(interpolateTerrain).domain(d3.extent(contourData.values)).nice();
+    }
+    */
+    function getColorScale(contourData) {
+        return d3.scaleSequential(d3.interpolateRainbow).domain(d3.extent(contourData.values)).nice();
     }
     function getMinCoord() {
         const zoom = map.getZoom();
@@ -401,6 +406,50 @@ function Contour(container, map, data) {
             context.fillStyle = color(contour.value);
             context.fill(path2D);
         })
+
+        // draw well point
+        const projectFn = getProjectionFn();
+        context.fillStyle = "black";
+        context.textAlign = "center";
+        context.font = 'bold 14px';
+        self.data.forEach(well => {
+            const point = projectFn(getLatLngObj(well.lat, well.lng));
+            context.fillRect(point.x, point.y, 5, 5);
+            context.fillText(well.wellName, point.x, point.y - 5);
+        })
+
+        // draw text label
+        if (self.showContourText) {
+            context.fillStyle = "black";
+            context.textAlign = "center";
+            const bounds = getBounds();
+            const projectFn = getProjectionFn();
+            const boundsInPx = {
+                sw: projectFn(getLatLngObj(bounds._sw.lat, bounds._sw.lng)),
+                ne: projectFn(getLatLngObj(bounds._ne.lat, bounds._ne.lng)),
+            }
+            const TEXT_SPACE = 10;
+            const ERR_IN_EDGE = 10; // px
+            contours.forEach(contour => {
+                if (!contour.coordinates[0]) return;
+                const pointsLength = contour.coordinates[0][0].length;
+                if (pointsLength && pointsLength >= 3) {
+                    d3.range(0, pointsLength, TEXT_SPACE)
+                        .forEach(index => {
+                            const _point = contour.coordinates[0][0][index];
+                            if (!_point) { return; }
+                            const point = { x: _point[0], y: _point[1] };
+                            if (Math.abs(point.x - boundsInPx.sw.x) <= ERR_IN_EDGE || Math.abs(point.y - boundsInPx.sw.y) <= ERR_IN_EDGE
+                                || Math.abs(point.x - boundsInPx.ne.x) <= ERR_IN_EDGE || Math.abs(point.y - boundsInPx.ne.y) <= ERR_IN_EDGE) {
+                                return;
+                            }
+                            else {
+                                context.fillText(contour.value.toFixed(4), point.x, point.y);
+                            }
+                        })
+                }
+            })
+        }
 
         // fill text
         if (window.viewNum) {
