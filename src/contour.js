@@ -6,7 +6,48 @@ const MAX_GRID_AREA = 100000;
 const GRID_TOO_LARGE = { lats: [], lngs: [], maxLat: 0, minLat: 0, maxLng: 0, minLng: 0 };
 window.test = 0.5;
 
-function Contour(container, map, data) {
+function isLightColor(color) {
+
+    // Variables for red, green, blue values
+    var r, g, b, hsp;
+    
+    // Check the format of the color, HEX or RGB?
+    if (color.match(/^rgb/)) {
+
+        // If HEX --> store the red, green, blue values in separate variables
+        color = color.match(/^rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*(\d+(?:\.\d+)?))?\)$/);
+        
+        r = color[1];
+        g = color[2];
+        b = color[3];
+    } 
+    else {
+        
+        // If RGB --> Convert it to HEX: http://gist.github.com/983661
+        color = +("0x" + color.slice(1).replace( 
+        color.length < 5 && /./g, '$&$&'));
+
+        r = color >> 16;
+        g = color >> 8 & 255;
+        b = color & 255;
+    }
+    
+    // HSP (Highly Sensitive Poo) equation from http://alienryderflex.com/hsp.html
+    hsp = Math.sqrt(
+    0.299 * (r * r) +
+    0.587 * (g * g) +
+    0.114 * (b * b)
+    );
+
+    // Using the HSP value, determine whether the color is light or dark
+    if (hsp>127.5) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+function Contour(container, map, data, transparency) {
     const self = this;
     this.container = d3.select(container);
     this.map = map;
@@ -16,12 +57,14 @@ function Contour(container, map, data) {
     let viewHeight = this.container.node().offsetHeight;
 
     // create canvas
-    let canvas = this.container.select('canvas');
+    let canvas = this.container.select('canvas.graphic-canvas');
     if (!canvas.node())
         canvas = this.container
             .append('canvas')
+            .attr("class", "graphic-canvas")
             .attr('width', viewWidth)
             .attr('height', viewHeight)
+            .style("opacity", _.isNumber(transparency) ? transparency:1);
             // .style('background-color', 'rgba(230, 230, 230, 1)');
     this.canvas = canvas.node();
 
@@ -191,7 +234,8 @@ function Contour(container, map, data) {
     }
     */
     function getColorScale(contourData) {
-        return d3.scaleSequential(d3.interpolateRainbow).domain(d3.extent(contourData.values)).nice();
+        // return d3.scaleSequential(d3.interpolateRainbow).domain(d3.extent(contourData.values)).nice();
+        return d3.scaleSequential(d3.interpolateTurbo).domain(d3.extent(contourData.values)).nice();
     }
     function getMinCoord() {
         const zoom = map.getZoom();
@@ -350,6 +394,7 @@ function Contour(container, map, data) {
     function _drawContour() {
         if (!self.data || !self.data.length) return;
         const context = self.canvas.getContext('2d');
+        const labelContext = self.labelCanvas.getContext("2d");
         /*
         data.forEach(d => {
           const {x, y} = map.project(d);
@@ -414,6 +459,12 @@ function Contour(container, map, data) {
         context.font = 'bold 14px';
         self.data.forEach(well => {
             const point = projectFn(getLatLngObj(well.lat, well.lng));
+            const contourColor = color(well.value);
+            if (isLightColor(contourColor)) {
+                context.fillStyle = "black";
+            } else {
+                context.fillStyle = "white";
+            }
             context.fillRect(point.x, point.y, 5, 5);
             context.fillText(well.wellName, point.x, point.y - 5);
         })
@@ -451,7 +502,7 @@ function Contour(container, map, data) {
             })
         }
 
-        // fill text
+        // fill text for test only
         if (window.viewNum) {
             context.font = 'bold 16px san-serif';
             context.fillStyle = 'black';
@@ -467,7 +518,6 @@ function Contour(container, map, data) {
         }
 
         // create gradient
-        const labelContext = self.labelCanvas.getContext("2d");
         const NUM_OF_COLORSTOP = 10;
         const OFFSET_FROM_RIGHT = 360;
         const WIDTH = 320;
