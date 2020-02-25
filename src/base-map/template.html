@@ -13,6 +13,27 @@
 <script type="text/ng-template" id="dashboard-template-modal">
 ${require('./dashboard-template-modal.html')}
 </script>
+
+<div class="dialog-error" ng-show="self.showError">
+    <div class="dialog-header">
+        <div style="display: flex; align-items: center;">
+            <div class="ti-alert" style="color: #ff8503; font-size: 20px;"></div>
+            <span>Warning</span>
+        </div>
+        <div class="ti ti-close" ng-click="self.showError = !self.showError" style="cursor: pointer;"></div>
+    </div>
+    <div class="loading">
+        <div class="loading-bar-error">
+          <span class="bar-animation-error" ng-style="{'animation-duration': self.showingTimeDialogError + 's'}"></span>
+        </div>
+      </div>
+    <div class="dialog-main">
+        <span>
+            {{ message || "Something error" }}
+        </span>
+    </div>
+    
+</div>
 <div class="dialog-error" ng-show="self.wellError">
   <div class="dialog-header">
       <div style="display: flex; align-items: center;">
@@ -77,7 +98,7 @@ ${require('./dashboard-template-modal.html')}
   </div>
   <div class="tab" style="justify-content: flex-start; padding-left: 5px; border-bottom: none;">
     <div title="Show/Hide dashboard" class="tab-fn" ng-class="{'on': self.showDashboard}" ng-show="self.showMap"
-      ng-click="self.showDashboard = !self.showDashboard; self.openDashboard()">
+      ng-click="self.openDashboard()">
       <i class="ti ti-pie-chart"></i>
     </div>
     <div title="Show well on map" class="tab-fn" ng-click="self.moveWell()"

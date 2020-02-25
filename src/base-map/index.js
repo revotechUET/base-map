@@ -917,10 +917,23 @@ function baseMapController(
     }).finally(() => {
       self.showLoadingDashboard = false;
     });
-
-
   }
+
+  const errorDialog = function (message) {
+    self.showError = true;
+    $scope.message = message;
+    $timeout(()=>{
+      self.showError = false;
+    },self.showingTimeDialogError*1000)
+  };
+
   this.openDashboard = function () {
+    if (!self.selectedNode) {
+      // show warning
+      errorDialog("Please select a project to show Dashboard");
+      return;
+    }
+    self.showDashboard = !self.showDashboard; 
     self.showLoadingDashboard = true;
     wiApi.getFullInfoPromise(self.selectedNode.idProject, self.selectedNode.owner, self.selectedNode.owner ? self.selectedNode.name : null).then((prjTree) => {
       projectTree = prjTree;
