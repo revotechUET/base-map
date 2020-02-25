@@ -2277,6 +2277,7 @@ function baseMapController(
             var sd = res.storage_databases[0];
             var file = new File([content], "i2G_basemap_configuration.zip");
             wiDialog.treeExplorer({
+                title: "Select Folder To Save Configuration",
                 selectWhat: 'folder',
                 file: file,
                 url: config.url,
@@ -2319,6 +2320,7 @@ function baseMapController(
             console.log(res);
             var sd = res.storage_databases[0];
             wiDialog.treeExplorer({
+                title: "Select File Configuration",
                 selectWhat: 'file',
                 url: config.url,
                 storage_database: JSON.stringify({
