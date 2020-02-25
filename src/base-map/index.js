@@ -184,8 +184,7 @@ app.value('chartSettings', {
       _.set(widgetConfig, 'bar_chart_options.scales.xAxes[0].ticks.max', Math.round(Number(newVal)) || 100);
       _.set(widgetConfig, 'bar_chart_options.scales.yAxes[0].ticks.max', Math.round(Number(newVal)) || 100);
     }
-  },
-
+  }
 });
 app.value('chartDataSource', CHART_DATA_SOURCE)
 app.component(componentName, {
@@ -735,8 +734,9 @@ function baseMapController(
             return Object.keys(data)[idx];
           },
           colorFn: function (config, datum, idx) {
-            let palette = wiApi.getPalette("RandomColor");
-            return `rgba(${palette[idx].red},${palette[idx].green},${palette[idx].blue},${palette[idx].alpha})`;
+            let palette = wiApi.getPalette(config.paletteName || "RandomColor");
+            idx = idx % palette.length;
+            return `rgba(${palette[idx % palette.length].red},${palette[idx].green},${palette[idx].blue},${palette[idx].alpha})`;
           }
         })
       })
@@ -771,7 +771,8 @@ function baseMapController(
             return Object.keys(data)[idx];
           },
           colorFn: function (config, datum, idx) {
-            let palette = wiApi.getPalette("RandomColor");
+            let palette = wiApi.getPalette(config.paletteName || "RandomColor");
+            idx = idx % palette.length;
             return `rgba(${palette[idx].red},${palette[idx].green},${palette[idx].blue},${palette[idx].alpha})`;
           }
         })
@@ -886,7 +887,8 @@ function baseMapController(
             return Object.keys(result.wTypes)[idx];
           },
           colorFn: function (config, datum, idx) {
-            let palette = wiApi.getPalette("RandomColor");
+            let palette = wiApi.getPalette(config.paletteName || "RandomColor");
+            idx = idx % palette.length;
             return `rgba(${palette[idx].red},${palette[idx].green},${palette[idx].blue},${palette[idx].alpha})`;
           },
           title: 'New Dashboard',
@@ -959,7 +961,8 @@ function baseMapController(
           return Object.keys(result.wTypes)[idx];
         },
         colorFn: function (config, datum, idx) {
-          let palette = wiApi.getPalette("RandomColor");
+          let palette = wiApi.getPalette(config.paletteName || "RandomColor");
+            idx = idx % palette.length;
           return `rgba(${palette[idx].red},${palette[idx].green},${palette[idx].blue},${palette[idx].alpha})`;
         },
         title: 'Well Type',
@@ -998,7 +1001,8 @@ function baseMapController(
         },
         colorFn: function (config, datum, idx) {
           // return 'rgba(64,64,200,0.7)';
-          let palette = wiApi.getPalette("RandomColor");
+          let palette = wiApi.getPalette(config.paletteName || "RandomColor");
+            idx = idx % palette.length;
           return `rgba(${palette[idx].red},${palette[idx].green},${palette[idx].blue},${palette[idx].alpha})`;
         },
         bar_chart_options: {
@@ -1037,7 +1041,8 @@ function baseMapController(
         },
         colorFn: function (config, datum, idx) {
           // return 'rgba(64,200,64,0.7)';
-          let palette = wiApi.getPalette("RandomColor");
+          let palette = wiApi.getPalette(config.paletteName || "RandomColor");
+            idx = idx % palette.length;
           return `rgba(${palette[idx].red},${palette[idx].green},${palette[idx].blue},${palette[idx].alpha})`;
         },
         title: "Operators",
@@ -1074,7 +1079,8 @@ function baseMapController(
           return Object.keys(result.tags)[idx];
         },
         colorFn: function (config, datum, idx) {
-          let palette = wiApi.getPalette("RandomColor");
+          let palette = wiApi.getPalette(config.paletteName || "RandomColor");
+            idx = idx % palette.length;
           return `rgba(${palette[idx].red},${palette[idx].green},${palette[idx].blue},${palette[idx].alpha})`;
         },
         title: "Tags",
@@ -1111,7 +1117,8 @@ function baseMapController(
           return Object.keys(result.curveTags)[idx];
         },
         colorFn: function (config, datum, idx) {
-          let palette = wiApi.getPalette("RandomColor");
+          let palette = wiApi.getPalette(config.paletteName || "RandomColor");
+            idx = idx % palette.length;
           return `rgba(${palette[idx].red},${palette[idx].green},${palette[idx].blue},${palette[idx].alpha})`;
         },
         title: "Curve Tags",
