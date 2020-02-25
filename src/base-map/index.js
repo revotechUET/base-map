@@ -697,7 +697,62 @@ function baseMapController(
       });
     })
   }
-
+  async function getDashboardTemplate1() {
+    return new Promise(resolve => {
+      const self = this;
+      this.mode = "load-dashboard";
+      this.selectedNode = null;
+      this.options = [];
+      
+      httpPost("/managementdashboard/list", {})
+        .then(res => {
+          if (!res || !res.data.content.length) {
+            return;
+          }
+          const templateList = res.data.content.map(dbTemplate => {
+            dbTemplate.content = JSON.parse(dbTemplate.content);
+            return dbTemplate;
+          })
+          let options = templateList.map((props)=> {
+            return {
+              data: { label: props.content.name },
+              properties: props
+            }
+          });
+          let config = {
+            title: "Select Template",
+            inputName: "Template Name",
+            selectionList: options,
+            onCtrlBtnClick: function(item, e, wiDropdown) {
+              console.log(item, e, wiDropdown);
+              let index = wiDropdown.items.indexOf(item);
+              wiDialog.confirmDialog("Delete template?", "Are you sure?", function(res) {
+                if(res) {
+                  httpPost("/managementdashboard/delete", { idManagementDashboard: item.properties.idManagementDashboard })
+                  .then(res => {
+                    console.log(res);
+                    $timeout(() => {
+                      wiDropdown.items.splice(index, 1);
+                      wiDropdown.selectedItem = wiDropdown.items.length ? wiDropdown.items[0] : null
+                    })
+                  })
+                  .catch(err => {
+                    console.error(err);
+                  });
+                }
+              })
+            },
+            hideButtonDelete: false,
+            iconBtn: 'fa fa-times-circle line-height-1_5'
+          }
+          wiDialog.promptListDialog(config, function(selectItem) {
+            console.log(selectItem);
+            resolve(angular.copy(selectItem.content));
+            
+          });
+        });
+    })
+  }
   function confirmDialog(message) {
     return new Promise(resolve => {
       ngDialog.open({
@@ -749,7 +804,8 @@ function baseMapController(
     });
   }
   this.loadDashboard = async function() {
-    const config = await getDashboardTemplate();
+    // const config = await getDashboardTemplate();
+    const config = await getDashboardTemplate1();
     if (!config) return;
     const widgetConfigs = config.widgets;
     self.showLoadingDashboard = true;
@@ -857,6 +913,70 @@ function baseMapController(
       }],
       controllerAs: "wiModal"
     });
+  }
+  this.saveDashboard1 = function() {
+    const content = self.dashboardContent.map(widget => {
+      const { name, id, config } = widget;
+      const _config = {
+        type: config.type,
+        dataSourceLabel: config.dataSourceLabel,
+        title: config.title,
+        bar_chart_options: config.bar_chart_options,
+        chart_options: config.chart_options
+      };
+
+      return {
+        name, id, config: _config
+      }
+    });
+    var payload = {
+      name: `${self.dashboardContent.project.alias}-dashboard-template`,
+      widgets: content
+    };
+    this.config = payload;
+    function checkAvailableDashboard(dshbrdName) {
+        return new Promise(resolve => {
+          httpPost("/managementdashboard/list", {})
+            .then(res => {
+              if (!res || !res.data.content.length) {
+                return resolve(null);
+              }
+              const templateList = res.data.content.map(dbTemplate => {
+                dbTemplate.content = JSON.parse(dbTemplate.content);
+                return dbTemplate;
+              });
+              const hasName = templateList.find(props => props.content.name === dshbrdName);
+              if (hasName) {
+                wiDialog.confirmDialog("Confirm",
+                `Template <b>"${dshbrdName}"</b> already exists! Are you sure you want to replace it ?`,
+                function(res) {
+                    res ? resolve(hasName.idManagementDashboard) : resolve(null)
+                })
+              } else {
+                return resolve(null);
+              }
+            })
+        })
+    }
+    let config = {
+      title: "Save Template",
+      inputName: "Template Name",
+      input: `${self.dashboardContent.project.alias}-dashboard-template`
+    }
+    wiDialog.promptDialog(config, function(name) {
+      payload.name = name;
+      checkAvailableDashboard(name)
+      .then((idMngDshbrd) => {
+        const path = `/managementdashboard/${idMngDshbrd !== null ? "edit":"new"}`;
+        httpPost(path, { content: JSON.stringify(payload), idManagementDashboard: idMngDshbrd })
+          .then(res => {
+            console.log(res);
+          })
+          .catch(err => {
+            console.error(err);
+          });
+      })
+    })
   }
 
   async function httpPost(path, payload) {
