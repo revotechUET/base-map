@@ -251,6 +251,7 @@ function baseMapController(
   self.point = true;
   self.showingTimeDialogError = 5;
   self.showContour = false;
+  self.contourTransparency = 0.5;
   self.showTrajectory = true;
   self.showAxes = true;
   self.axesUnitOptions = AxesUnitOptions;

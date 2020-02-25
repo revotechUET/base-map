@@ -6,7 +6,7 @@ const MAX_GRID_AREA = 100000;
 const GRID_TOO_LARGE = { lats: [], lngs: [], maxLat: 0, minLat: 0, maxLng: 0, minLng: 0 };
 window.test = 0.5;
 
-function Contour(container, map, data) {
+function Contour(container, map, data, transparency) {
     const self = this;
     this.container = d3.select(container);
     this.map = map;
@@ -16,12 +16,14 @@ function Contour(container, map, data) {
     let viewHeight = this.container.node().offsetHeight;
 
     // create canvas
-    let canvas = this.container.select('canvas');
+    let canvas = this.container.select('canvas.graphic-canvas');
     if (!canvas.node())
         canvas = this.container
             .append('canvas')
+            .attr("class", "graphic-canvas")
             .attr('width', viewWidth)
             .attr('height', viewHeight)
+            .style("opacity", _.isNumber(transparency) ? transparency:1);
             // .style('background-color', 'rgba(230, 230, 230, 1)');
     this.canvas = canvas.node();
 
@@ -191,7 +193,8 @@ function Contour(container, map, data) {
     }
     */
     function getColorScale(contourData) {
-        return d3.scaleSequential(d3.interpolateRainbow).domain(d3.extent(contourData.values)).nice();
+        // return d3.scaleSequential(d3.interpolateRainbow).domain(d3.extent(contourData.values)).nice();
+        return d3.scaleSequential(d3.interpolateTurbo).domain(d3.extent(contourData.values)).nice();
     }
     function getMinCoord() {
         const zoom = map.getZoom();
@@ -350,6 +353,7 @@ function Contour(container, map, data) {
     function _drawContour() {
         if (!self.data || !self.data.length) return;
         const context = self.canvas.getContext('2d');
+        const labelContext = self.labelCanvas.getContext("2d");
         /*
         data.forEach(d => {
           const {x, y} = map.project(d);
@@ -451,7 +455,7 @@ function Contour(container, map, data) {
             })
         }
 
-        // fill text
+        // fill text for test only
         if (window.viewNum) {
             context.font = 'bold 16px san-serif';
             context.fillStyle = 'black';
@@ -467,7 +471,6 @@ function Contour(container, map, data) {
         }
 
         // create gradient
-        const labelContext = self.labelCanvas.getContext("2d");
         const NUM_OF_COLORSTOP = 10;
         const OFFSET_FROM_RIGHT = 360;
         const WIDTH = 320;
