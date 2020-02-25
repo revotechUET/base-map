@@ -418,7 +418,7 @@ ${require('./dashboard-template-modal.html')}
     </div>
   </div>
 </div>
-<div class="help" ng-click="self.showHelp = !self.showHelp">
+<div class="help" ng-click="self.showHelp = !self.showHelp" ng-show="self.showMap">
   <i class="fa fa-question-circle" style="font-size: 18px;"></i>
   <div class="help-content" ng-show="self.showHelp">
     <div class="help-content-row">
