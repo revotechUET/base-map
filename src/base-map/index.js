@@ -88,7 +88,10 @@ app.value('chartSettings', {
     getValue: function(widgetConfig) {
       const foundNode = chartTypes.find(d => d.properties.value == widgetConfig.type);
       return foundNode ? foundNode.data.label : null;
-    }
+    },
+    getSelectedOption: function(widgetConfig) {
+      return this.options.find(o => o.properties.value == widgetConfig.type)
+    },
   },
   dataSourceOpt: {
     type: 'select',
@@ -100,11 +103,14 @@ app.value('chartSettings', {
       { data: { label: "Well By Tag" }, properties: { value: "well-by-tag" } },
       { data: { label: "Curve By Tag" }, properties: { value: "curve-by-tag" } },
     ],
+    getSelectedOption: function(widgetConfig) {
+      return this.options.find(o => o.data.label == widgetConfig.dataSourceLabel)
+    },
     getValue: function (widgetConfig) {
       return widgetConfig.dataSourceLabel;
     },
     setValue: function (selectedProps, widgetConfig) {
-      console.log("setting data source");
+      // console.log("setting data source");
       if (selectedProps) {
         /*
         widgetConfig.data = getData(widgetConfig.dataSources[DTSRC_MAP[selectedProps.value]]);
