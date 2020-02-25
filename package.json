@@ -5,7 +5,7 @@
     "local": "webpack --mode=none",
     "build-dev": "webpack  --mode=development",
     "build-prod": "webpack --mode=production",
-    "start": "http-server ."
+    "start": "webpack -w --mode=development"
   },
   "devDependencies": {
     "css-loader": "^2.1.1",
