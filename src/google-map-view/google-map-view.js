@@ -288,6 +288,7 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken, wiApi) {
     var coordsDiv = document.getElementById('coords');
     map.controls[google.maps.ControlPosition.TOP_CENTER].push(coordsDiv);
     map.addListener('mousemove', function (event) {
+      updateScaleMap();
       coordsDiv.innerHTML = "<div>Latitude: <strong>" + (+event.latLng.lat()).toFixed(6) + "</strong></div><div>Longtitude: <strong>" + (+event.latLng.lng()).toFixed(6) + "</strong></div>";
     });
     $timeout(()=>{
