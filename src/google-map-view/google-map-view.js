@@ -150,6 +150,7 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken, wiApi) {
       function () {
         // drawMarkers();
         drawMarkersDebounced();
+        updateAlertHash();
         $timeout(() => {
           showAllPopup(self.allPopup);
           updateCoordinateTableDebounced();
@@ -1831,7 +1832,26 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken, wiApi) {
 
   // ===================== DRAWING BY ZONE AND MARKER SET ===================
   let coordinateHash = {};
-  const alertDebounce = _.debounce(function (message) {
+  const alertHash = {};
+  // use alert hash table to prevent continually popup dialog
+  function updateAlertHash() {
+    Object.keys(alertHash).forEach(tag => {
+      if (!self.wells.find(w => w.name == tag)) {
+        alertHash[tag] = undefined;
+      }
+    })
+  }
+  const alertDebounce = _.debounce(function (message, tag) {
+    if (tag) {
+      if (Array.isArray(alertHash[tag]) && alertHash[tag].find(ms => ms == message)) {
+        //already displayed, ignore it
+        return;
+      } else {
+        if (alertHash[tag] === undefined)
+          alertHash[tag] = [];
+        alertHash[tag].push(message);
+      }
+    }
     self.showError = true;
     $scope.message = message;
     $timeout(()=>{
@@ -1985,11 +2005,11 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken, wiApi) {
         }
       } else {
         console.warn(`Cannot find XOFFSET or YOFFSET curve in INDEX dataset of well ${well.name}`);
-        alertDebounce(`Cannot find XOFFSET or YOFFSET curve in INDEX dataset of well ${well.name}`);
+        alertDebounce(`Cannot find XOFFSET or YOFFSET curve in INDEX dataset of well ${well.name}`, well.name);
       }
     } else {
       console.warn(`Cannot find INDEX dataset in well ${well.name}`);
-      alertDebounce(`Cannot find INDEX dataset in well ${well.name}`);
+      alertDebounce(`Cannot find INDEX dataset in well ${well.name}`, well.name);
     }
     if (Array.isArray(depth)) {
       return depth.map((d, i) => {
