@@ -724,8 +724,12 @@ function baseMapController(
       self.dashboardContent.project = prjTree
       self.dashboardContent.forEach(widgetConfig => {
         const data = result[DTSRC_MAP[DTSRC_OPTIONS_MAP[widgetConfig.config.dataSourceLabel]]];
+        const __data = getData(data);
+        const maxAxisValue = d3.max(__data) + Math.ceil(d3.max(__data) * 0.2);
+        _.set(widgetConfig, "config.bar_chart_options.scales.yAxes[0].ticks.max", maxAxisValue);
+        _.set(widgetConfig, "config.bar_chart_options.scales.xAxes[0].ticks.max", maxAxisValue);
         Object.assign(widgetConfig.config, {
-          data: getData(data),
+          data: __data,
           // dataSources: result,
           labelFn: function (config, datum, idx) {
             return Object.keys(data)[idx];
@@ -756,8 +760,12 @@ function baseMapController(
 
       const _dashboardContent = widgetConfigs.map(wConfig => {
         const data = result[DTSRC_MAP[DTSRC_OPTIONS_MAP[wConfig.config.dataSourceLabel]]];
+        const __data = getData(data);
+        const maxAxisValue = d3.max(__data) + Math.ceil(d3.max(__data) * 0.2);
+        _.set(wConfig, "config.bar_chart_options.scales.yAxes[0].ticks.max", maxAxisValue);
+        _.set(wConfig, "config.bar_chart_options.scales.xAxes[0].ticks.max", maxAxisValue);
         Object.assign(wConfig.config, {
-          data: getData(data),
+          data: __data,
           // dataSources: result,
           labelFn: function (config, datum, idx) {
             return Object.keys(data)[idx];
@@ -926,11 +934,12 @@ function baseMapController(
   function buildDashboard(prjTree) {
     let result = groupWells(prjTree);
     Object.assign(CHART_DATA_SOURCE, result)
+    const wellTypeData = getData(result.wTypes);
     let wTypeWidgetConfig = {
       name: "Well Type",
       config: {
         type: 'bar',
-        data: getData(result.wTypes),
+        data: wellTypeData,
         // dataSources: result,
         dataSourceLabel: 'Well By Type',
         labelFn: function (config, datum, idx) {
@@ -946,13 +955,15 @@ function baseMapController(
             yAxes: [{
               ticks: {
                 maxTicksLimit: 10,
-                min: 0
+                min: 0,
+                max: d3.max(wellTypeData) + Math.ceil(0.2 * d3.max(wellTypeData))
               }
             }],
             xAxes: [{
               ticks: {
                 // maxTicksLimit: 10,
-                min: 0
+                min: 0,
+                max: d3.max(wellTypeData) + Math.ceil(0.2 * d3.max(wellTypeData))
               }
             }]
           }
@@ -960,11 +971,13 @@ function baseMapController(
       },
       id: getUniqChartID()
     }
+
+    const fieldWidgetData = getData(result.fields);
     let fieldWidgetConfig = {
       name: "Fields",
       config: {
         type: 'bar',
-        data: getData(result.fields),
+        data: fieldWidgetData,
         // dataSources: result,
         dataSourceLabel: 'Well By Field',
         labelFn: function (config, datum, idx) {
@@ -980,13 +993,15 @@ function baseMapController(
             yAxes: [{
               ticks: {
                 maxTicksLimit: 10,
-                min: 0
+                min: 0,
+                max: d3.max(fieldWidgetData) + Math.ceil(d3.max(fieldWidgetData) * 0.2)
               }
             }],
             xAxes: [{
               ticks: {
                 // maxTicksLimit: 10,
-                min: 0
+                min: 0,
+                max: d3.max(fieldWidgetData) + Math.ceil(d3.max(fieldWidgetData) * 0.2)
               }
             }]
           }
@@ -995,11 +1010,13 @@ function baseMapController(
       },
       id: getUniqChartID()
     }
+
+    const operatorWidgetData = getData(result.operators);
     let operatorWidgetConfig = {
       name: "Operators",
       config: {
         type: 'bar',
-        data: getData(result.operators),
+        data: operatorWidgetData,
         // dataSources: result,
         dataSourceLabel: 'Well By Operator',
         labelFn: function (config, datum, idx) {
@@ -1010,18 +1027,21 @@ function baseMapController(
           let palette = wiApi.getPalette("RandomColor");
           return `rgba(${palette[idx].red},${palette[idx].green},${palette[idx].blue},${palette[idx].alpha})`;
         },
+        title: "Operators",
         bar_chart_options: {
           scales: {
             yAxes: [{
               ticks: {
                 maxTicksLimit: 10,
-                min: 0
+                min: 0,
+                max: d3.max(operatorWidgetData) + Math.ceil(d3.max(operatorWidgetData) * 0.2)
               }
             }],
             xAxes: [{
               ticks: {
                 // maxTicksLimit: 10,
-                min: 0
+                min: 0,
+                max: d3.max(operatorWidgetData) + Math.ceil(d3.max(operatorWidgetData) * 0.2)
               }
             }]
           }
@@ -1029,11 +1049,12 @@ function baseMapController(
       },
       id: getUniqChartID()
     }
+    const tagWidgetData = getData(result.tags);
     let tagWidgetConfig = {
       name: "Tags",
       config: {
         type: 'bar',
-        data: getData(result.tags),
+        data: tagWidgetData,
         // dataSources: result,
         dataSourceLabel: 'Well By Tag',
         labelFn: function (config, datum, idx) {
@@ -1043,18 +1064,21 @@ function baseMapController(
           let palette = wiApi.getPalette("RandomColor");
           return `rgba(${palette[idx].red},${palette[idx].green},${palette[idx].blue},${palette[idx].alpha})`;
         },
+        title: "Tags",
         bar_chart_options: {
           scales: {
             yAxes: [{
               ticks: {
                 maxTicksLimit: 10,
-                min: 0
+                min: 0,
+                max: d3.max(tagWidgetData) + Math.ceil(d3.max(tagWidgetData) * 0.2)
               }
             }],
             xAxes: [{
               ticks: {
                 // maxTicksLimit: 10,
-                min: 0
+                min: 0,
+                max: d3.max(tagWidgetData) + Math.ceil(d3.max(tagWidgetData) * 0.2)
               }
             }]
           }
@@ -1062,11 +1086,12 @@ function baseMapController(
       },
       id: getUniqChartID()
     }
+    const curveTagWidgetData = getData(result.curveTags);
     let curveTagWidgetConfig = {
       name: "Curve Tags",
       config: {
         type: 'bar',
-        data: getData(result.curveTags),
+        data: curveTagWidgetData,
         // dataSources: result,
         dataSourceLabel: 'Curve By Tag',
         labelFn: function (config, datum, idx) {
@@ -1076,18 +1101,21 @@ function baseMapController(
           let palette = wiApi.getPalette("RandomColor");
           return `rgba(${palette[idx].red},${palette[idx].green},${palette[idx].blue},${palette[idx].alpha})`;
         },
+        title: "Curve Tags",
         bar_chart_options: {
           scales: {
             yAxes: [{
               ticks: {
                 maxTicksLimit: 10,
-                min: 0
+                min: 0,
+                max: d3.max(curveTagWidgetData) + Math.ceil(d3.max(curveTagWidgetData) * 0.2)
               }
             }],
             xAxes: [{
               ticks: {
                 // maxTicksLimit: 10,
-                min: 0
+                min: 0,
+                max: d3.max(curveTagWidgetData) + Math.ceil(d3.max(curveTagWidgetData) * 0.2)
               }
             }]
           }
