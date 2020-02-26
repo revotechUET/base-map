@@ -443,6 +443,7 @@ function Contour(container, map, data, transparency) {
         })
 
         // draw well point
+        /*
         const projectFn = getProjectionFn();
         context.fillStyle = "black";
         context.textAlign = "center";
@@ -458,6 +459,7 @@ function Contour(container, map, data, transparency) {
             context.fillRect(point.x, point.y, 5, 5);
             context.fillText(well.wellName, point.x, point.y - 5);
         })
+        */
 
         // draw text label
         if (self.showContourText) {
