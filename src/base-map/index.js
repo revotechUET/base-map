@@ -641,9 +641,8 @@ function baseMapController(
     }
   };
   this.changeLayout = function (showmap) {
-    console.log(showmap)
-    if(!self.showDashboard) {
-      self.showDashboard = !self.showDashboard;
+    if(!self.showDashboard && !self.showMap) {
+      self.showDashboard = true;
     }
     if(!showmap){
       $(".main").addClass("change-layout");
@@ -1427,7 +1426,12 @@ function baseMapController(
     self.setDashboardMode = self.queryString.dashboardonly;
     if(self.setDashboardMode === "true"){
       self.showMap = false;
-    } else self.showMap = true;
+      self.showDashboard = true;
+
+    } else {
+      self.showDashboard = false;
+      self.showMap = true;
+    }
     if (localStorage.getItem("token") !== null) {
       getZoneList();
       getCurveTree();
