@@ -1,6 +1,5 @@
 module.exports = Contour;
-const MIN_COOR = 0.001;
-const PROPAGATE_RATE = 0.5; // propagate per latlong
+const MIN_COOR = 0.001; // degrees
 const NUM_OF_CONTOURS = 10;
 const MAX_GRID_AREA = 100000;
 const GRID_TOO_LARGE = { lats: [], lngs: [], maxLat: 0, minLat: 0, maxLng: 0, minLng: 0 };
@@ -126,11 +125,8 @@ function Contour(container, map, data, transparency) {
         })
     }
 
-    const EPSILON = 0.5 + 10e-9;
     function getBounds() {
         const mapBounds = self.map.getBounds();
-        // const sw = mapBounds._sw ? mapBounds._sw : {lat: mapBounds.pa.g, lng: mapBounds.pa.h};
-        // const ne = mapBounds._ne ? mapBounds._ne : {lat: mapBounds.ka.g, lng: mapBounds.ka.h};
         const sw = mapBounds._sw ? mapBounds._sw : {lat: mapBounds.getSouthWest().lat(), lng: mapBounds.getSouthWest().lng() };
         const ne = mapBounds._ne ? mapBounds._ne : {lat: mapBounds.getNorthEast().lat(), lng: mapBounds.getNorthEast().lng() };
 
@@ -139,12 +135,6 @@ function Contour(container, map, data, transparency) {
         const minLng = Math.max(d3.min(self.data, (d => d.lng)), sw.lng);
         const maxLng = Math.min(d3.max(self.data, (d => d.lng)), ne.lng);
         if (minLat && maxLat && minLng && maxLng)
-            /*
-            return {
-                _sw: { lat: Math.floor(minLat - EPSILON), lng: Math.floor(minLng - EPSILON) },
-                _ne: { lat: Math.ceil(maxLat + EPSILON), lng: Math.ceil(maxLng + EPSILON) }
-            }
-            */
             return {
                 _sw: { lat: minLat - getMinCoord(), lng: minLng - getMinCoord() },
                 _ne: { lat: maxLat + getMinCoord(), lng: maxLng + getMinCoord() }

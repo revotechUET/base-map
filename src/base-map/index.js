@@ -118,7 +118,13 @@ app.value('chartSettings', {
           return Object.keys(widgetConfig.dataSources[DTSRC_MAP[selectedProps.value]])[idx];
         }
         */
+        widgetConfig.dataSourceLabel = this.options.find(opt => opt.properties.value == selectedProps.value).data.label;
         widgetConfig.data = getData(CHART_DATA_SOURCE[DTSRC_MAP[selectedProps.value]]);
+        if (!_.isFinite(_.get(widgetConfig, "bar_chart_options.scales.yAxes[0].ticks.max"))) {
+          const maxAxisValue = d3.max(widgetConfig.data) + Math.ceil(d3.max(widgetConfig.data) * 0.2);
+          _.set(widgetConfig, "bar_chart_options.scales.yAxes[0].ticks.max", maxAxisValue);
+          _.set(widgetConfig, "bar_chart_options.scales.xAxes[0].ticks.max", maxAxisValue);
+        }
         widgetConfig.labelFn = function (config, datum, idx) {
           return Object.keys(CHART_DATA_SOURCE[DTSRC_MAP[selectedProps.value]])[idx];
         }
@@ -1077,6 +1083,7 @@ function baseMapController(
     let result = groupWells(prjTree);
     Object.assign(CHART_DATA_SOURCE, result)
     const wellTypeData = getData(result.wTypes);
+    const maxWellTypeData = d3.max(wellTypeData) + Math.ceil(0.2 * d3.max(wellTypeData));
     let wTypeWidgetConfig = {
       name: "Well Type",
       config: {
@@ -1099,14 +1106,14 @@ function baseMapController(
               ticks: {
                 maxTicksLimit: 10,
                 min: 0,
-                max: d3.max(wellTypeData) + Math.ceil(0.2 * d3.max(wellTypeData))
+                max: _.isFinite(maxWellTypeData) ? maxWellTypeData : undefined
               }
             }],
             xAxes: [{
               ticks: {
                 // maxTicksLimit: 10,
                 min: 0,
-                max: d3.max(wellTypeData) + Math.ceil(0.2 * d3.max(wellTypeData))
+                max: _.isFinite(maxWellTypeData) ? maxWellTypeData : undefined
               }
             }]
           }
@@ -1116,6 +1123,7 @@ function baseMapController(
     }
 
     const fieldWidgetData = getData(result.fields);
+    const maxFieldData = d3.max(fieldWidgetData) + Math.ceil(d3.max(fieldWidgetData) * 0.2);
     let fieldWidgetConfig = {
       name: "Fields",
       config: {
@@ -1138,14 +1146,14 @@ function baseMapController(
               ticks: {
                 maxTicksLimit: 10,
                 min: 0,
-                max: d3.max(fieldWidgetData) + Math.ceil(d3.max(fieldWidgetData) * 0.2)
+                max: _.isFinite(maxFieldData) ? maxFieldData:undefined
               }
             }],
             xAxes: [{
               ticks: {
                 // maxTicksLimit: 10,
                 min: 0,
-                max: d3.max(fieldWidgetData) + Math.ceil(d3.max(fieldWidgetData) * 0.2)
+                max: _.isFinite(maxFieldData) ? maxFieldData:undefined
               }
             }]
           }
@@ -1156,6 +1164,7 @@ function baseMapController(
     }
 
     const operatorWidgetData = getData(result.operators);
+    const maxOperatorData = d3.max(operatorWidgetData) + Math.ceil(d3.max(operatorWidgetData) * 0.2);
     let operatorWidgetConfig = {
       name: "Operators",
       config: {
@@ -1179,14 +1188,14 @@ function baseMapController(
               ticks: {
                 maxTicksLimit: 10,
                 min: 0,
-                max: d3.max(operatorWidgetData) + Math.ceil(d3.max(operatorWidgetData) * 0.2)
+                max: _.isFinite(maxOperatorData) ? maxOperatorData:undefined
               }
             }],
             xAxes: [{
               ticks: {
                 // maxTicksLimit: 10,
                 min: 0,
-                max: d3.max(operatorWidgetData) + Math.ceil(d3.max(operatorWidgetData) * 0.2)
+                max: _.isFinite(maxOperatorData) ? maxOperatorData:undefined
               }
             }]
           }
@@ -1195,6 +1204,7 @@ function baseMapController(
       id: getUniqChartID()
     }
     const tagWidgetData = getData(result.tags);
+    const maxTagData = d3.max(tagWidgetData) + Math.ceil(d3.max(tagWidgetData) * 0.2);
     let tagWidgetConfig = {
       name: "Tags",
       config: {
@@ -1217,14 +1227,14 @@ function baseMapController(
               ticks: {
                 maxTicksLimit: 10,
                 min: 0,
-                max: d3.max(tagWidgetData) + Math.ceil(d3.max(tagWidgetData) * 0.2)
+                max: _.isFinite(maxTagData) ? maxTagData:undefined
               }
             }],
             xAxes: [{
               ticks: {
                 // maxTicksLimit: 10,
                 min: 0,
-                max: d3.max(tagWidgetData) + Math.ceil(d3.max(tagWidgetData) * 0.2)
+                max: _.isFinite(maxTagData) ? maxTagData:undefined
               }
             }]
           }
@@ -1232,7 +1242,9 @@ function baseMapController(
       },
       id: getUniqChartID()
     }
+
     const curveTagWidgetData = getData(result.curveTags);
+    const maxCurveData = d3.max(curveTagWidgetData) + Math.ceil(d3.max(curveTagWidgetData) * 0.2);
     let curveTagWidgetConfig = {
       name: "Curve Tags",
       config: {
@@ -1255,14 +1267,14 @@ function baseMapController(
               ticks: {
                 maxTicksLimit: 10,
                 min: 0,
-                max: d3.max(curveTagWidgetData) + Math.ceil(d3.max(curveTagWidgetData) * 0.2)
+                max: _.isFinite(maxCurveData) ? maxCurveData : undefined
               }
             }],
             xAxes: [{
               ticks: {
                 // maxTicksLimit: 10,
                 min: 0,
-                max: d3.max(curveTagWidgetData) + Math.ceil(d3.max(curveTagWidgetData) * 0.2)
+                max: _.isFinite(maxCurveData) ? maxCurveData : undefined
               }
             }]
           }
