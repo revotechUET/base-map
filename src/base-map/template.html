@@ -84,7 +84,7 @@ ${require('./dashboard-template-modal.html')}
       <div class="tab-name fa fa-user-circle-o" style="color: #4085ff; font-size: 13px; position: relative; z-index: 1;"
         ng-click="self.showUser = !self.showUser">
         <div ng-show="self.showUser" class="user">
-          <wi-login ng-if="self.hasWiLogin" whoami="main-service" app-name="Base Map" login-url="{{ self.loginUrl }}"
+          <wi-login ng-if="self.hasWiLogin" whoami="main-service" app-name="{{self.appName}}" login-url="{{ self.loginUrl }}"
             query-string="self.queryString" register-url="https://www.i2g.cloud/register-information/">
           </wi-login>
         </div>
@@ -357,7 +357,7 @@ ${require('./dashboard-template-modal.html')}
       <div class="setting" ng-class="{'disable': !self.showMap}">
         <div class="setting-title">Themes</div>
         <div class="setting-content">
-          <span>Theme actived: {{ self.activeTheme }} </span>
+          <span>Active theme: {{ self.activeTheme }} </span>
         </div>
         <div style="display: flex; margin-top: 10px;justify-content: space-between;" class="theme-list">
           <div ng-class="{'active fa fa-check': self.activeTheme === 'Dark'}"
@@ -381,9 +381,9 @@ ${require('./dashboard-template-modal.html')}
         </div>
       </div>
       <div class="setting" ng-class="{'disable': !self.showMap}">
-        <div class="setting-title">Control panel</div>
+        <div class="setting-title">Control Panel</div>
         <div class="setting-content">
-          <span>Show or hide map control button </span>
+          <span>Show control panel </span>
           <label class="switch">
             <input type="checkbox" ng-checked="self.controlPanel" ng-click="self.controlPanel = !self.controlPanel" />
             <span class="slider round"></span>
@@ -391,9 +391,9 @@ ${require('./dashboard-template-modal.html')}
         </div>
       </div>
       <div class="setting" ng-class="{'disable': !self.showMap}">
-        <div class="setting-title">Popup</div>
+        <div class="setting-title">Well's Name</div>
         <div class="setting-content">
-          <span>Display all names well on the popup</span>
+          <span>Show well's name</span>
           <label class="switch">
             <input type="checkbox" ng-checked="allPopup" ng-click="self.allPopup()" />
             <span class="slider round"></span>
@@ -401,9 +401,9 @@ ${require('./dashboard-template-modal.html')}
         </div>
       </div>
       <div class="setting" ng-class="{'disable': !self.showMap}">
-        <div class="setting-title">Point location</div>
+        <div class="setting-title">Mouse Coordinates</div>
         <div class="setting-content">
-          <span>Displays coordinates information location of point mouse</span>
+          <span>Show mouse coordinates</span>
           <label class="switch">
             <input type="checkbox" ng-checked="self.point" ng-click="self.point = !self.point" />
             <span class="slider round"></span>
@@ -411,11 +411,11 @@ ${require('./dashboard-template-modal.html')}
         </div>
       </div>
       <div class="setting">
-        <div class="setting-title">Show only dashboard</div>
+        <div class="setting-title">Show Dashboard Only</div>
         <div class="setting-content">
           <span>Hide map to increase performance</span>
           <label class="switch">
-            <input type="checkbox" ng-click="self.showMap = !self.showMap; self.changeLayout();" />
+            <input type="checkbox" ng-checked="!self.showMap" ng-click="self.showMap = !self.showMap;" />
             <span class="slider round"></span>
           </label>
         </div>
@@ -431,9 +431,9 @@ ${require('./dashboard-template-modal.html')}
         </div>
       </div>
       <div class="setting">
-        <div class="setting-title">File manager dialog</div>
+        <div class="setting-title">File Manager</div>
         <div class="setting-content">
-          <span>Load/Save configuration file for Basemap</span>
+          <span>Load/Save configuration file</span>
           <label class="switch">
             <input type="checkbox" ng-checked="self.showFileDialog" ng-click="self.showFileDialog = !self.showFileDialog" />
             <span class="slider round"></span>
@@ -522,7 +522,7 @@ ${require('./dashboard-template-modal.html')}
   show-contour="self.showContour" control-panel="self.controlPanel" deep-ocean="self.deepOcean" point="self.point">
 </map-view>
 -->
-<google-map-view theme="themeMap" ng-if="checkGoogleApi()" ng-show="self.showMap" all-popup="allPopup" class="mapView"
+<google-map-view theme="themeMap" ng-if="checkGoogleApi() && self.showMap" all-popup="allPopup" class="mapView"
   wells="wellSelect" geo-json="self.geoJson" control-panel="self.controlPanel" point="self.point" focus-well='focusWell'
   focus-curve="focusCurve" show-contour="self.showContour" show-contour-text="self.showContourText" contour-transparency="self.contourTransparency"
   show-trajectory="self.showTrajectory" show-Axes="self.showAxes"

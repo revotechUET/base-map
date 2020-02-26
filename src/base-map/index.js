@@ -270,7 +270,7 @@ function baseMapController(
   self.selectedNodes = [];
   self.showLoading = false;
   self.showLoadingDashboard = false;
-  self.showMap = true;
+  self.showMap = undefined;
   self.darkMode = false;
   self.showZonesets = false;
   self.showMarkersets = false;
@@ -640,12 +640,18 @@ function baseMapController(
       }
     }
   };
-  this.changeLayout = function () {
+  this.changeLayout = function (showmap) {
+    console.log(showmap)
     if(!self.showDashboard) {
       self.showDashboard = !self.showDashboard;
     }
-    $(".main").toggleClass("change-layout");
-    $(".dialog").toggleClass("change-layout-dialog");
+    if(!showmap){
+      $(".main").addClass("change-layout");
+      $(".dialog").addClass("change-layout-dialog");
+    } else if (showmap){
+      $(".main").removeClass("change-layout");
+      $(".dialog").removeClass("change-layout-dialog");
+    }
   }
 
   async function getDashboardTemplate() {
@@ -1418,6 +1424,10 @@ function baseMapController(
     self.loginUrl =
       `${WI_AUTH_HOST}/login` || $location.search().loginUrl || self.loginUrl;
     self.queryString = queryString.parse(location.search);
+    self.setDashboardMode = self.queryString.dashboardonly;
+    if(self.setDashboardMode === "true"){
+      self.showMap = false;
+    } else self.showMap = true;
     if (localStorage.getItem("token") !== null) {
       getZoneList();
       getCurveTree();
@@ -1452,6 +1462,14 @@ function baseMapController(
           getZoneList();
           getCurveTree();
         }
+      }
+    );
+    $scope.$watch(
+      function () {
+        return self.showMap;
+      },
+      function (newValue, oldValue) {
+        self.changeLayout(self.showMap);
       }
     );
   };
