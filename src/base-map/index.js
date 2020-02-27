@@ -807,6 +807,7 @@ function baseMapController(
             return Object.keys(data)[idx];
           },
           colorFn: function (config, datum, idx) {
+            if (config.colors && config.colors[idx]) return config.colors[idx];
             let palette = wiApi.getPalette(config.paletteName || "RandomColor");
             idx = idx % palette.length;
             return `rgba(${palette[idx % palette.length].red},${palette[idx].green},${palette[idx].blue},${palette[idx].alpha})`;
@@ -845,6 +846,7 @@ function baseMapController(
             return Object.keys(data)[idx];
           },
           colorFn: function (config, datum, idx) {
+            if (config.colors && config.colors[idx]) return config.colors[idx];
             let palette = wiApi.getPalette(config.paletteName || "RandomColor");
             idx = idx % palette.length;
             return `rgba(${palette[idx].red},${palette[idx].green},${palette[idx].blue},${palette[idx].alpha})`;
@@ -1025,6 +1027,7 @@ function baseMapController(
             return Object.keys(result.wTypes)[idx];
           },
           colorFn: function (config, datum, idx) {
+            if (config.colors && config.colors[idx]) return config.colors[idx];
             let palette = wiApi.getPalette(config.paletteName || "RandomColor");
             idx = idx % palette.length;
             return `rgba(${palette[idx].red},${palette[idx].green},${palette[idx].blue},${palette[idx].alpha})`;
@@ -1100,6 +1103,7 @@ function baseMapController(
           return Object.keys(result.wTypes)[idx];
         },
         colorFn: function (config, datum, idx) {
+            if (config.colors && config.colors[idx]) return config.colors[idx];
           let palette = wiApi.getPalette(config.paletteName || "RandomColor");
             idx = idx % palette.length;
           return `rgba(${palette[idx].red},${palette[idx].green},${palette[idx].blue},${palette[idx].alpha})`;
@@ -1140,6 +1144,7 @@ function baseMapController(
           return Object.keys(result.fields)[idx];
         },
         colorFn: function (config, datum, idx) {
+            if (config.colors && config.colors[idx]) return config.colors[idx];
           // return 'rgba(64,64,200,0.7)';
           let palette = wiApi.getPalette(config.paletteName || "RandomColor");
             idx = idx % palette.length;
@@ -1181,6 +1186,7 @@ function baseMapController(
           return Object.keys(result.operators)[idx];
         },
         colorFn: function (config, datum, idx) {
+            if (config.colors && config.colors[idx]) return config.colors[idx];
           // return 'rgba(64,200,64,0.7)';
           let palette = wiApi.getPalette(config.paletteName || "RandomColor");
             idx = idx % palette.length;
@@ -1221,6 +1227,7 @@ function baseMapController(
           return Object.keys(result.tags)[idx];
         },
         colorFn: function (config, datum, idx) {
+            if (config.colors && config.colors[idx]) return config.colors[idx];
           let palette = wiApi.getPalette(config.paletteName || "RandomColor");
             idx = idx % palette.length;
           return `rgba(${palette[idx].red},${palette[idx].green},${palette[idx].blue},${palette[idx].alpha})`;
@@ -1261,6 +1268,7 @@ function baseMapController(
           return Object.keys(result.curveTags)[idx];
         },
         colorFn: function (config, datum, idx) {
+            if (config.colors && config.colors[idx]) return config.colors[idx];
           let palette = wiApi.getPalette(config.paletteName || "RandomColor");
             idx = idx % palette.length;
           return `rgba(${palette[idx].red},${palette[idx].green},${palette[idx].blue},${palette[idx].alpha})`;
@@ -2734,5 +2742,12 @@ function baseMapController(
       dd = dd * -1;
     }
     return dd;
+  }
+
+  this.onClickChart = function(points, evt, widgetConfig) {
+    let idx = points[0]._index;
+    wiDialog.colorPickerDialog(widgetConfig.colors[idx], {}, function (colorStr) {
+      widgetConfig.colors[idx] = colorStr;
+    });
   }
 }
