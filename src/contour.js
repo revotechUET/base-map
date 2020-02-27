@@ -46,7 +46,7 @@ function isLightColor(color) {
     }
 }
 
-function Contour(container, map, data, transparency) {
+function Contour(container, map, data, transparency, textFormatFunc) {
     const self = this;
     this.container = d3.select(container);
     this.map = map;
@@ -134,6 +134,12 @@ function Contour(container, map, data, transparency) {
         const maxLat = Math.min(d3.max(self.data, (d => d.lat)), ne.lat);
         const minLng = Math.max(d3.min(self.data, (d => d.lng)), sw.lng);
         const maxLng = Math.min(d3.max(self.data, (d => d.lng)), ne.lng);
+        /*
+        const minLat = d3.min(self.data, (d => d.lat));
+        const maxLat = d3.max(self.data, (d => d.lat));
+        const minLng = d3.min(self.data, (d => d.lng));
+        const maxLng = d3.max(self.data, (d => d.lng));
+        */
         if (minLat && maxLat && minLng && maxLng)
             return {
                 _sw: { lat: minLat - getMinCoord(), lng: minLng - getMinCoord() },
@@ -236,6 +242,15 @@ function Contour(container, map, data, transparency) {
         else if (zoom >= 9)
             return MIN_COOR * 100;
     }
+    function getLabelSpacingUnit() {
+        const zoom = map.getZoom();
+        if (zoom >= 11)
+            return 2;
+        else if (zoom >= 9)
+            return 3;
+        else
+            return 4;
+    }
     function getLng(lng) {
         if (typeof(self.map.getCenter().lng) == "function")
             return self.map.getCenter().lng() < 0 ? -1 * (360 - lng):lng;
@@ -256,6 +271,7 @@ function Contour(container, map, data, transparency) {
                     : ((getLng(lng) - minLng) * (getLng(lng) - maxLng) <= 0)
                 );
     }
+    /*
     function maxDistanceFromGrid(datum, grid) {
         const {minLat, maxLat, minLng, maxLng} = grid;
         const _nw = {lat: maxLat, lng: getLng(minLng)};
@@ -268,7 +284,6 @@ function Contour(container, map, data, transparency) {
             return Math.sqrt( lat ** 2 + lng ** 2);
         }));
     }
-    /*
     function calcValueFromDistance(value, distance) {
         // return value * ((PROPAGATE_RATE) ** (distance*MIN_COOR));
         return value - value * distance * MIN_COOR * (1 - PROPAGATE_RATE);
@@ -417,10 +432,9 @@ function Contour(container, map, data, transparency) {
             };
         }
 
-        // const minVal = d3.min(contourData.values);
         const maxVal = d3.max(contourData.values);
         const minVal = d3.min(contourData.values);
-        const rangeValPerContour = (maxVal - minVal) / NUM_OF_CONTOURS;
+        const rangeValPerContour = (maxVal - minVal) / (self.contourStep || 10);
         const thresholds = d3.range(minVal, maxVal + rangeValPerContour, rangeValPerContour);
         // const thresholds = d3.range(1, NUM_OF_CONTOURS, 1)
         //     .map(contNum => calcValueFromDistance(maxVal, window.test * contNum/getMinCoord()));
@@ -428,8 +442,9 @@ function Contour(container, map, data, transparency) {
         const contours = d3.contours()
             .size([contourData.width, contourData.height])
             .thresholds(thresholds)
+            // .thresholds(self.contourStep || 10)
             // .thresholds(d3.range(minVal, maxVal, rangeVal * 1/NUM_OF_CONTOURS))
-            // .thresholds(color.ticks(NUM_OF_CONTOURS))
+            // .thresholds(color.ticks(self.contourStep || 10))
             (contourData.values)
             .map(transformToPx);
         context.strokeStyle = 'black';
@@ -437,7 +452,8 @@ function Contour(container, map, data, transparency) {
         contours.forEach(contour => {
             const path = d3.geoPath()(contour);
             const path2D = new Path2D(path);
-            context.stroke(path2D);
+            if (self.showContourStroke)
+                context.stroke(path2D);
             context.fillStyle = color(contour.value);
             context.fill(path2D);
         })
@@ -477,7 +493,7 @@ function Contour(container, map, data, transparency) {
                 if (!contour.coordinates[0]) return;
                 const pointsLength = contour.coordinates[0][0].length;
                 if (pointsLength && pointsLength >= 3) {
-                    d3.range(0, pointsLength, TEXT_SPACE)
+                    d3.range(0, pointsLength, getLabelSpacingUnit())
                         .forEach(index => {
                             const _point = contour.coordinates[0][0][index];
                             if (!_point) { return; }
@@ -487,7 +503,7 @@ function Contour(container, map, data, transparency) {
                                 return;
                             }
                             else {
-                                context.fillText(contour.value.toFixed(4), point.x, point.y);
+                                context.fillText(textFormatFunc(contour.value), point.x, point.y);
                             }
                         })
                 }
@@ -529,8 +545,8 @@ function Contour(container, map, data, transparency) {
         labelContext.fillStyle = "black";
         labelContext.textAlign = "left";
         labelContext.font = "300 12px Sans-serif";
-        labelContext.fillText(colorDomainStart, viewWidth - OFFSET_FROM_RIGHT, viewHeight - OFFSET_FROM_BOTTOM - 10);
+        labelContext.fillText(textFormatFunc(colorDomainStart), viewWidth - OFFSET_FROM_RIGHT, viewHeight - OFFSET_FROM_BOTTOM - 10);
         labelContext.textAlign = "right";
-        labelContext.fillText(colorDomainStart + colorDomainRange, viewWidth - (OFFSET_FROM_RIGHT - WIDTH), viewHeight - OFFSET_FROM_BOTTOM - 10);
+        labelContext.fillText(textFormatFunc(colorDomainStart + colorDomainRange), viewWidth - (OFFSET_FROM_RIGHT - WIDTH), viewHeight - OFFSET_FROM_BOTTOM - 10);
     }
 }

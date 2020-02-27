@@ -256,7 +256,9 @@ function baseMapController(
   self.point = true;
   self.showingTimeDialogError = 5;
   self.showContour = false;
+  self.showContourStroke = true;
   self.contourTransparency = 0.5;
+  self.contourStep = 10;
   self.showTrajectory = true;
   self.showAxes = true;
   self.axesUnitOptions = AxesUnitOptions;
