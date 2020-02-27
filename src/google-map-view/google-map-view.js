@@ -25,7 +25,9 @@ app.component(componentName, {
     getCurveInfoFn: "<",
     showContour: "<",
     showContourText: "<",
+    showContourStroke: "<",
     contourTransparency: "<",
+    contourStep: "<",
     // view by marker or zone
     getCurveRawDataFn: "<",
     focusMarkerOrZone: "<",
@@ -184,7 +186,22 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken, wiApi) {
       }
     );
     $scope.$watch(
+      () => self.contourStep,
+      () => {
+        if (_.isNumber(self.contourStep) && contour) {
+          contour.contourStep = self.contourStep;
+          updateContours();
+        }
+      }
+    );
+    $scope.$watch(
       () => self.showContourText,
+      () => {
+        updateContours();
+      }
+    );
+    $scope.$watch(
+      () => self.showContourStroke,
       () => {
         updateContours();
       }
@@ -2163,7 +2180,8 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken, wiApi) {
     contour.updateCanvasSize();
   }
   function initContours() {
-    contour = new Contour("#contour-map-container", map, [], self.contourTransparency);
+    const formatTextFunc = wiApi.bestNumberFormat || ((text) => text);
+    contour = new Contour("#contour-map-container", map, [], self.contourTransparency, formatTextFunc);
     google.maps.event.addListener(map, 'bounds_changed', function () {
       contour.drawContourDebounced();
     })
@@ -2180,6 +2198,7 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken, wiApi) {
     }
     if (contour) {
       contour.showContourText = self.showContourText;
+      contour.showContourStroke = self.showContourStroke;
       contour.data = await genContourData();
       contour.drawContourDebounced();
     }

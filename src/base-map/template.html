@@ -269,8 +269,20 @@ ${require('./dashboard-template-modal.html')}
             </label>
           </div>
           <div ng-if="self.showContour" class="setting-content" style="margin-top: 12px;">
+            <span
+              class="setting-sub-title">Show Contour Line</span>
+            <label class="switch">
+              <input type="checkbox" ng-checked="self.showContourStroke" ng-click="self.showContourStroke = !self.showContourStroke" />
+              <span class="slider round"></span>
+            </label>
+          </div>
+          <div ng-if="self.showContour" class="setting-content" style="margin-top: 12px;">
             <span class="setting-sub-title">Contour Transparency</span>
             <input type="number" min="0" max="1" ng-model="self.contourTransparency" step="0.1"/>
+          </div>
+          <div ng-if="self.showContour" class="setting-content" style="margin-top: 12px;">
+            <span class="setting-sub-title">Number Of Contours Line</span>
+            <input type="number" min="1" ng-model="self.contourStep" step="1"/>
           </div>
           <div ng-if="self.showContour" class="setting-content" style="margin-top: 12px;">
             <wi-tree-view-virtual tree-root="curveList" get-label="self.getLabel" get-icon="self.getIcon" class="customize-tree-view"
@@ -524,7 +536,8 @@ ${require('./dashboard-template-modal.html')}
 -->
 <google-map-view theme="themeMap" ng-if="checkGoogleApi() && self.showMap" all-popup="allPopup" class="mapView"
   wells="wellSelect" geo-json="self.geoJson" control-panel="self.controlPanel" point="self.point" focus-well='focusWell'
-  focus-curve="focusCurve" show-contour="self.showContour" show-contour-text="self.showContourText" contour-transparency="self.contourTransparency"
+  focus-curve="focusCurve" show-contour="self.showContour" show-contour-text="self.showContourText"
+  contour-transparency="self.contourTransparency" contour-step="self.contourStep" show-contour-stroke="self.showContourStroke"
   show-trajectory="self.showTrajectory" show-Axes="self.showAxes"
   axes-unit="self.axesUnit" axes-x-left="self.XLeft" axes-x-right="self.XRight" axes-y-bottom="self.YBottom" axes-y-top="self.YTop"
   focus-marker-or-zone="focusMZ" zone-depth-spec="self.zoneDepthSpec" get-curve-info-fn="self.getCurveInfoFn"
