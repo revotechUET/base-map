@@ -1019,11 +1019,14 @@ function baseMapController(
       projectTree = prjTree;
       let result = groupWells(projectTree);
       Object.assign(CHART_DATA_SOURCE, result)
+      const wellByTypeData = getData(result.wTypes);
+      const maxWellTypeData = d3.max(maxWellTypeData);
       let WidgetConfig = {
         name: "New Dashboard",
         config: {
           type: 'bar',
-          data: getData(result.wTypes),
+          data: wellByTypeData,
+          dataSourceLabel: "Well By Type",
           // dataSources: result,
           labelFn: function (config, datum, idx) {
             return Object.keys(result.wTypes)[idx];
@@ -1040,12 +1043,14 @@ function baseMapController(
               yAxes: [{
                 ticks: {
                   maxTicksLimit: 10,
-                  min: 0
+                  min: 0,
+                  max: _.isFinite(maxWellTypeData) ? maxWellTypeData : undefined
                 }
               }],
               xAxes: [{
                 ticks: {
-                  min: 0
+                  min: 0,
+                max: _.isFinite(maxWellTypeData) ? maxWellTypeData : undefined
                 }
               }]
             }
