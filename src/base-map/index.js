@@ -1020,7 +1020,7 @@ function baseMapController(
       let result = groupWells(projectTree);
       Object.assign(CHART_DATA_SOURCE, result)
       const wellByTypeData = getData(result.wTypes);
-      const maxWellTypeData = d3.max(maxWellTypeData);
+      const maxWellTypeData = d3.max(wellByTypeData);
       let WidgetConfig = {
         name: "New Dashboard",
         config: {
