@@ -2455,14 +2455,14 @@ function baseMapController(
         }, function(item) {
           console.log(item);
           wiApi.getFullInfoPromise(item.idProject)
-          .then((res) => {
+          .then(async (res) => {
             console.log(res);
             var sd = res.storage_databases[0];
-            var file = new File([content], "i2G_basemap_configuration.zip");
+            // var file = new File([content], "i2G_basemap_configuration.zip");
             wiDialog.treeExplorer({
                 title: "Select Folder To Save Configuration",
                 selectWhat: 'folder',
-                file: file,
+                file: content,
                 url: config.url,
                 storage_database: JSON.stringify({
                   company: sd.company,
@@ -2471,7 +2471,10 @@ function baseMapController(
                 })
               }, Upload, (res) => {
                 console.log(res);
-            });
+            }, {
+              rename: true,
+              fileName: "i2G_basemap_configuration.zip"
+          });
           });
         });
       });
