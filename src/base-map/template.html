@@ -56,13 +56,13 @@ ${require('./dashboard-template-modal.html')}
 </div>
 
 <div id="main" class="main slim-scroller" ng-class="{'change-height': self.hideMain}">
-  <div class="tab">
+  <div class="tab" ng-style="{'margin-bottom': !self.showMap ? '20px' : '0'}">
     <div style="display: flex; align-items: center;">
 
       <div class="tab-name" ng-class="{'active' : isSet(1)}" ng-click="setTab(1)">
         Projects
       </div>
-      <div class="tab-name" ng-class="{'active' : isSet(3)}" ng-click="setTab(3)">
+      <div class="tab-name" ng-class="{'active' : isSet(3)}" ng-click="setTab(3)" ng-show="self.showMap">
         Wells
         <span ng-if="wellSelect.length" class="tab-badge">{{wellSelect.length?wellSelect.length:''}}</span>
       </div>
@@ -72,15 +72,15 @@ ${require('./dashboard-template-modal.html')}
         <span ng-if="curveList.length" class="tab-badge">{{curveList.length?curveList.length:''}}</span>
       </div>
       -->
-      <div class="tab-name" ng-class="{'active' : isSet(2)}" ng-click="setTab(2)">
+      <div class="tab-name" ng-class="{'active' : isSet(2)}" ng-click="setTab(2)" ng-show="self.showMap">
         Appearance
       </div>
-      <div class="tab-name" ng-class="{'active' : isSet(5)}" ng-click="setTab(5)">
+      <div class="tab-name" ng-class="{'active' : isSet(5)}" ng-click="setTab(5)" ng-show="self.showMap">
         Configs
       </div>
     </div>
     <div style="display: flex;">
-
+      <div class="tab-name ti ti-reload" style="color: #4085ff; font-size: 13px; position: relative; z-index: 1;" ng-click="self.refresh()" ng-show="!self.showMap" ></div>
       <div class="tab-name fa fa-user-circle-o" style="color: #4085ff; font-size: 13px; position: relative; z-index: 1;"
         ng-click="self.showUser = !self.showUser">
         <div ng-show="self.showUser" class="user">
@@ -96,8 +96,9 @@ ${require('./dashboard-template-modal.html')}
       <span class="bar-animation"></span>
     </div>
   </div>
-  <div class="tab" style="justify-content: flex-start; padding-left: 5px; border-bottom: none;">
-    <div title="Show/Hide dashboard" class="tab-fn" ng-class="{'on': self.showDashboard}" ng-show="self.showMap"
+  <div class="tab" style="justify-content: flex-start; padding-left: 5px; border-bottom: none;" ng-show="self.showMap">
+    <div title="Show/Hide dashboard" class="tab-fn" ng-class="{'on': self.showDashboard}" 
+      ng-show="!self.showMap"
       ng-click="self.openDashboard()">
       <i class="ti ti-pie-chart"></i>
     </div>
@@ -422,6 +423,8 @@ ${require('./dashboard-template-modal.html')}
           </label>
         </div>
       </div>
+      <!-- Disable setting open dashboard from basemap -->
+      <!-- <div class="setting" ng-show="!self.showMap"> -->
       <div class="setting">
         <div class="setting-title">Show Dashboard Only</div>
         <div class="setting-content">

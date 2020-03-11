@@ -1083,7 +1083,7 @@ function baseMapController(
       errorDialog("Please select a project to show Dashboard");
       return;
     }
-    self.showDashboard = !self.showDashboard; 
+    // self.showDashboard = !self.showDashboard; 
     self.showLoadingDashboard = true;
     wiApi.getFullInfoPromise(self.selectedNode.idProject, self.selectedNode.owner, self.selectedNode.owner ? self.selectedNode.name : null).then((prjTree) => {
       projectTree = prjTree;
@@ -2121,7 +2121,9 @@ function baseMapController(
   this.clickFunction = function ($event, node, selectedNodes) {
     self.selectedNode = node;
     self.selectedNodes = selectedNodes.map((e)=>e.data);
-    console.log(node)
+    if(!self.showMap){
+      self.openDashboard();
+    }
 			
     if (!$event.shiftKey && !$event.ctrlKey && !$event.metaKey) {
 			
@@ -2144,7 +2146,7 @@ function baseMapController(
       // console.log("Dataset clicked");
     } else if (node.idWell) {
       // console.log("Well clicked");
-    } else if (node.idProject) {
+    } else if (node.idProject && self.showMap) {
       self.showLoading = true;
       if (!node.timestamp || Date.now() - node.timestamp > 10 * 1000) {
         getWells(node.idProject, node, function (err, wells) {
