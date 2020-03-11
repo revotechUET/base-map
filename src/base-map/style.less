@@ -1182,6 +1182,8 @@ base-map {
             flex: 1;
         }
     }
+    
+      
 
   
 
@@ -1205,6 +1207,19 @@ wi-map-loading .main-spinner {
 wi-map-loading .spinner {
     display: none;
 }
+.icon-clicking {
+    width: 20px;
+    height: 20px;
+    background: #3e84ff;
+    margin-left: 16px;
+    top: 120px;
+    border-radius: 50%;
+    animation-duration: 1.5s;
+    animation-iteration-count: infinite;
+    animation-name: clicking;
+    position: fixed;
+    left: 250px;
+  }
 
 .loading {
     display        : flex;
@@ -1320,3 +1335,16 @@ wi-map-loading .spinner {
     }
 
 }
+@keyframes clicking {
+    0% {
+      opacity: 0;
+      transform: scale(3);
+    }
+    30% {
+      opacity: 0.6;
+    }
+    100% {
+      opacity: 0;
+      transform: scale(0.5);
+    }
+  }

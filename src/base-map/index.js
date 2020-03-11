@@ -1367,6 +1367,10 @@ function baseMapController(
     document.getElementById("main").classList.toggle("dark-mode");
     $(".dialog").toggleClass("dark-mode");
   }
+  this.setAllDone = function(param) {
+    console.log(param)
+    localStorage.setItem('all-done', param);
+  }
   function setDarkMode(enable) {
     if (enable) {
       document.getElementById("main").classList.add("dark-mode");
@@ -1451,6 +1455,15 @@ function baseMapController(
     if (localStorage.getItem("token") !== null) {
       getZoneList();
       getCurveTree();
+    }
+    if(localStorage.getItem('all-done') === "true") {
+      $timeout(()=>{
+        self.showGuide = false;
+      })
+    } else {
+      $timeout(()=>{
+        self.showGuide = true;
+      })
     }
 
     if (self.username && self.password) {
@@ -2122,7 +2135,9 @@ function baseMapController(
     self.selectedNode = node;
     self.selectedNodes = selectedNodes.map((e)=>e.data);
     if(!self.showMap){
+      self.showGuide = false;
       self.openDashboard();
+      
     }
 			
     if (!$event.shiftKey && !$event.ctrlKey && !$event.metaKey) {

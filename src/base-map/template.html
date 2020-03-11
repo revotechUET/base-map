@@ -12,8 +12,27 @@
 </div>
 <script type="text/ng-template" id="dashboard-template-modal">
 ${require('./dashboard-template-modal.html')}
-</script>
-
+</script> 
+<div ng-show="self.showGuide && !self.showMap"
+  style="width: calc(100vw - 340px); height: 100vh; right: 0; position: absolute; overflow: hidden; background: #3e84ff; z-index: 3;"
+  class="slim-scroller">
+  <div style="width: 300px; display: flex; top: 100px; left: 100px; position: absolute;">
+    <div class="icon-clicking"></div>
+    <div style="color: #fff; margin-left: 20px;">
+      <div style="font-size: 20px; font-weight: bold; margin-bottom: 10px;">
+        Open Dashboard
+      </div>
+      <div>
+        Choose a project to get started.
+      </div>
+      <div ng-click="self.showGuide = !self.showGuide; self.setAllDone(true)"
+        style="display: flex; padding: 10px 20px; border-radius: 20px; border: 2px solid #fff; width: fit-content; align-items: center; margin-top: 40px; cursor: pointer;">
+        <div class="fa fa-check" style="margin-right: 15px;"></div>
+        <div>Done</div>
+      </div>
+    </div>
+  </div>
+</div>
 <div class="dialog-error" ng-show="self.showError">
     <div class="dialog-header">
         <div style="display: flex; align-items: center;">
@@ -424,8 +443,8 @@ ${require('./dashboard-template-modal.html')}
         </div>
       </div>
       <!-- Disable setting open dashboard from basemap -->
-      <div class="setting" ng-show="!self.showMap">
-      <!-- <div class="setting"> -->
+      <!-- <div class="setting" ng-show="!self.showMap"> -->
+      <div class="setting">
         <div class="setting-title">Show Dashboard Only</div>
         <div class="setting-content">
           <span>Hide map to increase performance</span>
