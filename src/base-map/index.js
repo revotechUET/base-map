@@ -1442,7 +1442,7 @@ function baseMapController(
     self.loginUrl =
       `${WI_AUTH_HOST}/login` || $location.search().loginUrl || self.loginUrl;
     self.queryString = queryString.parse(location.search);
-    self.setDashboardMode = self.queryString.dashboardonly;
+    self.setDashboardMode = "true"; 
     self.queryString.token ? (() => { wiToken.setToken(self.queryString.token);  wiToken.saveToken(self.queryString)})() : null
     if(self.setDashboardMode === "true"){
       self.showMap = false;
