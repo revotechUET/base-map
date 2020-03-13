@@ -789,6 +789,14 @@ function baseMapController(
     })
   }
 
+  this.getNumberOfWells = function(project) {
+    console.log("project info", project);
+    if (!project)
+      return "";
+    else
+      return `(${project.wells.length} wells)`;
+  }
+
   this.reloadDashboardData = function() {
     self.showLoadingDashboard = true;
     wiApi.getFullInfoPromise(self.selectedNode.idProject, self.selectedNode.owner, self.selectedNode.owner ? self.selectedNode.name : null)
