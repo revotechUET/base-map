@@ -229,6 +229,38 @@ const WellDisplayModeOptions = [
   {label: "Status", value: "status"},
 ]
 
+const WELL_INFOS = [
+  { field: "Well Name", matchKeys: ["WELL"], getValueFn:(matchField) => matchField.value },
+  { field: "Top Depth", matchKeys: ["STRT"], getValueFn:(matchField) => `${matchField.value} (${matchField.unit})` },
+  { field: "Bottom Depth", matchKeys: ["STOP"], getValueFn:(matchField) => `${matchField.value} (${matchField.unit})` },
+  { field: "Total Depth", matchKeys: [""], getValueFn:(matchField) => matchField.value },
+  { field: "unit", matchKeys: [""], getValueFn:(matchField) => matchField.value },
+  { field: "UWI", matchKeys: [""], getValueFn:(matchField) => matchField.value },
+  { field: "API", matchKeys: [""], getValueFn:(matchField) => matchField.value },
+  { field: "Id", matchKeys: [""], getValueFn:(matchField) => matchField.value },
+  { field: "Name", matchKeys: [""], getValueFn:(matchField) => matchField.value },
+  { field: "Company", matchKeys: [""], getValueFn:(matchField) => matchField.value },
+  { field: "Operator", matchKeys: [""], getValueFn:(matchField) => matchField.value },
+  { field: "Author", matchKeys: [""], getValueFn:(matchField) => matchField.value },
+  { field: "Date", matchKeys: [""], getValueFn:(matchField) => matchField.value },
+  { field: "Logging date", matchKeys: [""], getValueFn:(matchField) => matchField.value },
+  { field: "Service company", matchKeys: [""], getValueFn:(matchField) => matchField.value },
+  { field: "License number", matchKeys: [""], getValueFn:(matchField) => matchField.value },
+  { field: "County", matchKeys: [""], getValueFn:(matchField) => matchField.value },
+  { field: "State", matchKeys: [""], getValueFn:(matchField) => matchField.value },
+  { field: "Province", matchKeys: [""], getValueFn:(matchField) => matchField.value },
+  { field: "Country", matchKeys: [""], getValueFn:(matchField) => matchField.value },
+  { field: "Location", matchKeys: [""], getValueFn:(matchField) => matchField.value },
+  { field: "Field", matchKeys: [""], getValueFn:(matchField) => matchField.value },
+  { field: "Project", matchKeys: [""], getValueFn:(matchField) => matchField.value },
+  { field: "Code", matchKeys: [""], getValueFn:(matchField) => matchField.value },
+  { field: "Area", matchKeys: [""], getValueFn:(matchField) => matchField.value },
+  { field: "Type", matchKeys: [""], getValueFn:(matchField) => matchField.value },
+  { field: "Status", matchKeys: [""], getValueFn:(matchField) => matchField.value },
+  { field: "Well Type", matchKeys: [""], getValueFn:(matchField) => matchField.value },
+  { field: "Fluid", matchKeys: [""], getValueFn:(matchField) => matchField.value },
+] 
+
 function baseMapController(
   $scope,
   $http,
@@ -790,7 +822,6 @@ function baseMapController(
   }
 
   this.getNumberOfWells = function(project) {
-    console.log("project info", project);
     if (!project)
       return "";
     else
@@ -824,6 +855,7 @@ function baseMapController(
           }
         })
       })
+      self.updateDashboardTableRows();
     }).catch((e) => {
       console.error(e);
     }).finally(() => {
@@ -1046,6 +1078,9 @@ function baseMapController(
             return `rgba(${palette[idx].red},${palette[idx].green},${palette[idx].blue},${palette[idx].alpha})`;
           },
           title: 'New Dashboard',
+          chart_options: {
+            maintainAspectRatio: false
+          },
           bar_chart_options: {
             scales: {
               yAxes: [{
@@ -1063,9 +1098,7 @@ function baseMapController(
               }]
             }
           }
-        },
-        // setting: true
-        id: getUniqChartID()
+        }
       }
       $timeout(() => {
         self.dashboardContent.push(WidgetConfig);
@@ -1102,6 +1135,7 @@ function baseMapController(
       self.showLoadingDashboard = false;
     });
   }
+
   function buildDashboard(prjTree) {
     let result = groupWells(prjTree);
     Object.assign(CHART_DATA_SOURCE, result)
@@ -1112,18 +1146,20 @@ function baseMapController(
       config: {
         type: 'bar',
         data: wellTypeData,
-        // dataSources: result,
         dataSourceLabel: 'Well By Type',
         labelFn: function (config, datum, idx) {
           return Object.keys(result.wTypes)[idx];
         },
         colorFn: function (config, datum, idx) {
-            if (config.colors && config.colors[idx]) return config.colors[idx];
+          if (config.colors && config.colors[idx]) return config.colors[idx];
           let palette = wiApi.getPalette(config.paletteName || "RandomColor");
-            idx = idx % palette.length;
+          idx = idx % palette.length;
           return `rgba(${palette[idx].red},${palette[idx].green},${palette[idx].blue},${palette[idx].alpha})`;
         },
         title: 'Well Type',
+        chart_options: {
+          maintainAspectRatio: false
+        },
         bar_chart_options: {
           scales: {
             yAxes: [{
@@ -1135,7 +1171,6 @@ function baseMapController(
             }],
             xAxes: [{
               ticks: {
-                // maxTicksLimit: 10,
                 min: 0,
                 max: _.isFinite(maxWellTypeData) ? maxWellTypeData : undefined
               }
@@ -1143,7 +1178,6 @@ function baseMapController(
           }
         },
       },
-      id: getUniqChartID()
     }
 
     const fieldWidgetData = getData(result.fields);
@@ -1159,11 +1193,13 @@ function baseMapController(
           return Object.keys(result.fields)[idx];
         },
         colorFn: function (config, datum, idx) {
-            if (config.colors && config.colors[idx]) return config.colors[idx];
-          // return 'rgba(64,64,200,0.7)';
+          if (config.colors && config.colors[idx]) return config.colors[idx];
           let palette = wiApi.getPalette(config.paletteName || "RandomColor");
-            idx = idx % palette.length;
+          idx = idx % palette.length;
           return `rgba(${palette[idx].red},${palette[idx].green},${palette[idx].blue},${palette[idx].alpha})`;
+        },
+        chart_options: {
+          maintainAspectRatio: false
         },
         bar_chart_options: {
           scales: {
@@ -1176,7 +1212,6 @@ function baseMapController(
             }],
             xAxes: [{
               ticks: {
-                // maxTicksLimit: 10,
                 min: 0,
                 max: _.isFinite(maxFieldData) ? maxFieldData:undefined
               }
@@ -1185,7 +1220,6 @@ function baseMapController(
         },
         title: 'Fields'
       },
-      id: getUniqChartID()
     }
 
     const operatorWidgetData = getData(result.operators);
@@ -1195,19 +1229,20 @@ function baseMapController(
       config: {
         type: 'bar',
         data: operatorWidgetData,
-        // dataSources: result,
         dataSourceLabel: 'Well By Operator',
         labelFn: function (config, datum, idx) {
           return Object.keys(result.operators)[idx];
         },
         colorFn: function (config, datum, idx) {
-            if (config.colors && config.colors[idx]) return config.colors[idx];
-          // return 'rgba(64,200,64,0.7)';
+          if (config.colors && config.colors[idx]) return config.colors[idx];
           let palette = wiApi.getPalette(config.paletteName || "RandomColor");
-            idx = idx % palette.length;
+          idx = idx % palette.length;
           return `rgba(${palette[idx].red},${palette[idx].green},${palette[idx].blue},${palette[idx].alpha})`;
         },
         title: "Operators",
+        chart_options: {
+          maintainAspectRatio: false
+        },
         bar_chart_options: {
           scales: {
             yAxes: [{
@@ -1219,7 +1254,6 @@ function baseMapController(
             }],
             xAxes: [{
               ticks: {
-                // maxTicksLimit: 10,
                 min: 0,
                 max: _.isFinite(maxOperatorData) ? maxOperatorData:undefined
               }
@@ -1227,7 +1261,6 @@ function baseMapController(
           }
         },
       },
-      id: getUniqChartID()
     }
     const tagWidgetData = getData(result.tags);
     const maxTagData = d3.max(tagWidgetData) + Math.ceil(d3.max(tagWidgetData) * 0.2);
@@ -1236,18 +1269,20 @@ function baseMapController(
       config: {
         type: 'bar',
         data: tagWidgetData,
-        // dataSources: result,
         dataSourceLabel: 'Well By Tag',
         labelFn: function (config, datum, idx) {
           return Object.keys(result.tags)[idx];
         },
         colorFn: function (config, datum, idx) {
-            if (config.colors && config.colors[idx]) return config.colors[idx];
+          if (config.colors && config.colors[idx]) return config.colors[idx];
           let palette = wiApi.getPalette(config.paletteName || "RandomColor");
-            idx = idx % palette.length;
+          idx = idx % palette.length;
           return `rgba(${palette[idx].red},${palette[idx].green},${palette[idx].blue},${palette[idx].alpha})`;
         },
         title: "Tags",
+        chart_options: {
+          maintainAspectRatio: false
+        },
         bar_chart_options: {
           scales: {
             yAxes: [{
@@ -1259,7 +1294,6 @@ function baseMapController(
             }],
             xAxes: [{
               ticks: {
-                // maxTicksLimit: 10,
                 min: 0,
                 max: _.isFinite(maxTagData) ? maxTagData:undefined
               }
@@ -1267,7 +1301,6 @@ function baseMapController(
           }
         },
       },
-      id: getUniqChartID()
     }
 
     const curveTagWidgetData = getData(result.curveTags);
@@ -1283,12 +1316,15 @@ function baseMapController(
           return Object.keys(result.curveTags)[idx];
         },
         colorFn: function (config, datum, idx) {
-            if (config.colors && config.colors[idx]) return config.colors[idx];
+          if (config.colors && config.colors[idx]) return config.colors[idx];
           let palette = wiApi.getPalette(config.paletteName || "RandomColor");
-            idx = idx % palette.length;
+          idx = idx % palette.length;
           return `rgba(${palette[idx].red},${palette[idx].green},${palette[idx].blue},${palette[idx].alpha})`;
         },
         title: "Curve Tags",
+        chart_options: {
+          maintainAspectRatio: false
+        },
         bar_chart_options: {
           scales: {
             yAxes: [{
@@ -1300,7 +1336,6 @@ function baseMapController(
             }],
             xAxes: [{
               ticks: {
-                // maxTicksLimit: 10,
                 min: 0,
                 max: _.isFinite(maxCurveData) ? maxCurveData : undefined
               }
@@ -1308,17 +1343,13 @@ function baseMapController(
           }
         },
       }, 
-      id: getUniqChartID()
     }
     $timeout(() => {
       const _dashboardContent = [wTypeWidgetConfig, fieldWidgetConfig, operatorWidgetConfig, tagWidgetConfig, curveTagWidgetConfig];
       _dashboardContent.project = prjTree;
       self.dashboardContent = _dashboardContent;
-      // self.dashboardContent = [wTypeWidgetConfig];
+      self.updateDashboardTableRows();
     });
-  }
-  function getUniqChartID() {
-    return Math.random().toString(36).substr(2, 9);
   }
   function groupWells(prjTree) {
     let wTypes = {};
@@ -2781,9 +2812,65 @@ function baseMapController(
   }
 
   this.onClickChart = function(points, evt, widgetConfig) {
+    if (!points[0]) return;
     let idx = points[0]._index;
     wiDialog.colorPickerDialog(widgetConfig.colors[idx], {}, function (colorStr) {
       widgetConfig.colors[idx] = colorStr;
     });
+  }
+
+  this.showDashboardTable = true;
+  this.dashboardTableFields = WELL_INFOS.map(w => ({...w, selected: false}));
+  this.dashboardTableWidthArr = [];
+  this.dashboardTableHeaders = this.dashboardTableFields.filter(w => w.selected).map(w => w.field);
+  this.dashboardTableDefaultWidths = WELL_INFOS.map(w => 100);
+  this.updateDashboardTableSelectedFields = function() {
+    self.showDashboardTable = false;
+    $timeout(() => {
+      const newFields = self.dashboardTableFields.filter(w => w.selected).map(w => w.field);
+      const newTableWidths = newFields.map(f => 100);
+      /*
+      for (let i = 0; i < newTableWidths.length; ++i) {
+        const lastIdx = self.dashboardTableHeaders.findIndex(_h => _h == newFields[i]);
+        if (lastIdx && lastIdx >= 0) {
+          newTableWidths[i] = self.dashboardTableWidthArr[lastIdx];
+        }
+      }
+      */
+      Object.assign(self.dashboardTableWidthArr, newTableWidths);
+      Object.assign(self.dashboardTableDefaultWidths, newTableWidths);
+      Object.assign(self.dashboardTableHeaders, newFields);
+      self.dashboardTableHeaders.length = newFields.length;
+      self.dashboardTableWidthArr.length = newTableWidths.length;
+      self.dashboardTableDefaultWidths.length = newTableWidths.length;
+      self.updateDashboardTableRows();
+      self.showDashboardTable = true;
+    }, 100)
+  }
+  this.onDashboardTableInit = function(tableWidthArray) {
+    $timeout(() => {
+      self.dashboardTableWidthArr = tableWidthArray;
+    })
+  }
+  this.onDashboardTableHeaderWidthChanged = function(leftColIdx, leftColWidth, rightColIdx, rightColWidth) {
+    $timeout(() => {
+      self.dashboardTableWidthArr[leftColIdx] = leftColWidth;
+      self.dashboardTableWidthArr[rightColIdx] = rightColWidth;
+    });
+  }
+  this.dashboardTableRows = [];
+  this.updateDashboardTableRows = function() {
+    if (!self.dashboardContent) return;
+    const newRows = self.dashboardContent.project.wells.map(well => {
+      return self.dashboardTableFields.filter(field => field.selected).map(fieldObj => {
+        const match = (well.wellheaders.find(wh => fieldObj.matchKeys.includes(wh.header)) || {});
+        return {
+          criteria: fieldObj,
+          matched: match
+        }
+      })
+    })
+    Object.assign(self.dashboardTableRows, newRows);
+    self.dashboardTableRows.length = newRows.length;
   }
 }

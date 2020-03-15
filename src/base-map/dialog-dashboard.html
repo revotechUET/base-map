@@ -4,6 +4,10 @@
             <div style=" color: #4085ff; font-size: 17px; margin-right: 20px; cursor: pointer;" class="ti ti-align-left" ng-click="self.hideMain = !self.hideMain" ng-show="self.hideMain"> </div>
             <div style=" color: #4085ff; font-size: 17px; margin-right: 20px;" class="ti ti-pie-chart"> </div>
             <div class="title-dialog">Dashboard ({{self.dashboardContent.project.alias || self.selectedNode.name}}) {{self.getNumberOfWells(self.dashboardContent.project)}}</div>
+            <div>
+                <button class="btn btn-default" ng-class="{'active': !self.showWellsInfo}" ng-click="self.showWellsInfo = false">Chart</button>
+                <button class="btn btn-default" ng-class="{'active': self.showWellsInfo}" ng-click="self.showWellsInfo = true">Table</button>
+            </div>
         </div>
         <div style="display: flex;">
             <div ng-click="self.loadDashboard()"
@@ -33,11 +37,36 @@
             <span class="bar-animation"></span>
         </div>
     </div>
-    <div class="main-dialog hide-scroller">
-        <div style="width: 100%">
+    <div class="main-dialog">
+        <div style="width: 100%" class="hide-scroller"  ng-if="!self.showWellsInfo">
             <manager-dashboard dashboard-content='self.dashboardContent' dashboard-columns="self.dashboardColumns"
               remove-confirm="true" on-click-chart="self.onClickChart">
             </manager-dashboard>
+        </div>
+        <div ng-if="self.showWellsInfo">
+            <div style="white-space: nowrap">
+                <span ng-repeat="field in self.dashboardTableFields">
+                    <input type="checkbox" ng-model="field.selected" ng-change="self.updateDashboardTableSelectedFields()">
+                    {{ field.field }}
+                </span>
+            </div>
+            <wi-table-resizeable ng-if="self.showDashboardTable" headers='self.dashboardTableHeaders' default-widths='self.dashboardTableDefaultWidths' on-header-width-changed='self.onDashboardTableHeaderWidthChanged' on-table-init='self.onDashboardTableInit'>
+                <div ng-repeat="row in self.dashboardTableRows" class="table-row" 
+                    style="
+                        border-bottom: 1px solid #e6e6e6;
+                        white-space: nowrap;">
+                    <div ng-repeat="cell in row track by $index" class="table-cell" ng-style="{'width': self.dashboardTableWidthArr[$index]}"
+                        style="
+                            display: inline-block;
+                            overflow: hidden;
+                            text-overflow: ellipsis;
+                            padding: .5em .25em;
+                            ">
+                        {{ cell.criteria.getValueFn ? cell.criteria.getValueFn(cell.matched) : cell.matched.value }}
+                    </div>
+                </div>
+            </wi-table-resizeable>
+            <div ng-show="!self.showDashboardTable" style="width: 100%; height: 100%; font-size: 40px; text-align: center; margin-top:30vh; color:lightgrey">LOADING...</div>
         </div>
     </div>
 </div>
