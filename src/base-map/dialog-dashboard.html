@@ -1,6 +1,7 @@
 <div class="display-dialog slim-scroller">
     <div class="header-dialog">
         <div style="display: flex;">
+            <div style=" color: #4085ff; font-size: 17px; margin-right: 20px; cursor: pointer;" class="ti ti-align-left" ng-click="self.hideMain = !self.hideMain" ng-show="self.hideMain"> </div>
             <div style=" color: #4085ff; font-size: 17px; margin-right: 20px;" class="ti ti-pie-chart"> </div>
             <div class="title-dialog">Dashboard ({{self.dashboardContent.project.alias || self.selectedNode.name}}) {{self.getNumberOfWells(self.dashboardContent.project)}}</div>
         </div>

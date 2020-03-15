@@ -1,6 +1,4 @@
-<div ng-class="{'show-dashboard': self.showDashboard}" class="dialog">
-  ${require('./dialog-dashboard.html')}
-</div>
+
 <div class="dialog-setting slim-scroller" ng-show="self.showZone">
   ${require('./dialog-zone-utms.html')}
 </div>
@@ -74,7 +72,7 @@ ${require('./dashboard-template-modal.html')}
   </div>
 </div>
 
-<div id="main" class="main slim-scroller" ng-class="{'change-height': self.hideMain}">
+<div id="main" class="main slim-scroller" ng-class="{'change-height': self.hideMain}" ng-style="{'width': self.hideMain ? '0px' : '340px'}">
   <div class="tab" ng-style="{'margin-bottom': !self.showMap ? '20px' : '0'}">
     <div style="display: flex; align-items: center;">
 
@@ -108,6 +106,7 @@ ${require('./dashboard-template-modal.html')}
           </wi-login>
         </div>
       </div>
+      <div class="tab-name ti-angle-left" style="color: #4085ff; font-size: 13px; position: relative; z-index: 1;" ng-click="self.hideMain = !self.hideMain" ></div>
     </div>
   </div>
   <div ng-show="self.showLoading" class="loading">
@@ -544,7 +543,9 @@ ${require('./dashboard-template-modal.html')}
     </div>
   </div>
 </div>
-
+<div ng-class="{'show-dashboard': self.showDashboard}" class="dialog">
+  ${require('./dialog-dashboard.html')}
+</div>
 <!-- <map-view 
   ng-show="self.showMap"
   class="mapView"
