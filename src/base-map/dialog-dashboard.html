@@ -4,10 +4,11 @@
             <div style=" color: #4085ff; font-size: 17px; margin-right: 20px; cursor: pointer;" class="ti ti-align-left" ng-click="self.hideMain = !self.hideMain" ng-show="self.hideMain"> </div>
             <div style=" color: #4085ff; font-size: 17px; margin-right: 20px;" class="ti ti-pie-chart"> </div>
             <div class="title-dialog">Dashboard ({{self.dashboardContent.project.alias || self.selectedNode.name}}) {{self.getNumberOfWells(self.dashboardContent.project)}}</div>
-            <div>
-                <button class="btn btn-default" ng-class="{'active': !self.showWellsInfo}" ng-click="self.showWellsInfo = false">Chart</button>
-                <button class="btn btn-default" ng-class="{'active': self.showWellsInfo}" ng-click="self.showWellsInfo = true">Table</button>
-            </div>
+            
+        </div>
+        <div>
+                <div class="btn btn-default" ng-class="{'active': !self.showWellsInfo}" ng-click="self.showWellsInfo = false">Chart</div>
+                <div class="btn btn-default" ng-class="{'active': self.showWellsInfo}" ng-click="self.showWellsInfo = true">Table</div>
         </div>
         <div style="display: flex;">
             <div ng-click="self.loadDashboard()"
@@ -43,10 +44,10 @@
               remove-confirm="true" on-click-chart="self.onClickChart">
             </manager-dashboard>
         </div>
-        <div ng-if="self.showWellsInfo">
-            <div style="white-space: nowrap">
-                <span ng-repeat="field in self.dashboardTableFields">
-                    <input type="checkbox" ng-model="field.selected" ng-change="self.updateDashboardTableSelectedFields()">
+        <div ng-if="self.showWellsInfo" style="overflow: hidden;">
+            <div style="white-space: nowrap; display: flex; flex-wrap: wrap;">
+                <span ng-repeat="field in self.dashboardTableFields" style="padding: 10px;">
+                    <input type="checkbox" ng-model="field.selected" ng-change="self.updateDashboardTableSelectedFields()" style="margin-right: 5px;">
                     {{ field.field }}
                 </span>
             </div>
