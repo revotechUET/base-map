@@ -63,7 +63,7 @@
                             text-overflow: ellipsis;
                             padding: .5em .25em;
                             ">
-                        {{ cell.criteria.getValueFn ? cell.criteria.getValueFn(cell.matched) : cell.matched.value }}
+                        {{ cell.criteria.getValueFn ? cell.criteria.getValueFn(cell.matched, cell.well) : cell.matched.value }}
                     </div>
                 </div>
             </wi-table-resizeable>

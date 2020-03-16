@@ -229,36 +229,39 @@ const WellDisplayModeOptions = [
   {label: "Status", value: "status"},
 ]
 
+const getField = function(well, field) {
+  return well.wellheaders.find(wh => wh.header === field) || {};
+}
 const WELL_INFOS = [
-  { field: "Well Name", matchKeys: ["WELL"], getValueFn:(matchField) => matchField.value },
-  { field: "Top Depth", matchKeys: ["STRT"], getValueFn:(matchField) => `${matchField.value} (${matchField.unit})` },
-  { field: "Bottom Depth", matchKeys: ["STOP"], getValueFn:(matchField) => `${matchField.value} (${matchField.unit})` },
-  { field: "Total Depth", matchKeys: [""], getValueFn:(matchField) => matchField.value },
-  { field: "unit", matchKeys: [""], getValueFn:(matchField) => matchField.value },
-  { field: "UWI", matchKeys: [""], getValueFn:(matchField) => matchField.value },
-  { field: "API", matchKeys: [""], getValueFn:(matchField) => matchField.value },
-  { field: "Id", matchKeys: [""], getValueFn:(matchField) => matchField.value },
-  { field: "Name", matchKeys: [""], getValueFn:(matchField) => matchField.value },
-  { field: "Company", matchKeys: [""], getValueFn:(matchField) => matchField.value },
-  { field: "Operator", matchKeys: [""], getValueFn:(matchField) => matchField.value },
-  { field: "Author", matchKeys: [""], getValueFn:(matchField) => matchField.value },
-  { field: "Date", matchKeys: [""], getValueFn:(matchField) => matchField.value },
-  { field: "Logging date", matchKeys: [""], getValueFn:(matchField) => matchField.value },
-  { field: "Service company", matchKeys: [""], getValueFn:(matchField) => matchField.value },
-  { field: "License number", matchKeys: [""], getValueFn:(matchField) => matchField.value },
-  { field: "County", matchKeys: [""], getValueFn:(matchField) => matchField.value },
-  { field: "State", matchKeys: [""], getValueFn:(matchField) => matchField.value },
-  { field: "Province", matchKeys: [""], getValueFn:(matchField) => matchField.value },
-  { field: "Country", matchKeys: [""], getValueFn:(matchField) => matchField.value },
-  { field: "Location", matchKeys: [""], getValueFn:(matchField) => matchField.value },
-  { field: "Field", matchKeys: [""], getValueFn:(matchField) => matchField.value },
-  { field: "Project", matchKeys: [""], getValueFn:(matchField) => matchField.value },
-  { field: "Code", matchKeys: [""], getValueFn:(matchField) => matchField.value },
-  { field: "Area", matchKeys: [""], getValueFn:(matchField) => matchField.value },
-  { field: "Type", matchKeys: [""], getValueFn:(matchField) => matchField.value },
-  { field: "Status", matchKeys: [""], getValueFn:(matchField) => matchField.value },
-  { field: "Well Type", matchKeys: [""], getValueFn:(matchField) => matchField.value },
-  { field: "Fluid", matchKeys: [""], getValueFn:(matchField) => matchField.value },
+  { field: "Well Name", matchKeys: ["WELL"], getValueFn:(matchField, well) => well.alias || well.name },
+  { field: "Top Depth", matchKeys: ["STRT"], getValueFn:(matchField, well) => `${matchField.value} (${matchField.unit})` },
+  { field: "Bottom Depth", matchKeys: ["STOP"], getValueFn:(matchField, well) => `${matchField.value} (${matchField.unit})` },
+  { field: "Total Depth", matchKeys: [""], getValueFn:(matchField, well) => (getField(well, "STOP").value - getField(well, "STRT").value) },
+  { field: "unit", matchKeys: [""], getValueFn:(matchField, well) => well.unit },
+  { field: "UWI", matchKeys: ["UWI"], getValueFn:(matchField, well) => matchField.value },
+  { field: "API", matchKeys: ["API"], getValueFn:(matchField, well) => matchField.value },
+  { field: "Id", matchKeys: ["ID"], getValueFn:(matchField, well) => matchField.value },
+  { field: "Name", matchKeys: ["NAME"], getValueFn:(matchField, well) => matchField.value },
+  { field: "Company", matchKeys: ["COMP"], getValueFn:(matchField, well) => matchField.value },
+  { field: "Operator", matchKeys: ["OPERATOR"], getValueFn:(matchField, well) => matchField.value },
+  { field: "Author", matchKeys: ["AUTHOR"], getValueFn:(matchField, well) => matchField.value },
+  { field: "Date", matchKeys: ["DATE"], getValueFn:(matchField, well) => matchField.value },
+  { field: "Logging date", matchKeys: ["LOGDATE"], getValueFn:(matchField, well) => matchField.value },
+  { field: "Service company", matchKeys: ["SRVC"], getValueFn:(matchField, well) => matchField.value },
+  { field: "License number", matchKeys: ["LIC"], getValueFn:(matchField, well) => matchField.value },
+  { field: "County", matchKeys: ["CNTY"], getValueFn:(matchField, well) => matchField.value },
+  { field: "State", matchKeys: ["STATE"], getValueFn:(matchField, well) => matchField.value },
+  { field: "Province", matchKeys: ["PROV"], getValueFn:(matchField, well) => matchField.value },
+  { field: "Country", matchKeys: ["CTRY"], getValueFn:(matchField, well) => matchField.value },
+  { field: "Location", matchKeys: ["LOC"], getValueFn:(matchField, well) => matchField.value },
+  { field: "Field", matchKeys: ["FLD"], getValueFn:(matchField, well) => matchField.value },
+  { field: "Project", matchKeys: ["PROJ"], getValueFn:(matchField, well) => matchField.value },
+  { field: "Code", matchKeys: ["CODE"], getValueFn:(matchField, well) => matchField.value },
+  { field: "Area", matchKeys: ["AREA"], getValueFn:(matchField, well) => matchField.value },
+  { field: "Type", matchKeys: ["TYPE"], getValueFn:(matchField, well) => matchField.value },
+  { field: "Status", matchKeys: ["STATUS"], getValueFn:(matchField, well) => matchField.value },
+  { field: "Well Type", matchKeys: ["WTYPE"], getValueFn:(matchField, well) => matchField.value },
+  { field: "Fluid", matchKeys: ["FLUID"], getValueFn:(matchField, well) => matchField.value },
 ] 
 
 function baseMapController(
@@ -2866,7 +2869,8 @@ function baseMapController(
         const match = (well.wellheaders.find(wh => fieldObj.matchKeys.includes(wh.header)) || {});
         return {
           criteria: fieldObj,
-          matched: match
+          matched: match,
+          well
         }
       })
     })
