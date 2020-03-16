@@ -44,18 +44,48 @@ function getData(resultObj) {
 }
 
 const DTSRC_OPTIONS_MAP = {
-  "Well By Type": 'well-by-type',
+  "Well By Well Type": 'well-by-well-type',
   "Well By Field": 'well-by-field',
   "Well By Operator": 'well-by-operator',
   "Well By Tag": 'well-by-tag',
-  "Curve By Tag": 'curve-by-tag',
+  "Well By UWI": 'well-by-uwi',
+  "Well By API": 'well-by-api',
+  "Well By Company": 'well-by-company',
+  "Well By Author": 'well-by-author',
+  "Well By Service": 'well-by-service',
+  "Well By County": 'well-by-county',
+  "Well By State": 'well-by-state',
+  "Well By Province": 'well-by-province',
+  "Well By Country": 'well-by-country',
+  "Well By Location": 'well-by-location',
+  "Well By Project": 'well-by-project',
+  "Well By Code": 'well-by-code',
+  "Well By Area": 'well-by-area',
+  "Well By Type": 'well-by-type',
+  "Well By Status": 'well-by-status',
+  "Well By Fluid": 'well-by-fluid',
 }
 const DTSRC_MAP = {
-  'well-by-type': 'wTypes',
-  'well-by-field': 'fields',
-  'well-by-operator': 'operators',
+  'well-by-well-type': 'WTYPE',
+  'well-by-field': 'FLD',
+  'well-by-operator': 'OPERATOR',
   'well-by-tag': 'tags',
-  'curve-by-tag': 'curveTags'
+  'well-by-uwi': 'UWI',
+  'well-by-api': 'API',
+  'well-by-company': 'COMP',
+  'well-by-author': 'AUTHOR',
+  'well-by-service': 'SRVC',
+  'well-by-county': 'CNTY',
+  'well-by-state': 'STATE',
+  'well-by-province': 'PROV',
+  'well-by-country': 'CTRY',
+  'well-by-location': 'LOC',
+  'well-by-project': 'PROJ',
+  'well-by-code': 'CODE',
+  'well-by-area': 'AREA',
+  'well-by-type': 'TYPE',
+  'well-by-status': 'STATUS',
+  'well-by-fluid': 'FLUID',
 }
 const chartTypes = [
   { data: { label: "Bar" }, properties: { value: "bar" } },
@@ -96,13 +126,7 @@ app.value('chartSettings', {
   dataSourceOpt: {
     type: 'select',
     label: "Data Source",
-    options: [
-      { data: { label: "Well By Type" }, properties: { value: "well-by-type" } },
-      { data: { label: "Well By Field" }, properties: { value: "well-by-field" } },
-      { data: { label: "Well By Operator" }, properties: { value: "well-by-operator" } },
-      { data: { label: "Well By Tag" }, properties: { value: "well-by-tag" } },
-      { data: { label: "Curve By Tag" }, properties: { value: "curve-by-tag" } },
-    ],
+    options: Object.keys(DTSRC_OPTIONS_MAP).map(label => ({data: {label}, properties: { value: DTSRC_OPTIONS_MAP[label]}})),
     getSelectedOption: function(widgetConfig) {
       return this.options.find(o => o.data.label == widgetConfig.dataSourceLabel)
     },
@@ -1062,17 +1086,21 @@ function baseMapController(
       projectTree = prjTree;
       let result = groupWells(projectTree);
       Object.assign(CHART_DATA_SOURCE, result)
-      const wellByTypeData = getData(result.wTypes);
-      const maxWellTypeData = d3.max(wellByTypeData);
+      const keys = Object.keys(result);
+      const firstKey = keys[0];
+      const firstData = getData(result[firstKey]);
+      const firstMaxData = d3.max(firstData);
+      const _k = Object.keys(DTSRC_MAP).find(__k => DTSRC_MAP[__k] == firstKey)
+      const label = Object.keys(DTSRC_OPTIONS_MAP).find(l => DTSRC_OPTIONS_MAP[l] == _k);
       let WidgetConfig = {
         name: "New Dashboard",
         config: {
           type: 'bar',
-          data: wellByTypeData,
-          dataSourceLabel: "Well By Type",
+          data: firstData,
+          dataSourceLabel: label,
           // dataSources: result,
           labelFn: function (config, datum, idx) {
-            return Object.keys(result.wTypes)[idx];
+            return Object.keys(firstData)[idx];
           },
           colorFn: function (config, datum, idx) {
             if (config.colors && config.colors[idx]) return config.colors[idx];
@@ -1090,13 +1118,13 @@ function baseMapController(
                 ticks: {
                   maxTicksLimit: 10,
                   min: 0,
-                  max: _.isFinite(maxWellTypeData) ? maxWellTypeData : undefined
+                  max: _.isFinite(firstMaxData) ? firstMaxData : undefined
                 }
               }],
               xAxes: [{
                 ticks: {
                   min: 0,
-                max: _.isFinite(maxWellTypeData) ? maxWellTypeData : undefined
+                max: _.isFinite(firstMaxData) ? firstMaxData : undefined
                 }
               }]
             }
@@ -1142,229 +1170,86 @@ function baseMapController(
   function buildDashboard(prjTree) {
     let result = groupWells(prjTree);
     Object.assign(CHART_DATA_SOURCE, result)
-    const wellTypeData = getData(result.wTypes);
-    const maxWellTypeData = d3.max(wellTypeData) + Math.ceil(0.2 * d3.max(wellTypeData));
-    let wTypeWidgetConfig = {
-      name: "Well Type",
-      config: {
-        type: 'bar',
-        data: wellTypeData,
-        dataSourceLabel: 'Well By Type',
-        labelFn: function (config, datum, idx) {
-          return Object.keys(result.wTypes)[idx];
-        },
-        colorFn: function (config, datum, idx) {
-          if (config.colors && config.colors[idx]) return config.colors[idx];
-          let palette = wiApi.getPalette(config.paletteName || "RandomColor");
-          idx = idx % palette.length;
-          return `rgba(${palette[idx].red},${palette[idx].green},${palette[idx].blue},${palette[idx].alpha})`;
-        },
-        title: 'Well Type',
-        chart_options: {
-          maintainAspectRatio: false
-        },
-        bar_chart_options: {
-          scales: {
-            yAxes: [{
-              ticks: {
-                maxTicksLimit: 10,
-                min: 0,
-                max: _.isFinite(maxWellTypeData) ? maxWellTypeData : undefined
-              }
-            }],
-            xAxes: [{
-              ticks: {
-                min: 0,
-                max: _.isFinite(maxWellTypeData) ? maxWellTypeData : undefined
-              }
-            }]
-          }
-        },
-      },
-    }
-
-    const fieldWidgetData = getData(result.fields);
-    const maxFieldData = d3.max(fieldWidgetData) + Math.ceil(d3.max(fieldWidgetData) * 0.2);
-    let fieldWidgetConfig = {
-      name: "Fields",
-      config: {
-        type: 'bar',
-        data: fieldWidgetData,
-        // dataSources: result,
-        dataSourceLabel: 'Well By Field',
-        labelFn: function (config, datum, idx) {
-          return Object.keys(result.fields)[idx];
-        },
-        colorFn: function (config, datum, idx) {
-          if (config.colors && config.colors[idx]) return config.colors[idx];
-          let palette = wiApi.getPalette(config.paletteName || "RandomColor");
-          idx = idx % palette.length;
-          return `rgba(${palette[idx].red},${palette[idx].green},${palette[idx].blue},${palette[idx].alpha})`;
-        },
-        chart_options: {
-          maintainAspectRatio: false
-        },
-        bar_chart_options: {
-          scales: {
-            yAxes: [{
-              ticks: {
-                maxTicksLimit: 10,
-                min: 0,
-                max: _.isFinite(maxFieldData) ? maxFieldData:undefined
-              }
-            }],
-            xAxes: [{
-              ticks: {
-                min: 0,
-                max: _.isFinite(maxFieldData) ? maxFieldData:undefined
-              }
-            }]
-          }
-        },
-        title: 'Fields'
-      },
-    }
-
-    const operatorWidgetData = getData(result.operators);
-    const maxOperatorData = d3.max(operatorWidgetData) + Math.ceil(d3.max(operatorWidgetData) * 0.2);
-    let operatorWidgetConfig = {
-      name: "Operators",
-      config: {
-        type: 'bar',
-        data: operatorWidgetData,
-        dataSourceLabel: 'Well By Operator',
-        labelFn: function (config, datum, idx) {
-          return Object.keys(result.operators)[idx];
-        },
-        colorFn: function (config, datum, idx) {
-          if (config.colors && config.colors[idx]) return config.colors[idx];
-          let palette = wiApi.getPalette(config.paletteName || "RandomColor");
-          idx = idx % palette.length;
-          return `rgba(${palette[idx].red},${palette[idx].green},${palette[idx].blue},${palette[idx].alpha})`;
-        },
-        title: "Operators",
-        chart_options: {
-          maintainAspectRatio: false
-        },
-        bar_chart_options: {
-          scales: {
-            yAxes: [{
-              ticks: {
-                maxTicksLimit: 10,
-                min: 0,
-                max: _.isFinite(maxOperatorData) ? maxOperatorData:undefined
-              }
-            }],
-            xAxes: [{
-              ticks: {
-                min: 0,
-                max: _.isFinite(maxOperatorData) ? maxOperatorData:undefined
-              }
-            }]
-          }
-        },
-      },
-    }
-    const tagWidgetData = getData(result.tags);
-    const maxTagData = d3.max(tagWidgetData) + Math.ceil(d3.max(tagWidgetData) * 0.2);
-    let tagWidgetConfig = {
-      name: "Tags",
-      config: {
-        type: 'bar',
-        data: tagWidgetData,
-        dataSourceLabel: 'Well By Tag',
-        labelFn: function (config, datum, idx) {
-          return Object.keys(result.tags)[idx];
-        },
-        colorFn: function (config, datum, idx) {
-          if (config.colors && config.colors[idx]) return config.colors[idx];
-          let palette = wiApi.getPalette(config.paletteName || "RandomColor");
-          idx = idx % palette.length;
-          return `rgba(${palette[idx].red},${palette[idx].green},${palette[idx].blue},${palette[idx].alpha})`;
-        },
-        title: "Tags",
-        chart_options: {
-          maintainAspectRatio: false
-        },
-        bar_chart_options: {
-          scales: {
-            yAxes: [{
-              ticks: {
-                maxTicksLimit: 10,
-                min: 0,
-                max: _.isFinite(maxTagData) ? maxTagData:undefined
-              }
-            }],
-            xAxes: [{
-              ticks: {
-                min: 0,
-                max: _.isFinite(maxTagData) ? maxTagData:undefined
-              }
-            }]
-          }
-        },
-      },
-    }
-
-    const curveTagWidgetData = getData(result.curveTags);
-    const maxCurveData = d3.max(curveTagWidgetData) + Math.ceil(d3.max(curveTagWidgetData) * 0.2);
-    let curveTagWidgetConfig = {
-      name: "Curve Tags",
-      config: {
-        type: 'bar',
-        data: curveTagWidgetData,
-        // dataSources: result,
-        dataSourceLabel: 'Curve By Tag',
-        labelFn: function (config, datum, idx) {
-          return Object.keys(result.curveTags)[idx];
-        },
-        colorFn: function (config, datum, idx) {
-          if (config.colors && config.colors[idx]) return config.colors[idx];
-          let palette = wiApi.getPalette(config.paletteName || "RandomColor");
-          idx = idx % palette.length;
-          return `rgba(${palette[idx].red},${palette[idx].green},${palette[idx].blue},${palette[idx].alpha})`;
-        },
-        title: "Curve Tags",
-        chart_options: {
-          maintainAspectRatio: false
-        },
-        bar_chart_options: {
-          scales: {
-            yAxes: [{
-              ticks: {
-                maxTicksLimit: 10,
-                min: 0,
-                max: _.isFinite(maxCurveData) ? maxCurveData : undefined
-              }
-            }],
-            xAxes: [{
-              ticks: {
-                min: 0,
-                max: _.isFinite(maxCurveData) ? maxCurveData : undefined
-              }
-            }]
-          }
-        },
-      }, 
-    }
+    const configs = [];
+    /*
+    const configs = Object.keys(result).map(dataSource => {
+      const data = getData(result[dataSource]);
+      const maxAxisValue = d3.max(data) + Math.ceil(0.2 * d3.max(data)); // for axis
+      const __key = Object.keys(DTSRC_MAP).find(k => DTSRC_MAP[k] == dataSource)
+      const dtsrcLabel = Object.keys(DTSRC_OPTIONS_MAP).find(label => DTSRC_OPTIONS_MAP[label] == __key);
+      let config = {
+        name: dataSource,
+        config: {
+          type: 'bar',
+          data,
+          dataSourceLabel: dtsrcLabel,
+          labelFn: function(config, datum, idx) {
+            return Object.keys(result[dataSource])[idx]
+          },
+          colorFn: function(config, datum, idx) {
+            if (config.colors && config.colors[idx]) return config.colors[idx];
+            let palette = wiApi.getPalette(config.paletteName || "RandomColor");
+            idx = idx % palette.length;
+            return `rgba(${palette[idx].red},${palette[idx].green},${palette[idx].blue},${palette[idx].alpha})`;
+          },
+          title: dtsrcLabel,
+          chart_options: {
+            maintainAspectRatio: false
+          },
+          bar_chart_options: {
+            scales: {
+              yAxes: [{
+                ticks: {
+                  maxTicksLimit: 10,
+                  min: 0,
+                  max: _.isFinite(maxAxisValue) ? maxAxisValue : undefined
+                }
+              }],
+              xAxes: [{
+                ticks: {
+                  min: 0,
+                  max: _.isFinite(maxAxisValue) ? maxAxisValue : undefined
+                }
+              }]
+            }
+          },
+        }
+      }
+      return config;
+    });
+    */
     $timeout(() => {
-      const _dashboardContent = [wTypeWidgetConfig, fieldWidgetConfig, operatorWidgetConfig, tagWidgetConfig, curveTagWidgetConfig];
+      // const _dashboardContent = [wTypeWidgetConfig, fieldWidgetConfig, operatorWidgetConfig, tagWidgetConfig ];
+      const _dashboardContent = configs;
       _dashboardContent.project = prjTree;
       self.dashboardContent = _dashboardContent;
       self.updateDashboardTableRows();
     });
   }
   function groupWells(prjTree) {
+    /*
     let wTypes = {};
     let fields = {};
     let operators = {};
     let tags = {};
-    let curveTags = {};
+    */
+
+    const result = {};
+    const dataSources = Object.values(DTSRC_MAP);
+    dataSources.forEach(dataSource => {
+      result[dataSource] = {};
+    });
 
     let wells = prjTree.wells;
     for (let well of wells) {
       const wellHeaders = well.wellheaders;
       for (let wh of wellHeaders) {
+        const key = wh.header;
+        if (!dataSources.includes(key)) continue;
+        const value = (!wh.value || !wh.value.length) ? "Unknown" : wh.value;
+        result[key][value] = result[key][value] || [];
+        result[key][value].push(well);
+        /*
         let value = (!wh.value || !wh.value.length) ? "Unknown" : wh.value;
         if (wh.header === "WTYPE") {
           wTypes[value] = wTypes[value] || [];
@@ -1378,31 +1263,21 @@ function baseMapController(
           operators[value] = operators[value] || [];
           operators[value].push(well);
         }
+        */
       }
 
       if (well.relatedTo && well.relatedTo.tags && well.relatedTo.tags.length) {
         for (let tag of well.relatedTo.tags) {
           if (tag && tag !== "") {
-            tags[tag] = tags[tag] || [];
-            tags[tag].push(well);
+            result['tags'][tag] = result['tags'][tag] || [];
+            result['tags'][tag].push(well);
           }
         }
       }
-      if (well.datasets.length) {
-        well.datasets.forEach(dts => {
-          dts.curves.forEach(curve => {
-            if (curve.relatedTo && curve.relatedTo.tags && curve.relatedTo.tags.length) {
-              for (let tag of curve.relatedTo.tags) {
-                curveTags[tag] = curveTags[tag] || [];
-                curveTags[tag].push(curve);
-              }
-            }
-          })
-        })
-      }
     }
 
-    return { wTypes, fields, operators, tags, curveTags };
+    return result;
+    // return { wTypes, fields, operators, tags };
   }
   this.toggleDarkMode = function () {
     self.darkMode = !self.darkMode;
