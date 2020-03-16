@@ -6,9 +6,12 @@
             <div class="title-dialog">Dashboard ({{self.dashboardContent.project.alias || self.selectedNode.name}}) {{self.getNumberOfWells(self.dashboardContent.project)}}</div>
             
         </div>
-        <div>
-                <div class="btn btn-default" ng-class="{'active': !self.showWellsInfo}" ng-click="self.showWellsInfo = false">Chart</div>
-                <div class="btn btn-default" ng-class="{'active': self.showWellsInfo}" ng-click="self.showWellsInfo = true">Table</div>
+        <div style="display: flex;">
+            <div ng-style="{'border-bottom': !self.showWellsInfo ? '2px solid #3e84ff' : ''}" ng-class="{'active': !self.showWellsInfo}" ng-click="self.showWellsInfo = false" style="padding: 15px 10px; cursor: pointer;">Chart</div>
+            <div ng-style="{'border-bottom': self.showWellsInfo ? '2px solid #3e84ff' : ''}" ng-class="{'active': self.showWellsInfo}" ng-click="self.showWellsInfo = true" style="padding: 15px 10px; cursor: pointer; display: flex; align-items: center;">Table
+                <div class="ti ti-angle-up" style="cursor: pointer; color: #3e84ff; margin-left: 10px;" ng-show="!self.showOptionsWellTab" ng-click="self.showOptionsWellTab = !self.showOptionsWellTab"></div>
+                <div class="ti ti-angle-down" style="cursor: pointer; color: #3e84ff; margin-left: 10px;" ng-show="self.showOptionsWellTab" ng-click="self.showOptionsWellTab = !self.showOptionsWellTab"></div>
+            </div>
         </div>
         <div style="display: flex;">
             <div ng-click="self.loadDashboard()"
@@ -45,8 +48,8 @@
             </manager-dashboard>
         </div>
         <div ng-if="self.showWellsInfo" style="overflow: hidden;">
-            <div style="white-space: nowrap; display: flex; flex-wrap: wrap;">
-                <span ng-repeat="field in self.dashboardTableFields" style="padding: 10px;">
+            <div ng-class="{'height0': self.showOptionsWellTab}" style="height: 120px; white-space: nowrap; display: flex; flex-wrap: wrap; overflow: hidden; transition: height ease-in 0.2s; background-color: #fff;">
+                <span ng-repeat="field in self.dashboardTableFields" style="padding: 10px; border-right: 1px solid #f4f4f4; border-bottom: 1px solid #f4f4f4;">
                     <input type="checkbox" ng-model="field.selected" ng-change="self.updateDashboardTableSelectedFields()" style="margin-right: 5px;">
                     {{ field.field }}
                 </span>
