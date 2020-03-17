@@ -1888,7 +1888,7 @@ function baseMapController(
     for (let i=0; i < self.selectedNodes.length; i++) {
       self.showLoading = true;
       if (node.idWell) {
-        let wellId = self.selectedNode.idWell;
+        let wellId = self.selectedNodes[i].idWell;
         let node = self.selectedNodes[i];
         let lat = getLat(self.selectedNode.well_headers);
         let long = getLong(self.selectedNode.well_headers);
