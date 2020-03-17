@@ -48,7 +48,15 @@
             </manager-dashboard>
         </div>
         <div ng-if="self.showWellsInfo" style="overflow: hidden; height: 100%;">
-            <div ng-class="{'height0': self.showOptionsWellTab}" style="height: auto; white-space: nowrap; display: flex; flex-wrap: wrap; overflow: hidden; transition: height ease-in 0.2s; background-color: #fff;">
+            <div ui-sortable="self.dashboardTableSortableOptions" ng-model="self.dashboardTableFields"
+                ng-class="{'height0': self.showOptionsWellTab}"
+                style="height: auto; white-space: nowrap; display: flex; flex-wrap: wrap; overflow: hidden; transition: height ease-in 0.2s; background-color: #fff;">
+                <span style="padding: 10px 15px; border-right: 1px solid #f4f4f4; border-bottom: 1px solid #f4f4f4; display: flex; align-items: center;">
+                    <input type="checkbox"
+                        ng-checked="self.isDashboardTableCheckAll()"
+                        ng-click="self.toggleDashboardTableCheckAll()" style="margin: 0 10px 0 0;">
+                    All
+                </span>
                 <span ng-repeat="field in self.dashboardTableFields" style="padding: 10px 15px; border-right: 1px solid #f4f4f4; border-bottom: 1px solid #f4f4f4; display: flex; align-items: center;">
                     <input type="checkbox" ng-model="field.selected" ng-change="self.updateDashboardTableSelectedFields()" style="margin: 0 10px 0 0;">
                     {{ field.field }}

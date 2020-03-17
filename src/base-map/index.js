@@ -2707,6 +2707,17 @@ function baseMapController(
     { field: "Well Type", matchKeys: ["WTYPE"], getValueFn:(matchField, well) => matchField.value },
     { field: "Fluid", matchKeys: ["FLUID"], getValueFn:(matchField, well) => matchField.value },
   ];
+  this.dashboardTableSortableOptions = {
+    placeholder: 'sortable-placeholder',
+    stop: function(event, ui) {
+      self.updateDashboardTableSelectedFields();
+    },
+    start: function (event, ui) {
+      ui.placeholder.height(ui.item.outerHeight());
+      ui.placeholder.width(ui.item.outerWidth());
+      ui.helper.css({"background-color": "#fff"})
+    },
+  }
   this.showDashboardTable = true;
   this.dashboardTableFields = WELL_INFOS.map(w => ({...w, selected: false}));
   this.dashboardTableWidthArr = [];
@@ -2761,5 +2772,16 @@ function baseMapController(
     })
     Object.assign(self.dashboardTableRows, newRows);
     self.dashboardTableRows.length = newRows.length;
+  }
+  this.isDashboardTableCheckAll = function() {
+    return self.dashboardTableFields.every(f => f.selected);
+  }
+  this.toggleDashboardTableCheckAll = function() {
+    if (self.isDashboardTableCheckAll()) {
+      self.dashboardTableFields.forEach(f => f.selected = false);
+    } else {
+      self.dashboardTableFields.forEach(f => f.selected = true);
+    }
+    self.updateDashboardTableSelectedFields();
   }
 }
