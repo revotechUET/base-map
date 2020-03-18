@@ -33,6 +33,7 @@ app.component(componentName, {
     focusMarkerOrZone: "<",
     zoneDepthSpec: '<',
     wellPosition: '<',
+    popupPosition: '<',
     // draw geojson objects
     geoJson: '<',
     // draw trajectory map
@@ -59,6 +60,7 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken, wiApi) {
   let map;
   let markers = [];
   const infowindows = [];
+  window.infowindows = infowindows;
   var drawMarkersDebounced = _.debounce(drawMarkers, 500);
   let icon_well = 'M413.9,455.1h-9.6L319.2,37.7h1.9c7.1,0,12.9-5.8,12.9-12.9V14.7c0-7.1-5.8-12.9-12.9-12.9H170.9c-7.1,0-12.9,5.8-12.9,12.9  v10.1c0,7.1,5.8,12.9,12.9,12.9h0.9L86.8,455.1H76.6c-7.1,0-12.9,5.8-12.9,12.9v10.1c0,7.1,5.8,12.9,12.9,12.9h48.6  c7.1,0,12.9-5.8,12.9-12.9v-10.1c0-7.1-5.8-12.9-12.9-12.9h-1.8l20-98.3H228v98.3h-6.3c-7.1,0-12.9,5.8-12.9,12.9v10.1  c0,7.1,5.8,12.9,12.9,12.9h48.6c7.1,0,12.9-5.8,12.9-12.9v-10.1c0-7.1-5.8-12.9-12.9-12.9H264v-98.3h83.6l20,98.3h-2.3  c-7.1,0-12.9,5.8-12.9,12.9v10.1c0,7.1,5.8,12.9,12.9,12.9h48.6c7.1,0,12.9-5.8,12.9-12.9v-10.1C426.8,460.9,421,455.1,413.9,455.1z   M310.1,172.8H264V37.7h18.6L310.1,172.8z M228,37.7v135.2H181l27.6-135.2H228z M150.8,320.9l22.9-112.2H228v112.2H150.8z   M264,320.9V208.7h53.4l22.9,112.2H264z';
   let icon_arrow_up = 'M442.627,185.388L265.083,7.844C260.019,2.78,253.263,0,245.915,0c-7.204,0-13.956,2.78-19.02,7.844L49.347,185.388    c-10.488,10.492-10.488,27.568,0,38.052l16.12,16.128c5.064,5.06,11.82,7.844,19.028,7.844c7.204,0,14.192-2.784,19.252-7.844    l103.808-103.584v329.084c0,14.832,11.616,26.932,26.448,26.932h22.8c14.832,0,27.624-12.1,27.624-26.932V134.816l104.396,104.752    c5.06,5.06,11.636,7.844,18.844,7.844s13.864-2.784,18.932-7.844l16.072-16.128C453.163,212.952,453.123,195.88,442.627,185.388z';
@@ -262,6 +264,12 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken, wiApi) {
       () => {
         updateCoordinateTableDebounced();
         updateTrajectoryDebounced();
+      }
+    )
+    $scope.$watch(
+      () => self.popupPosition,
+      () => {
+        drawMarkersDebounced();
       }
     )
     $scope.$watch(
@@ -1637,6 +1645,7 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken, wiApi) {
           let aMarker;
           if (checkCoordinate(lat, long, x, y) === true) {
             aMarker = new google.maps.Marker({ position: { lat: lat, lng: long }, map: map });
+            /*
             let markername = '<div id="firstHeading" class="firstHeading">' + self.wells[index].name + '</div>';
             let infowindow = new google.maps.InfoWindow({
               content: markername,
@@ -1646,6 +1655,7 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken, wiApi) {
             if (infowindows[self.wells[index].idWell])
               infowindow.setZIndex(infowindows[self.wells[index].idWell].getZIndex());
             infowindows[self.wells[index].idWell] = infowindow;
+            */
 
             if (getImageIconMarker(self.wells[index].well_headers) == icon_search) {
               aMarker.setIcon({
@@ -1689,16 +1699,17 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken, wiApi) {
           }
           else if (checkCoordinate(lat, long, x, y) === false) {
             aMarker = new google.maps.Marker({ position: { lat: latX, lng: lngY }, map: map });
+            /*
             let markername = '<div id="firstHeading" class="firstHeading">' + self.wells[index].name + '</div>';
             let infowindow = new google.maps.InfoWindow({
               content: markername,
               disableAutoPan: true
             });
-            // aMarker.addListener('click', function () {
             infowindow.open(map, aMarker);
             if (infowindows[self.wells[index].idWell])
               infowindow.setZIndex(infowindows[self.wells[index].idWell].getZIndex());
             infowindows[self.wells[index].idWell] = infowindow;
+            */
 
             if (getImageIconMarker(self.wells[index].well_headers) == icon_search) {
               aMarker.setIcon({
@@ -1758,6 +1769,7 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken, wiApi) {
           let aMarker;
           if (checkCoordinate(lat, long, x, y) === true) {
             aMarker = new google.maps.Marker({ position: { lat: lat, lng: long }, map: map });
+            /*
             let markername = '<div id="firstHeading" class="firstHeading">' + self.wells[index].name + '</div>';
             let infowindow = new google.maps.InfoWindow({
               content: markername,
@@ -1767,6 +1779,7 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken, wiApi) {
             if (infowindows[self.wells[index].idWell])
               infowindow.setZIndex(infowindows[self.wells[index].idWell].getZIndex());
             infowindows[self.wells[index].idWell] = infowindow;
+            */
 
             aMarker.setIcon({
               path: icon_well,
@@ -1780,6 +1793,7 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken, wiApi) {
           }
           else if (checkCoordinate(lat, long, x, y) === false) {
             aMarker = new google.maps.Marker({ position: { lat: latX, lng: lngY }, map: map });
+            /*
             let markername = '<div id="firstHeading" class="firstHeading">' + self.wells[index].name + '</div>';
             let infowindow = new google.maps.InfoWindow({
               content: markername,
@@ -1790,6 +1804,7 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken, wiApi) {
             if (infowindows[self.wells[index].idWell])
               infowindow.setZIndex(infowindows[self.wells[index].idWell].getZIndex());
             infowindows[self.wells[index].idWell] = infowindow;
+            */
 
             aMarker.setIcon({
               path: icon_well,
@@ -1809,6 +1824,56 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken, wiApi) {
           }
         }
       }
+    }
+    // POPUP WINDOWS
+    if (self.popupPosition == "base" && self.wellPosition != "base") {
+      self.wells.forEach(well => {
+        const wellDepthSpec = getDepthSpecsFromWell(well);
+        getCoordFromCurve(well, wellDepthSpec.bottomDepth)
+          .then(coord => {
+            const markername = '<div id="firstHeading" class="firstHeading">' + well.name + '</div>';
+            if (!infowindows[well.idWell]) {
+              infowindows[well.idWell] = new google.maps.InfoWindow({ disableAutoPan: true });
+            }
+            infowindows[well.idWell].setPosition(new google.maps.LatLng(coord.lat, coord.lng));
+            infowindows[well.idWell].setContent(markername);
+            infowindows[well.idWell].open(map);
+          })
+      })
+    } else if (self.popupPosition != "base" && self.wellPosition == "base") {
+      self.wells.forEach(well => {
+        const lat = getLat(well.well_headers, true);
+        const long = getLong(well.well_headers, true);
+        const x = getX(well.well_headers, true);
+        const y = getY(well.well_headers, true);
+        const latX = proj4(firstProjection, secondProjection, [x, y])[1];
+        const lngY = proj4(firstProjection, secondProjection, [x, y])[0];
+        let coord = null;
+        if (checkCoordinate(lat, long, x, y) === true) {
+          coord = new google.maps.LatLng(lat, long);
+        }
+        else if (checkCoordinate(lat, long, x, y) === false) {
+          coord = new google.maps.LatLng(latX, lngY);
+        }
+        if (coord) {
+          const markername = '<div id="firstHeading" class="firstHeading">' + well.name + '</div>';
+          if (!infowindows[well.idWell]) {
+            infowindows[well.idWell] = new google.maps.InfoWindow({ disableAutoPan: true });
+          }
+          infowindows[well.idWell].setPosition(coord);
+          infowindows[well.idWell].setContent(markername);
+          infowindows[well.idWell].open(map);
+        }
+      });
+    } else {
+      self.wells.forEach(well => {
+        const markername = '<div id="firstHeading" class="firstHeading">' + well.name + '</div>';
+        if (!infowindows[well.idWell]) {
+          infowindows[well.idWell] = new google.maps.InfoWindow({disableAutoPan: true});
+        }
+        infowindows[well.idWell].setContent(markername);
+        infowindows[well.idWell].open(map, markers[well.idWell]);
+      })
     }
   }
   //FOCUS WELL
@@ -2055,7 +2120,7 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken, wiApi) {
     }
     return { x, y, lat, lng };
   }
-  async function getCoordFromCurve(well) {
+  async function getCoordFromCurve(well, forcedDepth = null) {
     const focusedMZ = self.focusMarkerOrZone;
     if (!focusedMZ && !self.wellPosition) { return; }
     let depth = null;
@@ -2086,6 +2151,8 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken, wiApi) {
         depth = null;
       }
     }
+    if (_.isFinite(forcedDepth))
+      depth = forcedDepth;
     if (_.isFinite(depth)) {
       return await getCoordFromDepth(depth, well);
     }

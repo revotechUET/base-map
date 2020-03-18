@@ -265,6 +265,7 @@ function baseMapController(
   self.wellPositionOptions = WellPositionOptions;
   self.wellDisplayModeOptions = WellDisplayModeOptions;
   self.wellPosition = self.wellPositionOptions[0].value;
+  self.popupPosition = self.wellPositionOptions[0].value;
   self.wellDisplayMode = self.wellDisplayModeOptions[0].value;
   self.axesUnit = self.axesUnitOptions[0];
   self.selectedIdsHash = {};
@@ -613,6 +614,7 @@ function baseMapController(
               self.showTrajectory = data.showTrajectory;
               self.showAxes = data.showAxes;
               self.wellPosition = data.wellPosition; 
+              self.popupPosition = data.popupPosition; 
               self.darkMode = data.darkMode;
               setDarkMode(self.darkMode);
               self.showZonesets = data.showZonesets;
@@ -1385,6 +1387,8 @@ function baseMapController(
   };
   this.toggleTrajectory = function () {
     self.showTrajectory = !self.showTrajectory;
+    if (!self.showTrajectory)
+      self.popupPosition = "top";
   };
   this.toggleAxes = function() {
     self.showAxes = !self.showAxes;
@@ -1620,6 +1624,7 @@ function baseMapController(
       showTrajectory: self.showTrajectory,
       showAxes: self.showAxes,
       wellPosition: self.wellPosition,
+      popupPosition: self.popupPosition,
       zoneMap: $scope.zoneMap,
       darkMode: self.darkMode,
       showZonesets: self.showZonesets,
