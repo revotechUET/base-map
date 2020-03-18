@@ -1067,7 +1067,7 @@ function baseMapController(
       const keys = Object.keys(result);
       const firstKey = keys[0];
       const firstData = getData(result[firstKey]);
-      const firstMaxData = d3.max(firstData);
+      const firstMaxData = d3.max(firstData)+ Math.ceil(0.2 * d3.max(firstData));
       const _k = Object.keys(DTSRC_MAP).find(__k => DTSRC_MAP[__k] == firstKey)
       const label = Object.keys(DTSRC_OPTIONS_MAP).find(l => DTSRC_OPTIONS_MAP[l] == _k);
       let WidgetConfig = {
