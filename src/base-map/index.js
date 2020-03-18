@@ -801,14 +801,23 @@ function baseMapController(
     })
   }
   function confirmDialog(message) {
-    return new Promise(resolve => {
+    return new Promise((resolve, reject) => {
+      let okBtnClicked = false;
       ngDialog.open({
         template: 'dashboard-template-modal',
+        preCloseCallback: function() {
+          if (!okBtnClicked) reject();
+          return true;
+        },
         controller: ['$scope', function ($scope) {
           this.mode = "confirm-modal";
           this.message = message;
           this.onOkButtonClicked = function () {
+            okBtnClicked = true;
             resolve();
+            $scope.closeThisDialog();
+          }
+          this.closeBtnClicked = function() {
             $scope.closeThisDialog();
           }
         }],
@@ -1079,7 +1088,8 @@ function baseMapController(
           },
           title: 'New Dashboard',
           chart_options: {
-            maintainAspectRatio: false
+            maintainAspectRatio: false,
+            showSegmentLabel: true
           },
           bar_chart_options: {
             scales: {
@@ -1124,16 +1134,42 @@ function baseMapController(
       errorDialog("Please select a project to show Dashboard");
       return;
     }
-    // self.showDashboard = !self.showDashboard; 
-    self.showLoadingDashboard = true;
-    wiApi.getFullInfoPromise(self.selectedNode.idProject, self.selectedNode.owner, self.selectedNode.owner ? self.selectedNode.name : null).then((prjTree) => {
-      projectTree = prjTree;
-      buildDashboard(projectTree);
-    }).catch((e) => {
-      console.error(e);
-    }).finally(() => {
-      self.showLoadingDashboard = false;
-    });
+    if (self.dashboardContent && self.dashboardContent.project) {
+      confirmDialog("Changes you made may not be saved. Are you sure to switch project?")
+        .then(() => {
+          self.showGuide = false;
+          self.showLoadingDashboard = true;
+          wiApi.getFullInfoPromise(self.selectedNode.idProject, self.selectedNode.owner, self.selectedNode.owner ? self.selectedNode.name : null).then((prjTree) => {
+            projectTree = prjTree;
+            buildDashboard(projectTree);
+          }).catch((e) => {
+            console.error(e);
+          }).finally(() => {
+            self.showLoadingDashboard = false;
+          });
+        })
+        .catch(() => {
+          // reject modal
+          $timeout(() => {
+            const currPrjNode = $scope.treeConfig.find(p => p.idProject == self.dashboardContent.project.idProject)
+            currPrjNode._selected = true;
+            self.selectedNode._selected = false;
+            self.selectedNode = currPrjNode;
+            self.selectedNodes.splice(0, 1, currPrjNode);
+          })
+        })
+    } else {
+      self.showGuide = false;
+      self.showLoadingDashboard = true;
+      wiApi.getFullInfoPromise(self.selectedNode.idProject, self.selectedNode.owner, self.selectedNode.owner ? self.selectedNode.name : null).then((prjTree) => {
+        projectTree = prjTree;
+        buildDashboard(projectTree);
+      }).catch((e) => {
+        console.error(e);
+      }).finally(() => {
+        self.showLoadingDashboard = false;
+      });
+    }
   }
 
   function buildDashboard(prjTree) {
@@ -2021,9 +2057,7 @@ function baseMapController(
     self.selectedNode = node;
     self.selectedNodes = selectedNodes.map((e)=>e.data);
     if(!self.showMap){
-      self.showGuide = false;
       self.openDashboard();
-      
     }
 			
     if (!$event.shiftKey && !$event.ctrlKey && !$event.metaKey) {
