@@ -66,10 +66,11 @@ const DTSRC_OPTIONS_MAP = {
   "Well By Fluid": 'well-by-fluid',
 }
 const DTSRC_MAP = {
-  'well-by-well-type': 'WTYPE',
   'well-by-field': 'FLD',
-  'well-by-operator': 'OPERATOR',
+  'well-by-well-type': 'WTYPE',
   'well-by-tag': 'tags',
+  'well-by-fluid': 'FLUID',
+  'well-by-operator': 'OPERATOR',
   'well-by-uwi': 'UWI',
   'well-by-api': 'API',
   'well-by-company': 'COMP',
@@ -85,7 +86,6 @@ const DTSRC_MAP = {
   'well-by-area': 'AREA',
   'well-by-type': 'TYPE',
   'well-by-status': 'STATUS',
-  'well-by-fluid': 'FLUID',
 }
 const chartTypes = [
   { data: { label: "Bar" }, properties: { value: "bar" } },
@@ -1135,6 +1135,10 @@ function baseMapController(
       return;
     }
     if (self.dashboardContent && self.dashboardContent.project) {
+      if (self.selectedNode.idProject == self.dashboardContent.project.idProject) {
+        self.reloadDashboardData();
+        return;
+      } 
       confirmDialog("Changes you made may not be saved. Are you sure to switch project?")
         .then(() => {
           self.showGuide = false;
@@ -1175,9 +1179,8 @@ function baseMapController(
   function buildDashboard(prjTree) {
     let result = groupWells(prjTree);
     Object.assign(CHART_DATA_SOURCE, result)
-    const configs = [];
-    /*
-    const configs = Object.keys(result).map(dataSource => {
+    // const configs = [];
+    const configs = Object.keys(result).slice(0, 4).map(dataSource => {
       const data = getData(result[dataSource]);
       const maxAxisValue = d3.max(data) + Math.ceil(0.2 * d3.max(data)); // for axis
       const __key = Object.keys(DTSRC_MAP).find(k => DTSRC_MAP[k] == dataSource)
@@ -1199,7 +1202,8 @@ function baseMapController(
           },
           title: dtsrcLabel,
           chart_options: {
-            maintainAspectRatio: false
+            maintainAspectRatio: false,
+            showSegmentLabel: true
           },
           bar_chart_options: {
             scales: {
@@ -1222,7 +1226,6 @@ function baseMapController(
       }
       return config;
     });
-    */
     $timeout(() => {
       // const _dashboardContent = [wTypeWidgetConfig, fieldWidgetConfig, operatorWidgetConfig, tagWidgetConfig ];
       const _dashboardContent = configs;
