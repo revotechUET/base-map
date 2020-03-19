@@ -54,11 +54,11 @@
                 <span style="padding: 10px 15px; border-right: 1px solid #f4f4f4; border-bottom: 1px solid #f4f4f4; display: flex; align-items: center;">
                     <input type="checkbox"
                         ng-checked="self.isDashboardTableCheckAll()"
-                        ng-click="self.toggleDashboardTableCheckAll()" style="margin: 0 10px 0 0;">
+                        ng-click="self.toggleDashboardTableCheckAll()" style="margin: 0 10px 0 0; cursor: pointer">
                     All
                 </span>
-                <span ng-repeat="field in self.dashboardTableFields" style="padding: 10px 15px; border-right: 1px solid #f4f4f4; border-bottom: 1px solid #f4f4f4; display: flex; align-items: center;">
-                    <input type="checkbox" ng-model="field.selected" ng-change="self.updateDashboardTableSelectedFields()" style="margin: 0 10px 0 0;">
+                <span ng-repeat="field in self.dashboardTableFields" style="cursor: grab; padding: 10px 15px; border-right: 1px solid #f4f4f4; border-bottom: 1px solid #f4f4f4; display: flex; align-items: center;">
+                    <input type="checkbox" ng-model="field.selected" ng-change="self.updateDashboardTableSelectedFields()" style="cursor: pointer;margin: 0 10px 0 0;">
                     {{ field.field }}
                 </span>
             </div>

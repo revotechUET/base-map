@@ -2746,6 +2746,7 @@ function baseMapController(
   ];
   this.dashboardTableSortableOptions = {
     placeholder: 'sortable-placeholder',
+    cursor: 'grabbing',
     stop: function(event, ui) {
       self.updateDashboardTableSelectedFields();
     },
