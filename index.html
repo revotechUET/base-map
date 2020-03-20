@@ -80,22 +80,16 @@
   <script>
     angular
       .module("myApp", ["baseMap", "wiMapLoading", "wiToken"])
-      /*
-      .run(function (wiApi) {
-        wiApi.setBaseUrl('https://api-1.i2g.cloud');
-      })
-      */
       .controller('myController', function ($scope, $http, wiToken, wiApi) {
-        // $("<script>").attr({src: $scope.apikey}).appendTo("body");
         $scope.$watch(
-          function () {
-            return wiToken.getToken();
-          },
+          function () { return wiToken.getToken(); },
           function () {
             // reset base_url if got new token
             // => to invoke doinit function in wiApi service
+            /*
             if(wiToken.getToken() && wiToken.getToken() !== "")
               wiApi.setBaseUrl('https://api-1.i2g.cloud');
+            */
 
             $http({
               method: "POST",
@@ -107,25 +101,18 @@
             }).then(
               function (response) {
                 $scope.apikey = String('https://maps.googleapis.com/maps/api/js?key=' + response.data.content.key);
-                // console.log($scope.apikey)
                 var script = document.createElement('script');
-                script.onload = function () {
-                  //do stuff with the script
-                };
+                script.onload = function () { };
                 script.src = $scope.apikey;
-                document.body.appendChild(script); //or something of the likes
-
+                document.body.appendChild(script);
               },
               function (errorResponse) {
                 console.error(errorResponse);
                 wiToken.removeToken();
               }
             );
-
           }
         );
-
-
       });
   </script>
 </body>

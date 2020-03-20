@@ -5,19 +5,20 @@ const queryString = require("query-string");
 const JSZip = require("jszip");
 const fileSaver = require("file-saver");
 
-let config = require("../../config/default").default;
+let URL_CONFIG = require("../../config/default").default;
 if (process.env.NODE_ENV === "development") {
-  config = require("../../config/default").dev;
+  URL_CONFIG = require("../../config/default").dev;
 } else if (process.env.NODE_ENV === "production") {
-  config = require("../../config/default").production;
+  URL_CONFIG = require("../../config/default").production;
 }
-config = require("../../config/default").production;
+URL_CONFIG = require("../../config/default").production;
 
 
 // console.log("config", config);
 // console.log("NODE_ENV", process.env.NODE_ENV);
-const WI_AUTH_HOST = config.wi_auth;
-const WI_BACKEND_HOST = config.wi_backend;
+const WI_AUTH_HOST = URL_CONFIG.wi_auth;
+const WI_BACKEND_HOST = URL_CONFIG.wi_backend;
+const BASE_URL = WI_BACKEND_HOST;
 
 localStorage.setItem('__BASE_URL', WI_AUTH_HOST);
 
@@ -1362,10 +1363,7 @@ function baseMapController(
 
   this.$onInit = function () {
     self.showDialog = false;
-    self.baseUrl = $location.search().baseUrl || self.baseUrl;
-    // self.getLoginUrl = `${WI_AUTH_HOST}/login`;
-    self.loginUrl =
-      `${WI_AUTH_HOST}/login` || $location.search().loginUrl || self.loginUrl;
+    self.loginUrl = `${WI_AUTH_HOST}/login` || $location.search().loginUrl || self.loginUrl;
     self.queryString = queryString.parse(location.search);
     self.setDashboardMode = "true"; 
     self.queryString.token ? (() => { wiToken.setToken(self.queryString.token);  wiToken.saveToken(self.queryString)})() : null
@@ -1419,6 +1417,7 @@ function baseMapController(
         if (localStorage.getItem("token") !== null) {
           getZoneList();
           getCurveTree();
+          wiApi.setBaseUrl(BASE_URL);
         }
       }
     );
@@ -1579,54 +1578,6 @@ function baseMapController(
     }
     return well;
   }
-
-  /*
-  let unitTable = null;
-  this.convertUnitFn = convertUnit;
-  async function updateUnitTable() {
-    $http({
-      method: "POST",
-      url: BASE_URL + "/family/all-unit",
-      data: {},
-      headers: {
-        Authorization: wiToken.getToken()
-      }
-    }).then(function (units) {
-      unitTable = units;
-    });
-  }
-  function convertUnit (value, fromUnit, destUnit) {
-    if ((!Array.isArray(value) && !_.isFinite(value)) || fromUnit === destUnit) return value;
-    if (!unitTable) {
-      updateUnitTable();
-      return value;
-    }
-
-    let startUnit = unitTable.find(u => u.name == fromUnit);
-    let endUnit = unitTable.find(u => u.name == destUnit);
-
-    if(!startUnit || !endUnit || startUnit.idUnitGroup != endUnit.idUnitGroup)
-        return value;
-    if (startUnit && endUnit) {
-        let sCoeffs = JSON.parse(startUnit.rate);
-        let eCoeffs = JSON.parse(endUnit.rate);
-        function convert(value) {
-            return eCoeffs[0]* (value - sCoeffs[1])/sCoeffs[0] + eCoeffs[1];
-        }
-        if (Array.isArray(value)) {
-            return value.map(convert);
-        } else {
-            return convert(value);
-        }
-        //return value * endUnit.rate / startUnit.rate;
-    }
-    else {
-        let errUnit = !startUnit ? fromUnit : destUnit;
-        console.error("convert unit error");
-        return null;
-    }
-  }
-  */
 
   function getUniqZones(zoneset) {
     const _clonedZones = angular.copy(zoneset.zones);
@@ -2116,7 +2067,6 @@ function baseMapController(
   }
 
   this.getCurveTree = getCurveTree;
-  const BASE_URL = WI_BACKEND_HOST;
 
   function getCurveTree() {
     $scope.treeConfig = [];
