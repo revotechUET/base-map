@@ -34,7 +34,7 @@ ${require('./dashboard-template-modal.html')}
 <div class="dialog-error" ng-show="self.showError">
     <div class="dialog-header">
         <div style="display: flex; align-items: center;">
-            <div class="ti-alert" style="color: #ff8503; font-size: 20px;"></div>
+            <div class="ti ti-alert" style="color: #ff8503; font-size: 20px;"></div>
             <span>Warning</span>
         </div>
         <div class="ti ti-close" ng-click="self.showError = !self.showError" style="cursor: pointer;"></div>
@@ -54,7 +54,7 @@ ${require('./dashboard-template-modal.html')}
 <div class="dialog-error" ng-show="self.wellError">
   <div class="dialog-header">
       <div style="display: flex; align-items: center;">
-          <div class="ti-alert" style="color: #ff8503; font-size: 20px;"></div>
+          <div class="ti alert" style="color: #ff8503; font-size: 20px;"></div>
           <span>Warning</span>
       </div>
       <div class="ti ti-close" ng-click="self.wellError = !self.wellError" style="cursor: pointer;"></div>
@@ -97,7 +97,7 @@ ${require('./dashboard-template-modal.html')}
       </div>
     </div>
     <div style="display: flex;">
-      <div class="tab-name ti-angle-left" style="color: #4085ff; font-size: 13px; position: relative; z-index: 1;" ng-click="self.hideMain = !self.hideMain" ></div>
+      <div class="tab-name ti ti-angle-left" style="color: #4085ff; font-size: 13px; position: relative; z-index: 1;" ng-click="self.hideMain = !self.hideMain" ></div>
       <div class="tab-name ti ti-reload" style="color: #4085ff; font-size: 13px; position: relative; z-index: 1;" ng-click="self.refresh()" ng-show="!self.showMap" ></div>
       <div class="tab-name fa fa-user-circle-o" style="color: #4085ff; font-size: 13px; position: relative; z-index: 1;"
         ng-click="self.showUser = !self.showUser">
