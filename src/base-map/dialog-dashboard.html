@@ -70,10 +70,10 @@
               remove-confirm="true" on-click-chart="self.onClickChart">
             </manager-dashboard>
         </div>
-        <div ng-if="self.showWellsInfo" style="overflow: hidden; height: 100%;">
+        <div ng-if="self.showWellsInfo" style="height: 100%;">
             <div ui-sortable="self.dashboardTableSortableOptions" ng-model="self.dashboardTableFields"
                 ng-class="{'height0': self.showOptionsWellTab}"
-                style="height: auto; white-space: nowrap; display: flex; flex-wrap: wrap; overflow: hidden; transition: height ease-in 0.2s; background-color: #fff;">
+                style="width: calc(100vw - 340px); height: auto; white-space: nowrap; display: flex; flex-wrap: wrap; overflow: hidden; transition: height ease-in 0.2s; background-color: #fff;">
                 <span style="padding: 10px 15px; border-right: 1px solid #f4f4f4; border-bottom: 1px solid #f4f4f4; display: flex; align-items: center;">
                     <input type="checkbox"
                         ng-checked="self.isDashboardTableCheckAll()"
