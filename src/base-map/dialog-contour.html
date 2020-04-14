@@ -1,0 +1,28 @@
+<div style="width:calc(100% - 10px); height: calc(100% - 10px); margin: 5px">
+    <contour-view
+        values-get="self.getterFn('contourConfig.values')"
+        n-rows-get="self.getterFn('contourConfig.headers.numOfCols')"
+        n-cols-get="self.getterFn('contourConfig.headers.numOfRows')"
+        min-x-get="self.getterFn('contourConfig.headers.minX')"
+        max-x-get="self.getterFn('contourConfig.headers.maxX')"
+        min-y-get="self.getterFn('contourConfig.headers.minY')"
+        max-y-get="self.getterFn('contourConfig.headers.maxY')"
+        color-scale-get="self.getterFn('contourConfig.colorScale')"
+        step-get="self.getterFn('contourConfig.step')"
+        major-every-get="self.getterFn('contourConfig.majorEvery')"
+        show-grid-get="self.getterFn('contourConfig.showGrid')"
+        grid-major-get="self.getterFn('contourConfig.gridMajor')"
+        grid-minor-get="self.getterFn('contourConfig.gridMinor')"
+        grid-nice-get="self.getterFn('contourConfig.gridNice')"
+        show-label-get="self.getterFn('contourConfig.showLabel')"
+        show-scale-get="self.getterFn('contourConfig.showScale')"
+        label-font-size-get="self.getterFn('contourConfig.labelFontSize')"
+        y-direction-get="self.getterFn('contourConfig.yDirection')"
+        wells-get="self.getterFn('contourConfig.wells')"
+        show-well-get="self.getterFn('contourConfig.showWell')"
+        trajectories-get="self.getterFn('contourConfig.trajectories')"
+        show-trajectory-get="self.getterFn('contourConfig.showTrajectory')"
+        on-component-mounted-get="self.getterFn('contourConfig.onContourViewMounted')"
+        on-scale-changed-get="self.getterFn('contourConfig.onScaleChanged')">
+    </contour-view>
+</div>

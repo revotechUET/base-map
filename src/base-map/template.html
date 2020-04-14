@@ -1,3 +1,6 @@
+<div ng-class="{'show-dashboard': self.showContourPanel}" class="dialog">
+  ${require('./dialog-contour.html')}
+</div>
 <div ng-class="{'show-dashboard': self.showDashboard}" class="dialog">
   ${require('./dialog-dashboard.html')}
 </div>
@@ -96,6 +99,9 @@ ${require('./dashboard-template-modal.html')}
       </div>
       <div class="tab-name" ng-class="{'active' : isSet(5)}" ng-click="setTab(5)" ng-show="self.showMap">
         Configs
+      </div>
+      <div class="tab-name" ng-class="{'active' : isSet(6)}" ng-click="setTab(6); self.onContourTabClick();" ng-show="self.showMap">
+        Contour
       </div>
     </div>
     <div style="display: flex;">
@@ -283,6 +289,19 @@ ${require('./dashboard-template-modal.html')}
         </div>
       </div>
       <div class="setting">
+        <div class="setting-title" style="margin-bottom: 10px;">Show Contour Panel</div>
+        <div class="complex-setting">
+          <div class="setting-content">
+            <span
+              class="setting-sub-title"></span>
+            <label class="switch">
+              <input type="checkbox" ng-checked="self.showContourPanel" ng-click="self.showContourPanel = !self.showContourPanel" />
+              <span class="slider round"></span>
+            </label>
+          </div>
+        </div>
+      </div>
+      <div class="setting">
         <div class="setting-title" style="margin-bottom: 10px;">Show contour</div>
         <div class="complex-setting">
           <div class="setting-content">
@@ -393,8 +412,120 @@ ${require('./dashboard-template-modal.html')}
           </div>
         </div>
       </div>
-     
     </div>
+  </div>
+  <div ng-show="isSet(6) && !self.hideMain" class="content">
+      <div style="height: calc(100vh - 193px); overflow-y: overlay; overflow-x: hidden;">
+          <div class="setting">
+              <contour-file-import
+                  on-data-changed-get="self.getterFn('contourConfig.onDataChanged')">
+              </contour-file-import>
+          </div>
+          <div class="setting">
+              <color-scale-generator
+                  on-component-mounted-get="self.getterFn('contourConfig.onColorScaleBarInit')"
+                  on-scale-changed-get="self.getterFn('contourConfig.onColorScaleChanged')"
+                  min-val-get="self.getterFn('contourConfig.minValue')"
+                  max-val-get="self.getterFn('contourConfig.maxValue')">
+              </color-scale-generator>
+          </div>
+          <div class="setting">
+              <div class="setting-title" style="margin-bottom: 10px;">Label</div>
+              <div class="setting-content">
+                  <span class="setting-sub-title">Display label in contour</span>
+                  <label class="switch">
+                      <input type="checkbox"
+                             ng-checked="self.contourConfig.showLabel"
+                             ng-click="self.contourConfig.showLabel = !self.contourConfig.showLabel" />
+                      <span class="slider round"></span>
+                  </label>
+              </div>
+              <div class="" ng-show="self.contourConfig.showLabel">
+                  <div class="setting-content">
+                      <span class="setting-sub-title">Label font size</span>
+                      <div class="setting-content">
+                          <input type="number" ng-model="self.contourConfig.labelFontSize" />
+                      </div>
+                  </div>
+              </div>
+          </div>
+          <div class="setting">
+              <div class="setting-title" style="margin-bottom: 10px;">Scale</div>
+              <div class="setting-content">
+                  <span class="setting-sub-title">Current scale: {{ self.getRound(self.contourConfig.scale, 2) }}x</span>
+                  <label class="switch">
+                      <input type="checkbox"
+                             ng-checked="self.contourConfig.showScale"
+                             ng-click="self.contourConfig.showScale = !self.contourConfig.showScale" />
+                      <span class="slider round"></span>
+                  </label>
+              </div>
+          </div>
+          <div class="setting">
+              <div class="setting-title" style="margin-bottom: 10px;">Contour</div>
+              <div class="complex-setting">
+                  <div class="setting-content">
+                      <span class="setting-sub-title">Major every</span>
+                      <div class="setting-content">
+                          <input type="number" ng-model="self.contourConfig.majorEvery" />
+                      </div>
+                  </div>
+                  <div class="setting-content">
+                      <span class="setting-sub-title">Step</span>
+                      <div class="setting-content">
+                          <input type="number" ng-model="self.contourConfig.step" />
+                      </div>
+                  </div>
+                  <div class="setting-content">
+                      <span class="setting-sub-title">Scale</span>
+                      <div class="setting-content">
+                          <input type="number" ng-model="self.contourConfig.scale" ng-blur="self.contourConfig.updateContourScale()" />
+                      </div>
+                  </div>
+                  <div class="setting-content">
+                      <span class="setting-sub-title">Center</span>
+                      <div class="setting-content">
+                          <button ng-click="self.contourConfig.focusCenter()">Go!</button>
+                      </div>
+                  </div>
+              </div>
+          </div>
+          <div class="setting">
+              <div class="setting-title" style="margin-bottom: 10px;">Grid</div>
+              <div class="setting-content">
+                  <span class="setting-sub-title">Display grid in contour</span>
+                  <label class="switch">
+                      <input type="checkbox"
+                             ng-checked="self.contourConfig.showGrid"
+                             ng-click="self.contourConfig.showGrid = !self.contourConfig.showGrid" />
+                      <span class="slider round"></span>
+                  </label>
+              </div>
+              <div class="" ng-show="self.contourConfig.showGrid">
+                  <div class="setting-content">
+                      <span class="setting-sub-title">Nice grid tick</span>
+                      <label class="switch">
+                          <input type="checkbox"
+                                 ng-checked="self.contourConfig.gridNice"
+                                 ng-click="self.contourConfig.gridNice = !self.contourConfig.gridNice" />
+                          <span class="slider round"></span>
+                      </label>
+                  </div>
+                  <div class="setting-content">
+                      <span class="setting-sub-title">Major tick</span>
+                      <div class="setting-content">
+                          <input type="number" min='1' ng-model="self.contourConfig.gridMajor" />
+                      </div>
+                  </div>
+                  <div class="setting-content">
+                      <span class="setting-sub-title">Minor tick</span>
+                      <div class="setting-content">
+                          <input type="number" min='1' ng-model="self.contourConfig.gridMinor" />
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </div>
   </div>
   <div ng-show="isSet(2) && !self.hideMain" class="content">
     <div style="flex: 1; margin: 15px; user-select: none; overflow: hidden ;display: flex; flex-direction: column;"

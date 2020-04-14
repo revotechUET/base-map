@@ -1,9 +1,11 @@
+// vim: ts=2 sw=2
 var componentName = "baseMap";
 module.exports.name = componentName;
 require("./style.less");
 const queryString = require("query-string");
 const JSZip = require("jszip");
 const fileSaver = require("file-saver");
+const utils = require("../utils");
 
 let config = require("../../config/default").default;
 if (process.env.NODE_ENV === "development") {
@@ -36,7 +38,11 @@ var app = angular.module(componentName, [
   'managerDashboard',
   'wiApi',
   'file-explorer',
-  'wiDialog'
+  'wiDialog',
+
+  'contourView',
+  'contourFileImport',
+  'colorScaleGenerator'
 ]);
 
 function getData(resultObj) {
@@ -277,6 +283,7 @@ function baseMapController(
   self.darkMode = false;
   self.showZonesets = false;
   self.showMarkersets = false;
+
   $scope.zoneDepthSpecs = [
     { label: 'Zone Top', value: 'zone-top' },
     { label: 'Zone Middle', value: 'zone-middle' },
@@ -1570,6 +1577,7 @@ function baseMapController(
   };
 
   this.cleanMap = function () {
+    self.contourConfig.deleteWells(_.clone(self.contourConfig.wells));
     $scope.wellSelect = [];
     $scope.curveList.length = 0;
     $scope.zoneList.length = 0;
@@ -1586,7 +1594,9 @@ function baseMapController(
 //      let idx = $scope.wellSelect.findIndex(node => self.nodeComparator(node, deleteNode));
 //      $scope.wellSelect.splice(idx, 1);
 //    }
-		$scope.wellSelect = $scope.wellSelect.filter(w => !w._selected)
+    const deletedWells = $scope.wellSelect.filter(w => w._selected);
+    self.contourConfig.deleteWells(deletedWells);
+		$scope.wellSelect = $scope.wellSelect.filter(w => !w._selected);
     $timeout(() => {
       self.selectedIdsHash = {};
       $scope.focusWell.length = 0;
@@ -1923,6 +1933,7 @@ function baseMapController(
               await updateZoneList();
               await updateMarkerList();
               self.showLoading = false;
+              self.contourConfig.addWell(cloneNode);
             });
           });
         }
@@ -1963,6 +1974,7 @@ function baseMapController(
                   await updateZoneList();
                   await updateMarkerList();
                   self.showLoading = false;
+                  self.contourConfig.addWell(wells[index]);
                 });
               });
             }
@@ -2122,6 +2134,7 @@ function baseMapController(
     self.selectedIdsHash[node.idWell] = node;
     $scope.focusWell = node;
     self.clearClipboardFocusWell = !self.clearClipboardFocusWell;
+    self.contourConfig.centerByWell(node);
   };
   this.clickCurveFunction = function ($event, node) {
     $scope.focusCurve = node;
@@ -2783,4 +2796,172 @@ function baseMapController(
       widgetConfig.colors[idx] = colorStr;
     });
   }
+
+  //====================== DRAWING CONTOUR MODULE =====================//
+  this.showContourPanel = false;
+  let updateColorScaleBarWidth = () => {};
+  let setContourViewScale = () => {};
+  let setContourViewCenter = () => {};
+  this.contourConfig = {
+    values: [],
+    headers: {},
+    minValue : 0,
+    maxValue : 1,
+    colorScale : d3.scaleLinear().range(['red', 'blue']),
+    step : 100,
+    majorEvery : 5,
+    labelFontSize : 12,
+    showLabel : false,
+    showScale : true,
+    showGrid : true,
+    gridMajor : 5,
+    gridMinor : 4,
+    gridNice : true,
+    scale : 1,
+    yDirection : 'up',
+    showWell : true,
+    showTrajectory : true,
+    wells: [],
+    trajectories: [],
+    onContourViewMounted: function () {
+      const [contourViewComponent] = arguments;
+      setContourViewScale = (_scale) => {
+        contourViewComponent.setScale.call(contourViewComponent, _scale);
+      }
+      setContourViewCenter = (xCoord, yCoord) => {
+        contourViewComponent.setCenter.call(contourViewComponent, xCoord, yCoord);
+      }
+    },
+    onDataChanged: (newData) => {
+      console.log('on data changed', newData);
+      self.contourConfig.headers = _.clone(newData.headers);
+      self.contourConfig.values = _.flatten(newData.data);
+      const domain = d3.extent(self.contourConfig.values);
+      self.contourConfig.minValue = domain[0];
+      self.contourConfig.maxValue = domain[1];
+      $timeout(() => $scope.$digest());
+    },
+    onColorScaleChanged: (newColorScale) => {
+      self.contourConfig.colorScale = newColorScale;
+      $timeout(() => $scope.$digest());
+    },
+    onScaleChanged: (newScale) => {
+      self.contourConfig.scale = newScale;
+      $timeout(() => $scope.$digest());
+    },
+    onColorScaleBarInit: function() {
+      const [colorScaleBar] = arguments;
+      updateColorScaleBarWidth = () => {
+        $timeout(() => {
+          colorScaleBar.redraw.call(colorScaleBar, true);
+        }, 100);
+      }
+    },
+    focusCenter: function() {
+      const centerX = this.headers.minX + (this.headers.maxX - this.headers.minX)/2
+      const centerY = this.headers.minY + (this.headers.maxY - this.headers.minY)/2
+      setContourViewCenter(centerX, centerY);
+    },
+    updateContourScale: function() {
+      setContourViewScale(this.scale);
+    },
+    // wells
+    addWell: function(projectWell) {
+      if (!this.wells.find(_w => projectWell.idWell == _w.idWell)) {
+        const { idWell, name, color } = projectWell;
+        let _color = 'white';
+        try {
+          const __colors = JSON.parse(color);
+          if (Array.isArray(__colors))
+            _color = __colors[0];
+        } catch (e) {
+          console.log(e)
+          _color = color;
+        }
+        const xyCoord = getWellXYForContour(projectWell);
+        console.log("adding well to contour", projectWell, xyCoord);
+        this.wells.push({
+          idWell, name, color: _color,
+          xCoord: xyCoord.xCoord,
+          yCoord: xyCoord.yCoord
+        })
+        this.addTrajectories(projectWell);
+      }
+    },
+    deleteWells: function(wells) {
+      wells.forEach(w => {
+        // delete trajectory
+        const foundTrajectoryIdx = this.trajectories.findIndex(_t => _t.idWell == w.idWell);
+        if (foundTrajectoryIdx >= 0)
+          this.trajectories.splice(foundTrajectoryIdx, 1);
+        // delete well
+        const foundIdx = this.wells.findIndex(_w => _w.idWell == w.idWell);
+        if (foundIdx >= 0)
+          this.wells.splice(foundIdx, 1);
+      })
+    },
+    centerByWell: function(well) {
+      const xyCoord = getWellXYForContour(well);
+      setContourViewCenter(xyCoord.xCoord, xyCoord.yCoord);
+    },
+    // trajectories
+    addTrajectories: async function(well) {
+      const depthSpec = utils.getDepthSpecsFromWell(well, wiApi);
+      const numberOfPoints = 100;
+      const depthStep = (depthSpec.bottomDepth - depthSpec.topDepth) / numberOfPoints;
+      const depths = d3.range(depthSpec.topDepth, depthSpec.bottomDepth, depthStep);
+      const coords = await utils.getCoordFromDepth(depths, well, self.getCurveRawDataFn, $scope.zoneMap, wiApi);
+      // check if well is currently avalable in map
+      const wells = getters['contourConfig.wells']();
+      if (!wells.find(w => w.idWell == well.idWell)) return;
+      console.log("adding trajectory for well", well, coords);
+      this.trajectories.push({
+        idWell: well.idWell,
+        name: well.name,
+        color: 'white',
+        lineWidth: 1,
+        points: coords
+            .map(c => ({ xCoord: c.x, yCoord: c.y }))
+            .filter(p => _.isFinite(p.xCoord) && _.isFinite(p.yCoord))
+      })
+    }
+  };
+
+  function getWellXYForContour(well) {
+    const X = getX(well.wellheaders || well.well_headers || [], true);
+    const Y = getY(well.wellheaders || well.well_headers || [], true);
+    let xCoord = X;
+    let yCoord = Y;
+
+    if ((!X || !Y)) {
+      const lat = getLat(well.wellheaders || well.well_headers || [], true);
+      const long = getLong(well.wellheaders || well.well_headers || [], true);
+      const firstProjection = "+proj=longlat +ellps=WGS84 +datum=WGS84 +units=degrees";
+      const secondProjection = $scope.zoneMap;
+      const xByLng = proj4(firstProjection, secondProjection, [long, lat])[0];
+      const yByLat = proj4(firstProjection, secondProjection, [long, lat])[1];
+      if (xByLng && yByLat) {
+        xCoord = xByLng;
+        yCoord = yByLat;
+      }
+    }
+    return { xCoord, yCoord };
+  }
+
+  this.onContourTabClick = function() {
+    self.showContourPanel = true;
+    updateColorScaleBarWidth();
+  }
+
+  this.getRound = function(number, decimal) {
+    return _.round(number, decimal || 2);
+  }
+
+  const getters = {};
+  this.getterFn = function(key) {
+    if (typeof(getters[key]) != 'function')
+      getters[key] = () => _.get(self, key);
+    return getters[key];
+  }
+  //====================== END DRAWING CONTOUR MODULE =====================//
 }

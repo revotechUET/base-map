@@ -2,6 +2,7 @@ var componentName = "googleMapView";
 module.exports.name = componentName;
 require("./google-map-view.less");
 var app = angular.module(componentName, ["ngDialog", "wiToken"]);
+const utils = require('../utils');
 const Contour = require("../contour");
 const Axes = require("../axes");
 
@@ -1828,7 +1829,7 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken, wiApi) {
     // POPUP WINDOWS
     if (self.popupPosition == "base" && self.wellPosition != "base") {
       self.wells.forEach(well => {
-        const wellDepthSpec = getDepthSpecsFromWell(well);
+        const wellDepthSpec = utils.getDepthSpecsFromWell(well, wiApi);
         getCoordFromCurve(well, wellDepthSpec.bottomDepth)
           .then(coord => {
             const markername = '<div id="firstHeading" class="firstHeading">' + well.name + '</div>';
@@ -1979,7 +1980,8 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken, wiApi) {
       drawMarkersDebounced();
     })
   }
-  async function getCoordFromDepth(depth, well) {
+  /*
+  async function getCoordFromDepth(depth, well, curveRawDataFn, zoneMap, wiApi) {
     let x, y, lat, lng;
     if (Array.isArray(depth)) {
       x = []; y = []; lat = []; lng = [];
@@ -1993,48 +1995,24 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken, wiApi) {
         const top = Number(indexDataset.top);
         const step = Number(indexDataset.step);
         const xOffsetData = await new Promise((res) => {
-          self.getCurveRawDataFn(xOffsetCurve.idCurve, (err, data) => {
-            // res(data.filter(d => _.isFinite(d.x)).map(d => Object.assign({}, d, { depth: top + step * d.y, x: wiApi.convertUnit(d.x, xOffsetCurve.unit, "m")})));
+          curveRawDataFn(xOffsetCurve.idCurve, (err, data) => {
             res(data.filter(d => _.isFinite(d.x)).map(d => Object.assign(d, { depth: top + step * d.y })));
           });
         });
         const yOffsetData = await new Promise((res) => {
-          self.getCurveRawDataFn(yOffsetCurve.idCurve, (err, data) => {
-            // res(data.filter(d => _.isFinite(d.x)).map(d => Object.assign({}, d, { depth: top + step * d.y, x: wiApi.convertUnit(d.x, yOffsetCurve.unit, "m")})));
+          curveRawDataFn(yOffsetCurve.idCurve, (err, data) => {
             res(data.filter(d => _.isFinite(d.x)).map(d => Object.assign(d, { depth: top + step * d.y })));
           });
         });
 
         if (xOffsetData.length && yOffsetData.length) {
-          const firstProjection = self.zoneMap;
+          const firstProjection = zoneMap;
           const secondProjection = "+proj=longlat +ellps=WGS84 +datum=WGS84 +units=degrees";
 
           const _lat = getLat(well.well_headers, true);
           const _lng = getLong(well.well_headers, true);
           const _x = getX(well.well_headers, true);
           const _y = getY(well.well_headers, true);
-
-          /* // VERSION 1
-          const xUpperBoundIdx = xOffsetData.findIndex(datum => datum.depth >= depth);
-          const xUpperBound = xOffsetData[xUpperBoundIdx];
-          const xLowerBound = xOffsetData[xUpperBoundIdx - 1];
-
-          // calculate x, y offsets
-          let _xOffset, _yOffset;
-          if (xLowerBound)
-            _xOffset = d3.scaleLinear().domain([xLowerBound.depth, xUpperBound.depth]).range([xLowerBound.x, xUpperBound.x])(depth);
-          else
-            _xOffset = (xUpperBound || xOffsetData[xOffsetData.length - 1]).x;
-
-          const yUpperBoundIdx = yOffsetData.findIndex(datum => datum.depth >= depth);
-          const yUpperBound = yOffsetData[yUpperBoundIdx];
-          const yLowerBound = yOffsetData[yUpperBoundIdx - 1];
-
-          if (yLowerBound)
-            _yOffset = d3.scaleLinear().domain([yLowerBound.depth, yUpperBound.depth]).range([yLowerBound.x, yUpperBound.x])(depth);
-          else
-            _yOffset = (yUpperBound || yOffsetData[yOffsetData.length - 1]).x;
-          */
 
           // VERSION 2
           let _xOffset, _yOffset;
@@ -2060,14 +2038,6 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken, wiApi) {
                 const _destLatLng = proj4(firstProjection,secondProjection, [x[i], y[i]]);
                 lat[i] = _destLatLng[1];
                 lng[i] = _destLatLng[0];
-                /*
-                const offsetProject = proj4(firstProjection, secondProjection, [_xOffset[i], _yOffset[i]]);
-                lat[i] = _lat + (offsetProject[1] - zeroProject[1]);
-                lng[i] = _lng + (offsetProject[0] - zeroProject[0]);
-                const revertPrj = proj4(secondProjection, firstProjection, [lng[i], lat[i]]);
-                x[i] = revertPrj[0];
-                y[i] = revertPrj[1];
-                */
               })
             } else {
               const _originalXY = proj4(secondProjection, firstProjection, [_lng, _lat]);
@@ -2076,15 +2046,6 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken, wiApi) {
               const _destLatLng = proj4(firstProjection,secondProjection, [x, y]);
               lat = _destLatLng[1];
               lng = _destLatLng[0];
-              /*
-              const zeroProject = proj4(firstProjection, secondProjection, [0, 0]);
-              const offsetProject = proj4(firstProjection, secondProjection, [_xOffset, _yOffset]);
-              lat = _lat + (offsetProject[1] - zeroProject[1]);
-              lng = _lng + (offsetProject[0] - zeroProject[0]);
-              const revertPrj = proj4(secondProjection, firstProjection, [lng, lat]);
-              x = revertPrj[0];
-              y = revertPrj[1];
-              */
             }
           } else if (_checkCoordResult == false) {
             // calculate new lat/lng from new x, y
@@ -2120,6 +2081,7 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken, wiApi) {
     }
     return { x, y, lat, lng };
   }
+  */
   async function getCoordFromCurve(well, forcedDepth = null) {
     const focusedMZ = self.focusMarkerOrZone;
     if (!focusedMZ && !self.wellPosition) { return; }
@@ -2143,7 +2105,7 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken, wiApi) {
           depth = matchMarker.depth;
       }
     } else if (self.wellPosition) {
-      const wellDepthSpec = getDepthSpecsFromWell(well);
+      const wellDepthSpec = utils.getDepthSpecsFromWell(well, wiApi);
       if ( self.wellPosition == "base" ) {
         depth = wellDepthSpec.bottomDepth;
       } else {
@@ -2154,7 +2116,7 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken, wiApi) {
     if (_.isFinite(forcedDepth))
       depth = forcedDepth;
     if (_.isFinite(depth)) {
-      return await getCoordFromDepth(depth, well);
+      return await utils.getCoordFromDepth(depth, well, self.getCurveRawDataFn, self.zoneMap, wiApi, alertDebounce);
     }
     return { x: null, y: null, lat: null, lng: null };
   }
@@ -2440,24 +2402,20 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken, wiApi) {
     return _.range(startDepth, endDepth + step, step, step);
   }
 
+  /*
   function getDepthSpecsFromWell(well) {
     return {
       topDepth: wiApi.convertUnit(Number((well.well_headers.find(h => h.header == "STRT") || {}).value), well.unit, "m"),
       bottomDepth: wiApi.convertUnit(Number((well.well_headers.find(h => h.header == "STOP") || {}).value), well.unit, "m")
     }
   }
+  */
 
   async function calculatePathForWell(well) {
-    const depthSpecs = getDepthSpecsFromWell(well);
+    const depthSpecs = utils.getDepthSpecsFromWell(well, wiApi);
     const depths = getDepthsFromScale(depthSpecs.topDepth, depthSpecs.bottomDepth);
     await self.prepareWellInfoFn(well);
-    const coords = await getCoordFromDepth(depths, well);
-    /*
-    for(let depth of depths) {
-      const coord = await  getCoordFromDepth(depth, well);
-      coords.push(coord);
-    }
-    */
+    const coords = await utils.getCoordFromDepth(depths, well, self.getCurveRawDataFn, self.zoneMap, wiApi, alertDebounce);
     return coords;
   }
 
