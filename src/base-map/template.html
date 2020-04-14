@@ -289,19 +289,6 @@ ${require('./dashboard-template-modal.html')}
         </div>
       </div>
       <div class="setting">
-        <div class="setting-title" style="margin-bottom: 10px;">Show Contour Panel</div>
-        <div class="complex-setting">
-          <div class="setting-content">
-            <span
-              class="setting-sub-title"></span>
-            <label class="switch">
-              <input type="checkbox" ng-checked="self.showContourPanel" ng-click="self.showContourPanel = !self.showContourPanel" />
-              <span class="slider round"></span>
-            </label>
-          </div>
-        </div>
-      </div>
-      <div class="setting">
         <div class="setting-title" style="margin-bottom: 10px;">Show contour</div>
         <div class="complex-setting">
           <div class="setting-content">
@@ -415,14 +402,64 @@ ${require('./dashboard-template-modal.html')}
     </div>
   </div>
   <div ng-show="isSet(6) && !self.hideMain" class="content">
-      <div style="height: calc(100vh - 193px); overflow-y: overlay; overflow-x: hidden;">
+      <div style="height: calc(100vh - 193px); overflow-y: overlay; overflow-x: hidden; padding: 0 10px;">
           <div class="setting">
-              <contour-file-import
-                  on-data-changed-get="self.getterFn('contourConfig.onDataChanged')">
-              </contour-file-import>
+              <div class="setting-title" style="margin-bottom: 10px;">Show Contour Panel</div>
+              <div class="complex-setting">
+                  <div class="setting-content">
+                      <span
+                          class="setting-sub-title">Display contour panel</span>
+                      <label class="switch">
+                          <input type="checkbox" ng-checked="self.showContourPanel" ng-click="self.showContourPanel = !self.showContourPanel" />
+                          <span class="slider round"></span>
+                      </label>
+                  </div>
+              </div>
+          </div>
+          <div class="upload">
+              <div class="upload-header">
+                  <div>
+                      <div style="font-weight: bold; margin-bottom: 10px;">Upload grid file</div>
+                      <span>File type Zmap+Grid </span>
+                  </div>
+                  <div class="btn-add" id="map-upfile-3-btn">
+                      <span class="ti ti-plus"></span>
+                  </div>
+              </div>
+              <div class="upload-content" id="map-upfile-3">
+                  <p ng-show="false">
+                    <contour-file-import
+                        on-data-changed-get="self.getterFn('contourConfig.onDataChanged')">
+                    </contour-file-import>
+                  </p>
+                  <div id="fp" style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis; padding-top: 15px;"></div>
+              </div>
+          </div>
+          <div class="setting" ng-show="self.getterFn('contourConfig.values')().length">
+              <div class="setting-title" style="margin-bottom: 10px;">Imported Info</div>
+              <div style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis; padding-top: 15px;">
+                  <b>Unrotated Min X:</b> {{self.getterFn('contourConfig.headers.minX')()}}<br/>
+                  <b>Unrotated Max X:</b> {{self.getterFn('contourConfig.headers.maxX')()}}<br/>
+                  <b>Unrotated Min Y:</b> {{self.getterFn('contourConfig.headers.minY')()}}<br/>
+                  <b>Unrotated Max Y:</b> {{self.getterFn('contourConfig.headers.maxY')()}}<br/>
+                  <b>Total number of nodes in J-direction::</b> {{self.getterFn('contourConfig.headers.numOfRows')()}}<br/>
+                  <b>Total number of nodes in I-direction:</b> {{self.getterFn('contourConfig.headers.numOfCols')()}}<br/>
+                  <b>Total number of nodes:</b>
+                    {{
+                        self.getterFn('contourConfig.headers.numOfCols')() *
+                        self.getterFn('contourConfig.headers.numOfRows')()
+                    }}<br/>
+                  <b>Total number of cells:</b>
+                    {{
+                        (self.getterFn('contourConfig.headers.numOfCols')() - 1) *
+                        (self.getterFn('contourConfig.headers.numOfRows')() - 1)
+                    }}<br/>
+              </div>
           </div>
           <div class="setting">
+              <div class="setting-title" style="margin-bottom: 10px;">Color Scale</div>
               <color-scale-generator
+                  bar-height-get="self.getterFn('contourConfig.colorBarHeight')"
                   on-component-mounted-get="self.getterFn('contourConfig.onColorScaleBarInit')"
                   on-scale-changed-get="self.getterFn('contourConfig.onColorScaleChanged')"
                   min-val-get="self.getterFn('contourConfig.minValue')"
@@ -465,6 +502,24 @@ ${require('./dashboard-template-modal.html')}
               <div class="setting-title" style="margin-bottom: 10px;">Contour</div>
               <div class="complex-setting">
                   <div class="setting-content">
+                      <span class="setting-sub-title">Show Well</span>
+                      <label class="switch">
+                          <input type="checkbox"
+                                 ng-checked="self.contourConfig.showWell"
+                                 ng-click="self.contourConfig.showWell = !self.contourConfig.showWell" />
+                          <span class="slider round"></span>
+                      </label>
+                  </div>
+                  <div class="setting-content">
+                      <span class="setting-sub-title">Show Trajectory</span>
+                      <label class="switch">
+                          <input type="checkbox"
+                                 ng-checked="self.contourConfig.showTrajectory"
+                                 ng-click="self.contourConfig.showTrajectory = !self.contourConfig.showTrajectory" />
+                          <span class="slider round"></span>
+                      </label>
+                  </div>
+                  <div class="setting-content">
                       <span class="setting-sub-title">Major every</span>
                       <div class="setting-content">
                           <input type="number" ng-model="self.contourConfig.majorEvery" />
@@ -483,7 +538,7 @@ ${require('./dashboard-template-modal.html')}
                       </div>
                   </div>
                   <div class="setting-content">
-                      <span class="setting-sub-title">Center</span>
+                      <span class="setting-sub-title">Focus Map Center</span>
                       <div class="setting-content">
                           <button ng-click="self.contourConfig.focusCenter()">Go!</button>
                       </div>

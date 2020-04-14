@@ -2821,6 +2821,7 @@ function baseMapController(
     yDirection : 'up',
     showWell : true,
     showTrajectory : true,
+    colorBarHeight: 40,
     wells: [],
     trajectories: [],
     onContourViewMounted: function () {
@@ -2839,7 +2840,20 @@ function baseMapController(
       const domain = d3.extent(self.contourConfig.values);
       self.contourConfig.minValue = domain[0];
       self.contourConfig.maxValue = domain[1];
-      $timeout(() => $scope.$digest());
+      // update file info
+      const fileEle = $("#map-upfile-3 input")[0];
+      const file = fileEle.files.item(0);
+      const infoArea = $("#map-upfile-3 #fp")[0];
+      infoArea.innerHTML =
+            '<b>File Name: </b>' + file.name + '</br>'
+          + '<b>File Size: </b>' + Math.round((file.size / 1024)) + 'KB </br>'
+          + '<b>File Type: </b>' + file.type + "</br>";
+      $timeout(() => {
+        $scope.$digest();
+        $timeout(() => {
+          self.contourConfig.focusCenter();
+        }, 200)
+      });
     },
     onColorScaleChanged: (newColorScale) => {
       self.contourConfig.colorScale = newColorScale;
@@ -2963,5 +2977,10 @@ function baseMapController(
       getters[key] = () => _.get(self, key);
     return getters[key];
   }
+  // upload-file
+  $('#map-upfile-3-btn').bind("click", function () {
+    // $("#map-upfile-3 input[type='file']").val("");
+    $("#map-upfile-3 input[type='file']").click();
+  });
   //====================== END DRAWING CONTOUR MODULE =====================//
 }
