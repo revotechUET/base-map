@@ -429,6 +429,7 @@ ${require('./dashboard-template-modal.html')}
               <div class="upload-content" id="map-upfile-3">
                   <p ng-show="false">
                     <contour-file-import
+                        negative-data-get="self.getterFn('contourConfig.negativeData')"
                         on-data-changed-get="self.getterFn('contourConfig.onDataChanged')">
                     </contour-file-import>
                   </p>
@@ -458,6 +459,7 @@ ${require('./dashboard-template-modal.html')}
           </div>
           <div class="setting">
               <div class="setting-title" style="margin-bottom: 10px;">Color Scale</div>
+              <span class="setting-sub-title">use Ctrl to add and change, use Shift to remove</span>
               <color-scale-generator
                   bar-height-get="self.getterFn('contourConfig.colorBarHeight')"
                   on-component-mounted-get="self.getterFn('contourConfig.onColorScaleBarInit')"
@@ -502,6 +504,24 @@ ${require('./dashboard-template-modal.html')}
               <div class="setting-title" style="margin-bottom: 10px;">Contour</div>
               <div class="complex-setting">
                   <div class="setting-content">
+                      <span class="setting-sub-title">Negative Data</span>
+                      <label class="switch">
+                          <input type="checkbox"
+                                 ng-checked="self.contourConfig.negativeData"
+                                 ng-click="self.contourConfig.negativeData = !self.contourConfig.negativeData" />
+                          <span class="slider round"></span>
+                      </label>
+                  </div>
+                  <div class="setting-content">
+                      <span class="setting-sub-title">Show Color Legend</span>
+                      <label class="switch">
+                          <input type="checkbox"
+                                 ng-checked="self.contourConfig.showColorScaleLegend"
+                                 ng-click="self.contourConfig.showColorScaleLegend = !self.contourConfig.showColorScaleLegend" />
+                          <span class="slider round"></span>
+                      </label>
+                  </div>
+                  <div class="setting-content">
                       <span class="setting-sub-title">Show Well</span>
                       <label class="switch">
                           <input type="checkbox"
@@ -528,7 +548,7 @@ ${require('./dashboard-template-modal.html')}
                   <div class="setting-content">
                       <span class="setting-sub-title">Step</span>
                       <div class="setting-content">
-                          <input type="number" ng-model="self.contourConfig.step" />
+                          <input type="number" ng-init="__tmpStep = self.contourConfig.step" ng-model="__tmpStep" ng-blur="self.contourConfig.step = __tmpStep" />
                       </div>
                   </div>
                   <div class="setting-content">

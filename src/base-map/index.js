@@ -2821,6 +2821,8 @@ function baseMapController(
     yDirection : 'up',
     showWell : true,
     showTrajectory : true,
+    negativeData: false,
+    showColorScaleLegend: true,
     colorBarHeight: 40,
     wells: [],
     trajectories: [],
