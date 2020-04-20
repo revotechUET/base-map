@@ -2882,7 +2882,7 @@ function baseMapController(
       setContourViewScale(this.scale);
     },
     // wells
-    addWell: function(projectWell) {
+    addWell: async function(projectWell) {
       if (!this.wells.find(_w => projectWell.idWell == _w.idWell)) {
         const { idWell, name, color } = projectWell;
         let _color = 'white';
@@ -2894,12 +2894,19 @@ function baseMapController(
           console.log(e)
           _color = color;
         }
-        const xyCoord = getWellXYForContour(projectWell);
+        const xyCoord = await getWellXYForContour(projectWell, self.wellPosition);
         console.log("adding well to contour", projectWell, xyCoord);
         this.wells.push({
-          idWell, name, color: _color,
+          idWell, name, __fireUpdate: false,
           xCoord: xyCoord.xCoord,
-          yCoord: xyCoord.yCoord
+          yCoord: xyCoord.yCoord,
+          // icon
+          color: self.wellDisplayMode == "derrick"
+            ? "#585858"
+            : utils.getWellColorMarker(projectWell.wellheaders || projectWell.well_headers || []),
+          icon: self.wellDisplayMode == "derrick"
+            ? "well"
+            : utils.getWellIconMarker(projectWell.wellheaders || projectWell.well_headers || []),
         })
         this.addTrajectories(projectWell);
       }
@@ -2916,52 +2923,126 @@ function baseMapController(
           this.wells.splice(foundIdx, 1);
       })
     },
-    centerByWell: function(well) {
-      const xyCoord = getWellXYForContour(well);
+    centerByWell: async function(well) {
+      const xyCoord = await getWellXYForContour(well, self.wellPosition);
       setContourViewCenter(xyCoord.xCoord, xyCoord.yCoord);
     },
     // trajectories
     addTrajectories: async function(well) {
       const depthSpec = utils.getDepthSpecsFromWell(well, wiApi);
-      const numberOfPoints = 100;
+      const numberOfPoints = 1000;
       const depthStep = (depthSpec.bottomDepth - depthSpec.topDepth) / numberOfPoints;
       const depths = d3.range(depthSpec.topDepth, depthSpec.bottomDepth, depthStep);
-      const coords = await utils.getCoordFromDepth(depths, well, self.getCurveRawDataFn, $scope.zoneMap, wiApi);
+      const coords = await utils.getCoordFromDepth(depths, well, self.getCurveRawDataFn, $scope.zoneMap, wiApi, null, {preferXY: true});
       // check if well is currently avalable in map
       const wells = getters['contourConfig.wells']();
       if (!wells.find(w => w.idWell == well.idWell)) return;
       console.log("adding trajectory for well", well, coords);
+      let endPointPos = {};
+      if (self.wellPosition == "base") {
+        endPointPos = await getWellXYForContour(well, "top");
+      } else {
+        endPointPos = await getWellXYForContour(well, "base");
+      }
       this.trajectories.push({
         idWell: well.idWell,
         name: well.name,
-        color: 'white',
+        color: 'black',
         lineWidth: 1,
         points: coords
             .map(c => ({ xCoord: c.x, yCoord: c.y }))
-            .filter(p => _.isFinite(p.xCoord) && _.isFinite(p.yCoord))
+            .filter(p => _.isFinite(p.xCoord) && _.isFinite(p.yCoord)),
+        endPoint: {
+          radius: 3,
+          color: "black",
+          xCoord: endPointPos.xCoord,
+          yCoord: endPointPos.yCoord
+        }
+      })
+    },
+    onChangeWellDisplayMode: function() {
+      this.wells.forEach((cWell, cIdx) => {
+        const well = $scope.wellSelect.find(w => w.idWell == cWell.idWell);
+        if (well) {
+          this.wells[cIdx].color = self.wellDisplayMode == "derrick"
+                ? "#585858"
+                : utils.getWellColorMarker(well.wellheaders || well.well_headers || []);
+          this.wells[cIdx].icon = self.wellDisplayMode == "derrick"
+                ? "well"
+                : utils.getWellIconMarker(well.wellheaders || well.well_headers || []);
+        }
+      })
+    },
+    onChangeWellPosition: function() {
+      this.wells.forEach(async (cWell, cIdx) => {
+        const well = $scope.wellSelect.find(w => w.idWell == cWell.idWell);
+        if (well) {
+          const wellPos = await getWellXYForContour(well, self.wellPosition);
+          this.wells[cIdx].xCoord = wellPos.xCoord;
+          this.wells[cIdx].yCoord = wellPos.yCoord;
+          // update popup position
+          if (self.wellPosition !== self.popupPosition) {
+            const popupPos = await getWellXYForContour(well, self.popupPosition);
+            this.wells[cIdx].popupConfig = popupPos;
+          } else {
+            delete this.wells[cIdx].popupConfig;
+          }
+          // update trajectory endpoint
+          const tj = this.trajectories.find(t => t.idWell == cWell.idWell);
+          if (tj) {
+            let endPointPos = {};
+            if (self.wellPosition == "top")
+              endPointPos = await getWellXYForContour(well, "base");
+            else
+              endPointPos = await getWellXYForContour(well, "top");
+            tj.endPoint.xCoord = endPointPos.xCoord;
+            tj.endPoint.yCoord = endPointPos.yCoord;
+          }
+        }
+      })
+    },
+    onChangePopupPosition: function() {
+      this.wells.forEach(async (cWell, cIdx) => {
+        const well = $scope.wellSelect.find(w => w.idWell == cWell.idWell);
+        if (well) {
+          if (self.popupPosition == self.wellPosition) {
+            delete this.wells[cIdx].popupConfig;
+          } else {
+            const popupPos = await getWellXYForContour(well, self.popupPosition);
+            this.wells[cIdx].popupConfig = popupPos;
+          }
+          this.wells[cIdx].__fireUpdate = !this.wells[cIdx].__fireUpdate;
+        }
       })
     }
   };
 
-  function getWellXYForContour(well) {
-    const X = getX(well.wellheaders || well.well_headers || [], true);
-    const Y = getY(well.wellheaders || well.well_headers || [], true);
-    let xCoord = X;
-    let yCoord = Y;
+  async function getWellXYForContour(well, wellPosition = "top") {
+    if (wellPosition == "base") {
+      const depthSpec = utils.getDepthSpecsFromWell(well, wiApi);
+      const coord = await utils.getCoordFromDepth(depthSpec.bottomDepth, well, self.getCurveRawDataFn, $scope.zoneMap, wiApi, null, {preferXY: true})
+      return { xCoord: coord.x, yCoord: coord.y };
+    } else {
+      // default always return top of well
+      const X = utils.getX(well.wellheaders || well.well_headers || []);
+      const Y = utils.getY(well.wellheaders || well.well_headers || []);
+      let xCoord = X;
+      let yCoord = Y;
 
-    if ((!X || !Y)) {
-      const lat = getLat(well.wellheaders || well.well_headers || [], true);
-      const long = getLong(well.wellheaders || well.well_headers || [], true);
-      const firstProjection = "+proj=longlat +ellps=WGS84 +datum=WGS84 +units=degrees";
-      const secondProjection = $scope.zoneMap;
-      const xByLng = proj4(firstProjection, secondProjection, [long, lat])[0];
-      const yByLat = proj4(firstProjection, secondProjection, [long, lat])[1];
-      if (xByLng && yByLat) {
-        xCoord = xByLng;
-        yCoord = yByLat;
+      if ((!X || !Y)) {
+        const lat = getLat(well.wellheaders || well.well_headers || [], true);
+        const long = getLong(well.wellheaders || well.well_headers || [], true);
+        const firstProjection = "+proj=longlat +ellps=WGS84 +datum=WGS84 +units=degrees";
+        const secondProjection = $scope.zoneMap;
+        const xByLng = proj4(firstProjection, secondProjection, [long, lat])[0];
+        const yByLat = proj4(firstProjection, secondProjection, [long, lat])[1];
+        if (xByLng && yByLat) {
+          xCoord = xByLng;
+          yCoord = yByLat;
+        }
       }
+      return { xCoord, yCoord };
     }
-    return { xCoord, yCoord };
   }
 
   this.onContourTabClick = function() {

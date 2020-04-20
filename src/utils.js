@@ -1,7 +1,14 @@
 module.exports.getCoordFromDepth = getCoordFromDepth;
 module.exports.getDepthSpecsFromWell = getDepthSpecsFromWell;
+module.exports.getWellIconMarker = getWellIconMarker;
+module.exports.getWellColorMarker = getWellColorMarker;
+module.exports.getWellType = getWellType;
+module.exports.getX = getX;
+module.exports.getY = getY;
+module.exports.getLat = getLat;
+module.exports.getLong = getLong;
 
-async function getCoordFromDepth(depth, well, curveRawDataFn, zoneMap, wiApi, alertFn) {
+async function getCoordFromDepth(depth, well, curveRawDataFn, zoneMap, wiApi, alertFn, options = {}) {
     let x, y, lat, lng;
     if (Array.isArray(depth)) {
         x = []; y = []; lat = []; lng = [];
@@ -35,8 +42,8 @@ async function getCoordFromDepth(depth, well, curveRawDataFn, zoneMap, wiApi, al
                 const _y = getY(well.well_headers);
 
                 let _xOffset, _yOffset;
-                const xScale = d3.scaleLinear().domain(xOffsetData.map(p => p.depth)).range(xOffsetData.map(p => p.x));
-                const yScale = d3.scaleLinear().domain(yOffsetData.map(p => p.depth)).range(yOffsetData.map(p => p.x));
+                const xScale = d3.scaleLinear().domain(xOffsetData.map(p => p.depth || p.y)).range(xOffsetData.map(p => p.x));
+                const yScale = d3.scaleLinear().domain(yOffsetData.map(p => p.depth || p.y)).range(yOffsetData.map(p => p.x));
                 if (Array.isArray(depth)) {
                     _xOffset = depth.map(d => wiApi.convertUnit(xScale(d), xOffsetCurve.unit, "m"));
                     _yOffset = depth.map(d => wiApi.convertUnit(yScale(d), yOffsetCurve.unit, "m"));
@@ -45,7 +52,8 @@ async function getCoordFromDepth(depth, well, curveRawDataFn, zoneMap, wiApi, al
                     _yOffset = wiApi.convertUnit(yScale(depth), yOffsetCurve.unit, "m");
                 }
 
-                const _checkCoordResult = checkCoordinate(_lat, _lng, _x, _y);
+                const _checkCoordResult = checkCoordinate(_lat, _lng, _x, _y, options.preferXY);
+                // have valid lat, long coordinates, ignore x, y
                 if (_checkCoordResult == true) {
                     // calculate new lat/lng, x/y from x, y offset
                     if (Array.isArray(depth)) {
@@ -66,6 +74,7 @@ async function getCoordFromDepth(depth, well, curveRawDataFn, zoneMap, wiApi, al
                         lat = _destLatLng[1];
                         lng = _destLatLng[0];
                     }
+                // have valid x, y coordinates
                 } else if (_checkCoordResult == false) {
                     // calculate new lat/lng from new x, y
                     if (Array.isArray(depth)) {
@@ -130,7 +139,7 @@ function getLong(wellIndex) {
 function getX(wellIndex) {
     if (!(wellIndex || []).length) return 0;
     for (let index = 0; index < wellIndex.length; index++) {
-        if (wellIndex[index].header === "X") {
+        if (wellIndex[index].header === "X" || wellIndex[index].header === "E") {
             const value = Number(wellIndex[index].value);
             return isNaN(value) ? 0 : value;
         }
@@ -141,7 +150,7 @@ function getX(wellIndex) {
 function getY(wellIndex) {
     if (!(wellIndex || []).length) return 0;
     for (let index = 0; index < wellIndex.length; index++) {
-        if (wellIndex[index].header === "Y") {
+        if (wellIndex[index].header === "Y" || wellIndex[index].header === "N") {
             const value = Number(wellIndex[index].value);
             return isNaN(value) ? 0 : value;
         }
@@ -149,7 +158,9 @@ function getY(wellIndex) {
     return 0;
 }
 
-function checkCoordinate(lat, long, x, y) {
+function checkCoordinate(lat, long, x, y, preferXY = false) {
+    if (preferXY && (x && y))
+        return false;
     if ((!lat || !long) && (x && y)) {
         return false;
     } else if ((!lat || !long) && (!x || !y)) {
@@ -171,4 +182,49 @@ function getDepthSpecsFromWell(well, wiApi) {
         topDepth: mergedTop,
         bottomDepth: mergedBot
     }
+}
+function getWellIconMarker (wellHeader) {
+    if (getWellType(wellHeader) === 'exploration') {
+      return "search";
+    } else if (getWellType(wellHeader) === 'production') {
+      return "arrow_up";
+    } else if (getWellType(wellHeader) === 'injection') {
+      return "arrow_down";
+    } else {
+      return "well";
+    }
+}
+
+function getWellColorMarker(wellHeader) {
+    if (getFluidCode(wellHeader) === 'gas') {
+      return '#ff6868'
+    } else if (getFluidCode(wellHeader) === 'water') {
+      return '#559bf3'
+    } else if (getFluidCode(wellHeader) === 'condensate') {
+      return '#a0a0a0'
+    } else if (getFluidCode(wellHeader) === 'oil') {
+      return '#15b153'
+    } else {
+      return '#585858'
+    }
+}
+
+function getFluidCode(wellHeader) {
+    if (!(wellHeader || []).length) return 0;
+    for (let index = 0; index < wellHeader.length; index++) {
+      if (wellHeader[index].header === "FLUID") {
+        return wellHeader[index].value.replace(/\s+/g, '').toLowerCase();
+      }
+    }
+    return 0;
+}
+
+function getWellType(wellHeader) {
+    if (!(wellHeader || []).length) return 0;
+    for (let index = 0; index < wellHeader.length; index++) {
+        if (wellHeader[index].header === "WTYPE") {
+            return wellHeader[index].value.replace(/\s+/g, '').toLowerCase();
+        }
+    }
+    return 0;
 }

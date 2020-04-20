@@ -213,7 +213,7 @@ ${require('./dashboard-template-modal.html')}
           <div class="setting-content">
             <span class="setting-sub-title">Choose which position of well to display</span>
               <div class="setting-content">
-                <select style="width: 100%;border: none; background: none;" ng-model="self.wellPosition">
+                <select style="width: 100%;border: none; background: none;" ng-model="self.wellPosition" ng-change="self.contourConfig.onChangeWellPosition()">
                   <option ng-repeat="opt in self.wellPositionOptions" ng-value="opt.value">{{opt.label}}</option>
                 </select>
               </div>
@@ -226,7 +226,7 @@ ${require('./dashboard-template-modal.html')}
           <div class="setting-content">
             <span class="setting-sub-title">Choose which position of popup to display</span>
               <div class="setting-content">
-                <select style="width: 100%;border: none; background: none;" ng-model="self.popupPosition">
+                <select style="width: 100%;border: none; background: none;" ng-model="self.popupPosition" ng-change="self.contourConfig.onChangePopupPosition()">
                   <option ng-repeat="opt in self.wellPositionOptions" ng-value="opt.value">{{opt.label}}</option>
                 </select>
               </div>
@@ -239,7 +239,7 @@ ${require('./dashboard-template-modal.html')}
           <div class="setting-content">
             <span class="setting-sub-title">Choose which icon of well to display</span>
               <div class="setting-content">
-                <select style="width: 100%;border: none; background: none;" ng-model="self.wellDisplayMode">
+                <select style="width: 100%;border: none; background: none;" ng-model="self.wellDisplayMode" ng-change="self.contourConfig.onChangeWellDisplayMode()">
                   <option ng-repeat="opt in self.wellDisplayModeOptions" ng-value="opt.value">{{opt.label}}</option>
                 </select>
               </div>
