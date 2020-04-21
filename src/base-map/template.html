@@ -491,7 +491,7 @@ ${require('./dashboard-template-modal.html')}
           <div class="setting">
               <div class="setting-title" style="margin-bottom: 10px;">Scale</div>
               <div class="setting-content">
-                  <span class="setting-sub-title">Current scale: {{ self.getRound(self.contourConfig.scale, 2) }}x</span>
+                  <span class="setting-sub-title">Current scale: {{ self.contourConfig.getScale(self.contourConfig.scale) }}</span>
                   <label class="switch">
                       <input type="checkbox"
                              ng-checked="self.contourConfig.showScale"

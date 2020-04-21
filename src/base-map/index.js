@@ -2141,13 +2141,17 @@ function baseMapController(
   };
   this.clickZoneFunction = function ($event, node) {
     // console.log("Zone click function", $event, node);
-    if (node.idZone)
+    if (node.idZone) {
       $scope.focusMZ = node;
+      self.contourConfig.onChangePopupPosition();
+    }
   }
   this.clickMarkerFunction = function ($event, node) {
     // console.log("Marker click function", $event, node);
-    if (node.idMarker)
+    if (node.idMarker) {
       $scope.focusMZ = node;
+      self.contourConfig.onChangePopupPosition();
+    }
   }
   this.clickFunction = function ($event, node, selectedNodes) {
     self.selectedNode = node;
@@ -3005,6 +3009,44 @@ function baseMapController(
       this.wells.forEach(async (cWell, cIdx) => {
         const well = $scope.wellSelect.find(w => w.idWell == cWell.idWell);
         if (well) {
+          if ($scope.focusMZ) {
+            // console.log("draw popup based on zone or marker depth");
+            // console.log(well, $scope.focusMZ, self.zoneDepthSpec);
+            const focusMZ = $scope.focusMZ;
+            const zoneDepthSpec = self.zoneDepthSpec;
+            if (focusMZ.idMarker) {
+              // draw by marker
+              const markerSet = well.marker_sets.find(ms => ms.name == focusMZ.markersetName);
+              if (markerSet) {
+                const marker = markerSet.markers.find(m => m.idMarkerTemplate == focusMZ.idMarkerTemplate);
+                if (marker) {
+                  const drawDepth = marker.depth;
+                  const coord = await utils.getCoordFromDepth(drawDepth, well, self.getCurveRawDataFn, $scope.zoneMap, wiApi, null, {preferXY: true})
+                  this.wells[cIdx].popupConfig = {xCoord: coord.x, yCoord: coord.y};
+                  this.wells[cIdx].__fireUpdate = !this.wells[cIdx].__fireUpdate;
+                  return;
+                }
+              }
+            } else if(focusMZ.idZone) {
+              // draw by zone
+              const zoneSet = well.zone_sets.find(zs => zs.name == focusMZ.zonesetName);
+              if (zoneSet) {
+                const zone = zoneSet.zones.find(z => z.idZoneTemplate == focusMZ.idZoneTemplate);
+                let drawDepth = zone.startDepth;
+                if (zone) {
+                  if (zoneDepthSpec == 'zone-bottom')
+                    drawDepth = zone.endDepth;
+                  else if (zoneDepthSpec == 'zone-middle')
+                    drawDepth = zone.startDepth + (zone.endDepth - zone.startDepth) / 2;
+                  const coord = await utils.getCoordFromDepth(drawDepth, well, self.getCurveRawDataFn, $scope.zoneMap, wiApi, null, {preferXY: true})
+                  this.wells[cIdx].popupConfig = {xCoord: coord.x, yCoord: coord.y};
+                  this.wells[cIdx].__fireUpdate = !this.wells[cIdx].__fireUpdate;
+                  return;
+                }
+              }
+            }
+
+          }
           if (self.popupPosition == self.wellPosition) {
             delete this.wells[cIdx].popupConfig;
           } else {
@@ -3014,6 +3056,16 @@ function baseMapController(
           this.wells[cIdx].__fireUpdate = !this.wells[cIdx].__fireUpdate;
         }
       })
+    },
+    getScale: function(zoomedScale) {
+      const incX = this.headers["xDirection"] || 50;
+      // 1 node ~ incX (m)
+      // 1 node ~ 1px in zoomedScale == 1
+      // => 1 node ~ zoomedScale px
+      const Dpi = utils.getDpi();
+      const Dpm = Dpi * 100 / 2.54;
+      const scale = _.round(incX / (zoomedScale / Dpm), 1);
+      return `1:${scale}`;
     }
   };
 

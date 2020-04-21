@@ -7,6 +7,7 @@ module.exports.getX = getX;
 module.exports.getY = getY;
 module.exports.getLat = getLat;
 module.exports.getLong = getLong;
+module.exports.getDpi = getDpi;
 
 async function getCoordFromDepth(depth, well, curveRawDataFn, zoneMap, wiApi, alertFn, options = {}) {
     let x, y, lat, lng;
@@ -227,4 +228,24 @@ function getWellType(wellHeader) {
         }
     }
     return 0;
+}
+
+let __cachedDpi = {};
+const CACHED_DPI_TIMEOUT = 60000; // 1 minute
+function getDpi() {
+    if(__cachedDpi.value && (Date.now() - __cachedDpi.lastUpdate) <= CACHED_DPI_TIMEOUT) {
+        return __cachedDpi.value;
+    }
+
+    let inch = document.createElement('inch');
+    inch.style = 'height: 1in; width: 1in; left: -100%; position: absolute; top: -100%;';
+    document.body.appendChild(inch);
+    let devicePixelRatio = window.devicePixelRatio || 1;
+    let dpi = inch.clientWidth * devicePixelRatio;
+    document.body.removeChild(inch);
+
+    __cachedDpi.value = dpi;
+    __cachedDpi.lastUpdate = Date.now();
+
+    return dpi;
 }
