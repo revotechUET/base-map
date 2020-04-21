@@ -1430,6 +1430,7 @@ function baseMapController(
       delete $scope.focusMZ;
       clearTreeState('zoneList');
     }
+    self.contourConfig.onChangePopupPosition();
   }
   this.toggleMarkersets = function () {
     self.showMarkersets = !self.showMarkersets;
@@ -1444,6 +1445,7 @@ function baseMapController(
       delete $scope.focusMZ;
       clearTreeState('markerList');
     }
+    self.contourConfig.onChangePopupPosition();
   }
 
   this.$onInit = function () {
@@ -2827,6 +2829,7 @@ function baseMapController(
     showTrajectory : true,
     negativeData: false,
     showColorScaleLegend: true,
+    viewWellDepth: false,
     colorBarHeight: 40,
     wells: [],
     trajectories: [],
@@ -2899,9 +2902,9 @@ function baseMapController(
           _color = color;
         }
         const xyCoord = await getWellXYForContour(projectWell, self.wellPosition);
-        console.log("adding well to contour", projectWell, xyCoord);
+        const displayContent = this.viewWellDepth ? getWellDepth(projectWell, self.popupPosition) : name;
         this.wells.push({
-          idWell, name, __fireUpdate: false,
+          idWell, name, __fireUpdate: false, displayContent,
           xCoord: xyCoord.xCoord,
           yCoord: xyCoord.yCoord,
           // icon
@@ -3009,43 +3012,13 @@ function baseMapController(
       this.wells.forEach(async (cWell, cIdx) => {
         const well = $scope.wellSelect.find(w => w.idWell == cWell.idWell);
         if (well) {
-          if ($scope.focusMZ) {
-            // console.log("draw popup based on zone or marker depth");
-            // console.log(well, $scope.focusMZ, self.zoneDepthSpec);
-            const focusMZ = $scope.focusMZ;
-            const zoneDepthSpec = self.zoneDepthSpec;
-            if (focusMZ.idMarker) {
-              // draw by marker
-              const markerSet = well.marker_sets.find(ms => ms.name == focusMZ.markersetName);
-              if (markerSet) {
-                const marker = markerSet.markers.find(m => m.idMarkerTemplate == focusMZ.idMarkerTemplate);
-                if (marker) {
-                  const drawDepth = marker.depth;
-                  const coord = await utils.getCoordFromDepth(drawDepth, well, self.getCurveRawDataFn, $scope.zoneMap, wiApi, null, {preferXY: true})
-                  this.wells[cIdx].popupConfig = {xCoord: coord.x, yCoord: coord.y};
-                  this.wells[cIdx].__fireUpdate = !this.wells[cIdx].__fireUpdate;
-                  return;
-                }
-              }
-            } else if(focusMZ.idZone) {
-              // draw by zone
-              const zoneSet = well.zone_sets.find(zs => zs.name == focusMZ.zonesetName);
-              if (zoneSet) {
-                const zone = zoneSet.zones.find(z => z.idZoneTemplate == focusMZ.idZoneTemplate);
-                let drawDepth = zone.startDepth;
-                if (zone) {
-                  if (zoneDepthSpec == 'zone-bottom')
-                    drawDepth = zone.endDepth;
-                  else if (zoneDepthSpec == 'zone-middle')
-                    drawDepth = zone.startDepth + (zone.endDepth - zone.startDepth) / 2;
-                  const coord = await utils.getCoordFromDepth(drawDepth, well, self.getCurveRawDataFn, $scope.zoneMap, wiApi, null, {preferXY: true})
-                  this.wells[cIdx].popupConfig = {xCoord: coord.x, yCoord: coord.y};
-                  this.wells[cIdx].__fireUpdate = !this.wells[cIdx].__fireUpdate;
-                  return;
-                }
-              }
-            }
-
+          if ((self.showZonesets || self.showMarkersets) && $scope.focusMZ) {
+            const drawDepth = getWellDepth(well);
+            const coord = await utils.getCoordFromDepth(drawDepth, well, self.getCurveRawDataFn, $scope.zoneMap, wiApi, null, {preferXY: true})
+            this.wells[cIdx].displayContent = this.viewWellDepth ? drawDepth : well.name;
+            this.wells[cIdx].popupConfig = {xCoord: coord.x, yCoord: coord.y};
+            this.wells[cIdx].__fireUpdate = !this.wells[cIdx].__fireUpdate;
+            return;
           }
           if (self.popupPosition == self.wellPosition) {
             delete this.wells[cIdx].popupConfig;
@@ -3053,6 +3026,7 @@ function baseMapController(
             const popupPos = await getWellXYForContour(well, self.popupPosition);
             this.wells[cIdx].popupConfig = popupPos;
           }
+          this.wells[cIdx].displayContent = this.viewWellDepth ? getWellDepth(well, self.popupPosition) : well.name;
           this.wells[cIdx].__fireUpdate = !this.wells[cIdx].__fireUpdate;
         }
       })
@@ -3060,14 +3034,57 @@ function baseMapController(
     getScale: function(zoomedScale) {
       const incX = this.headers["xDirection"] || 50;
       // 1 node ~ incX (m)
-      // 1 node ~ 1px in zoomedScale == 1
+      // 1 node ~ 1px if zoomedScale == 1
       // => 1 node ~ zoomedScale px
       const Dpi = utils.getDpi();
       const Dpm = Dpi * 100 / 2.54;
       const scale = _.round(incX / (zoomedScale / Dpm), 1);
       return `1:${scale}`;
+    },
+    toggleViewWellDepth: function() {
+      this.viewWellDepth = !this.viewWellDepth;
+      this.onChangePopupPosition();
     }
   };
+
+  function getWellDepth(well, wellPosition = "top") {
+    if ((self.showZonesets || self.showMarkersets) && $scope.focusMZ) {
+      const focusMZ = $scope.focusMZ;
+      const zoneDepthSpec = self.zoneDepthSpec;
+      if (focusMZ.idMarker) {
+        // draw by marker
+        const markerSet = well.marker_sets.find(ms => ms.name == focusMZ.markersetName);
+        if (markerSet) {
+          const marker = markerSet.markers.find(m => m.idMarkerTemplate == focusMZ.idMarkerTemplate);
+          if (marker) {
+            const drawDepth = marker.depth;
+            return drawDepth;
+          }
+        }
+      } else if(focusMZ.idZone) {
+        // draw by zone
+        const zoneSet = well.zone_sets.find(zs => zs.name == focusMZ.zonesetName);
+        if (zoneSet) {
+          const zone = zoneSet.zones.find(z => z.idZoneTemplate == focusMZ.idZoneTemplate);
+          let drawDepth = zone.startDepth;
+          if (zone) {
+            if (zoneDepthSpec == 'zone-bottom')
+              drawDepth = zone.endDepth;
+            else if (zoneDepthSpec == 'zone-middle')
+              drawDepth = zone.startDepth + (zone.endDepth - zone.startDepth) / 2;
+            return drawDepth;
+          }
+        }
+      }
+    }
+    if (wellPosition == "base") {
+      const depthSpec = utils.getDepthSpecsFromWell(well, wiApi);
+      return depthSpec.bottomDepth;
+    } else {
+      const depthSpec = utils.getDepthSpecsFromWell(well, wiApi);
+      return depthSpec.topDepth;
+    }
+  }
 
   async function getWellXYForContour(well, wellPosition = "top") {
     if (wellPosition == "base") {
@@ -3112,9 +3129,7 @@ function baseMapController(
       getters[key] = () => _.get(self, key);
     return getters[key];
   }
-  // upload-file
   $('#map-upfile-3-btn').bind("click", function () {
-    // $("#map-upfile-3 input[type='file']").val("");
     $("#map-upfile-3 input[type='file']").click();
   });
   //====================== END DRAWING CONTOUR MODULE =====================//
