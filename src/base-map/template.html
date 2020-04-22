@@ -508,7 +508,7 @@ ${require('./dashboard-template-modal.html')}
                       <label class="switch">
                           <input type="checkbox"
                                  ng-checked="self.contourConfig.negativeData"
-                                 ng-click="self.contourConfig.negativeData = !self.contourConfig.negativeData" />
+                                 ng-click="self.contourConfig.negativeData = !self.contourConfig.negativeData; self.contourConfig.onNegativeDataChanged()" />
                           <span class="slider round"></span>
                       </label>
                   </div>

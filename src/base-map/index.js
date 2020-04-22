@@ -2902,7 +2902,8 @@ function baseMapController(
           _color = color;
         }
         const xyCoord = await getWellXYForContour(projectWell, self.wellPosition);
-        const displayContent = this.viewWellDepth ? getWellDepth(projectWell, self.popupPosition) : name;
+        const _displayContent = this.viewWellDepth ? getWellDepth(projectWell, self.popupPosition) : name;
+        const displayContent = (this.viewWellDepth && this.negativeData) ? makeNegativeValue(_displayContent) : _displayContent;
         this.wells.push({
           idWell, name, __fireUpdate: false, displayContent,
           xCoord: xyCoord.xCoord,
@@ -3015,7 +3016,8 @@ function baseMapController(
           if ((self.showZonesets || self.showMarkersets) && $scope.focusMZ) {
             const drawDepth = getWellDepth(well);
             const coord = await utils.getCoordFromDepth(drawDepth, well, self.getCurveRawDataFn, $scope.zoneMap, wiApi, null, {preferXY: true})
-            this.wells[cIdx].displayContent = this.viewWellDepth ? drawDepth : well.name;
+            const displayContent = this.viewWellDepth ? drawDepth : well.name;
+            this.wells[cIdx].displayContent = (this.viewWellDepth && this.negativeData) ? makeNegativeValue(displayContent) : displayContent;
             this.wells[cIdx].popupConfig = {xCoord: coord.x, yCoord: coord.y};
             this.wells[cIdx].__fireUpdate = !this.wells[cIdx].__fireUpdate;
             return;
@@ -3026,7 +3028,8 @@ function baseMapController(
             const popupPos = await getWellXYForContour(well, self.popupPosition);
             this.wells[cIdx].popupConfig = popupPos;
           }
-          this.wells[cIdx].displayContent = this.viewWellDepth ? getWellDepth(well, self.popupPosition) : well.name;
+          const displayContent = this.viewWellDepth ? getWellDepth(well, self.popupPosition) : well.name;
+          this.wells[cIdx].displayContent = (this.viewWellDepth && this.negativeData) ? makeNegativeValue(displayContent) : displayContent;
           this.wells[cIdx].__fireUpdate = !this.wells[cIdx].__fireUpdate;
         }
       })
@@ -3044,8 +3047,20 @@ function baseMapController(
     toggleViewWellDepth: function() {
       this.viewWellDepth = !this.viewWellDepth;
       this.onChangePopupPosition();
+    },
+    onNegativeDataChanged: function() {
+      if (this.viewWellDepth) {
+        $timeout(() => {
+          // reupdate popup text
+          this.onChangePopupPosition();
+        }, 1000)
+      }
     }
   };
+
+  function makeNegativeValue(value) {
+    return -Math.abs(value);
+  }
 
   function getWellDepth(well, wellPosition = "top") {
     if ((self.showZonesets || self.showMarkersets) && $scope.focusMZ) {
