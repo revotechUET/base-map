@@ -2839,8 +2839,8 @@ function baseMapController(
       setContourViewScale = (_scale) => {
         contourViewComponent.setScale.call(contourViewComponent, _scale);
       }
-      setContourViewCenter = (xCoord, yCoord) => {
-        contourViewComponent.setCenter.call(contourViewComponent, xCoord, yCoord);
+      setContourViewCenter = (xCoord, yCoord, centerX, centerY) => {
+        contourViewComponent.setCenter.call(contourViewComponent, xCoord, yCoord, centerX, centerY);
       }
     },
     onDataChanged: (newData) => {
@@ -2934,7 +2934,8 @@ function baseMapController(
     },
     centerByWell: async function(well) {
       const xyCoord = await getWellXYForContour(well, self.wellPosition);
-      setContourViewCenter(xyCoord.xCoord, xyCoord.yCoord);
+      const centerPointOfMap = getMapCenterOnContourView();
+      setContourViewCenter(xyCoord.xCoord, xyCoord.yCoord, centerPointOfMap.x, centerPointOfMap.y);
     },
     // trajectories
     addTrajectories: async function(well) {
@@ -3128,6 +3129,14 @@ function baseMapController(
       }
       return { xCoord, yCoord };
     }
+  }
+
+  /* get relative point of base-map center on contour map */
+  function getMapCenterOnContourView() {
+    const windowWidth = window.innerWidth;
+    const windowHeight = window.innerHeight;
+    const canvasMetric = $('contour-view canvas')[0].getBoundingClientRect();
+    return {x: windowWidth / 2 - canvasMetric.x, y: windowHeight / 2 - canvasMetric.y};
   }
 
   this.onContourTabClick = function() {
