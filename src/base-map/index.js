@@ -3145,6 +3145,12 @@ function baseMapController(
       getters[key] = () => _.get(self, key);
     return getters[key];
   }
+  this.logGetterFn = function(key) {
+    console.log(`getting getter function for ${key}`);
+    if (typeof(getters[key]) != 'function')
+      getters[key] = () => _.get(self, key);
+    return getters[key];
+  }
   $('#map-upfile-3-btn').bind("click", function () {
     $("#map-upfile-3 input[type='file']").click();
   });
