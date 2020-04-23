@@ -487,6 +487,14 @@ ${require('./dashboard-template-modal.html')}
                       </div>
                   </div>
               </div>
+              <div class="" ng-show="self.contourConfig.showLabel">
+                  <div class="setting-content">
+                      <span class="setting-sub-title">Label interval</span>
+                      <div class="setting-content">
+                          <input type="number" ng-init="__tmpLabelInterval = self.contourConfig.labelInterval" ng-model="__tmpLabelInterval" ng-blur="self.contourConfig.labelInterval = __tmpLabelInterval" />
+                      </div>
+                  </div>
+              </div>
           </div>
           <div class="setting">
               <div class="setting-title" style="margin-bottom: 10px;">Scale</div>

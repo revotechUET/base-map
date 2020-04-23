@@ -2817,6 +2817,7 @@ function baseMapController(
     step : 100,
     majorEvery : 5,
     labelFontSize : 12,
+    labelInterval: 1000,
     showLabel : false,
     showScale : true,
     showGrid : true,
