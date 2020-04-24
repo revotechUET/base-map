@@ -501,13 +501,23 @@ ${require('./dashboard-template-modal.html')}
           <div class="setting">
               <div class="setting-title" style="margin-bottom: 10px;">Scale</div>
               <div class="setting-content">
-                  <span class="setting-sub-title">Current scale: {{ self.contourConfig.getScale(self.contourConfig.scale) }}</span>
+                  <span class="setting-sub-title">Current scale: 1:{{ self.contourConfig.getRealRatio(self.contourConfig.scale) }}</span>
                   <label class="switch">
                       <input type="checkbox"
                              ng-checked="self.contourConfig.showScale"
                              ng-click="self.contourConfig.showScale = !self.contourConfig.showScale" />
                       <span class="slider round"></span>
                   </label>
+              </div>
+              <div class="setting-content">
+                  <span class="setting-sub-title">Scale</span>
+                  <div class="setting-content">
+                      1 :&nbsp;
+                      <input type="number"
+                             ng-init="__tmpRealRatio = self.contourConfig.getRealRatio(self.contourConfig.scale)"
+                             ng-model="__tmpRealRatio"
+                             ng-blur="self.contourConfig.updateContourScaleFromRealRatio(__tmpRealRatio)" />
+                  </div>
               </div>
           </div>
           <div class="setting">
@@ -568,12 +578,6 @@ ${require('./dashboard-template-modal.html')}
                       <span class="setting-sub-title">Step</span>
                       <div class="setting-content">
                           <input type="number" ng-init="__tmpStep = self.contourConfig.step" ng-model="__tmpStep" ng-blur="self.contourConfig.step = __tmpStep" />
-                      </div>
-                  </div>
-                  <div class="setting-content">
-                      <span class="setting-sub-title">Scale</span>
-                      <div class="setting-content">
-                          <input type="number" ng-model="self.contourConfig.scale" ng-blur="self.contourConfig.updateContourScale()" />
                       </div>
                   </div>
                   <div class="setting-content">

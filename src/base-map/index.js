@@ -2871,6 +2871,7 @@ function baseMapController(
     },
     onScaleChanged: (newScale) => {
       self.contourConfig.scale = newScale;
+      $scope.__tmpRealRatio = self.contourConfig.getRealRatio(newScale);
       $timeout(() => $scope.$digest());
     },
     onColorScaleBarInit: function() {
@@ -2885,9 +2886,6 @@ function baseMapController(
       const centerX = this.headers.minX + (this.headers.maxX - this.headers.minX)/2
       const centerY = this.headers.minY + (this.headers.maxY - this.headers.minY)/2
       setContourViewCenter(centerX, centerY);
-    },
-    updateContourScale: function() {
-      setContourViewScale(this.scale);
     },
     // wells
     addWell: async function(projectWell) {
@@ -3036,7 +3034,15 @@ function baseMapController(
         }
       })
     },
-    getScale: function(zoomedScale) {
+    updateContourScaleFromRealRatio: function(__ratio) {
+      if (__ratio == 0) return;
+      const incX = this.headers["xDirection"] || 50;
+      const Dpi = utils.getDpi(); // dots per inche
+      const Dpm = Dpi * 100 / 2.54; // dots per meter
+      const zoomedScale = (incX * Dpm) / __ratio;
+      setContourViewScale(zoomedScale);
+    },
+    getRealRatio: function(zoomedScale) {
       const incX = this.headers["xDirection"] || 50;
       // 1 node ~ incX (m)
       // 1 node ~ 1px if zoomedScale == 1
@@ -3044,7 +3050,7 @@ function baseMapController(
       const Dpi = utils.getDpi();
       const Dpm = Dpi * 100 / 2.54;
       const scale = _.round(incX / (zoomedScale / Dpm), 1);
-      return `1:${scale}`;
+      return scale;
     },
     toggleViewWellDepth: function() {
       this.viewWellDepth = !this.viewWellDepth;
