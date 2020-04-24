@@ -493,7 +493,11 @@ ${require('./dashboard-template-modal.html')}
                   <div class="setting-content">
                       <span class="setting-sub-title">Label interval</span>
                       <div class="setting-content">
-                          <input type="number" ng-init="__tmpLabelInterval = self.contourConfig.labelInterval" ng-model="__tmpLabelInterval" ng-blur="self.contourConfig.labelInterval = __tmpLabelInterval" />
+                          <input type="number"
+                                 ng-keyup="$event.keyCode == 13 ? $event.currentTarget.blur():false;"
+                                 ng-init="__tmpLabelInterval = self.contourConfig.labelInterval"
+                                 ng-model="__tmpLabelInterval"
+                                 ng-blur="self.contourConfig.labelInterval = __tmpLabelInterval" />
                       </div>
                   </div>
               </div>
@@ -514,6 +518,7 @@ ${require('./dashboard-template-modal.html')}
                   <div class="setting-content">
                       1 :&nbsp;
                       <input type="number"
+                             ng-keyup="$event.keyCode == 13 ? $event.currentTarget.blur():false;"
                              ng-init="__tmpRealRatio = self.contourConfig.getRealRatio(self.contourConfig.scale)"
                              ng-model="__tmpRealRatio"
                              ng-blur="self.contourConfig.updateContourScaleFromRealRatio(__tmpRealRatio)" />
@@ -577,7 +582,11 @@ ${require('./dashboard-template-modal.html')}
                   <div class="setting-content">
                       <span class="setting-sub-title">Step</span>
                       <div class="setting-content">
-                          <input type="number" ng-init="__tmpStep = self.contourConfig.step" ng-model="__tmpStep" ng-blur="self.contourConfig.step = __tmpStep" />
+                          <input type="number"
+                                 ng-keyup="$event.keyCode == 13 ? $event.currentTarget.blur():false;"
+                                 ng-init="__tmpStep = self.contourConfig.step"
+                                 ng-model="__tmpStep"
+                                 ng-blur="self.contourConfig.step = __tmpStep" />
                       </div>
                   </div>
                   <div class="setting-content">
