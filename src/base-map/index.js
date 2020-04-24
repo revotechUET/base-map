@@ -3075,8 +3075,7 @@ function baseMapController(
       const nodeX = Math.round(xy.nodeX);
       const nodeY = Math.floor(xy.nodeY);
       const gridWidth = self.contourConfig.headers.numOfCols;
-      const factor = self.contourConfig.negativeData ? -1 : 1;
-      self.contourConfig.mousePoint.z = factor * _.round(self.contourConfig.values[gridWidth * nodeY + nodeX], 2);
+      self.contourConfig.mousePoint.z = _.round(self.contourConfig.values[gridWidth * nodeY + nodeX], 2);
       $timeout(() => $scope.$digest())
     },
     rulerDistance: null,
