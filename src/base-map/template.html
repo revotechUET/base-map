@@ -514,6 +514,15 @@ ${require('./dashboard-template-modal.html')}
                   </label>
               </div>
               <div class="setting-content">
+                  <span class="setting-sub-title">Disable Pan and Zoom</span>
+                  <label class="switch">
+                      <input type="checkbox"
+                             ng-checked="self.contourConfig.disableZoom"
+                             ng-click="self.contourConfig.disableZoom = !self.contourConfig.disableZoom" />
+                      <span class="slider round"></span>
+                  </label>
+              </div>
+              <div class="setting-content">
                   <span class="setting-sub-title">Scale</span>
                   <div class="setting-content">
                       1 :&nbsp;
@@ -534,6 +543,15 @@ ${require('./dashboard-template-modal.html')}
                           <input type="checkbox"
                                  ng-checked="self.contourConfig.negativeData"
                                  ng-click="self.contourConfig.negativeData = !self.contourConfig.negativeData; self.contourConfig.onNegativeDataChanged()" />
+                          <span class="slider round"></span>
+                      </label>
+                  </div>
+                  <div class="setting-content">
+                      <span class="setting-sub-title">Ruler Mode</span>
+                      <label class="switch">
+                          <input type="checkbox"
+                                 ng-checked="self.contourConfig.enableRulerMode"
+                                 ng-click="self.contourConfig.enableRulerMode = !self.contourConfig.enableRulerMode; self.contourConfig.rulerDistance = null;" />
                           <span class="slider round"></span>
                       </label>
                   </div>

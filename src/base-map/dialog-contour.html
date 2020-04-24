@@ -1,4 +1,4 @@
-<div style="width:calc(100% - 10px); height: calc(100% - 10px); margin: 5px">
+<div style="width:calc(100% - 10px); height: calc(100% - 10px - 30px); margin: 5px">
     <contour-view
         values-get="self.getterFn('contourConfig.values')"
         n-rows-get="self.getterFn('contourConfig.headers.numOfCols')"
@@ -7,29 +7,55 @@
         max-x-get="self.getterFn('contourConfig.headers.maxX')"
         min-y-get="self.getterFn('contourConfig.headers.minY')"
         max-y-get="self.getterFn('contourConfig.headers.maxY')"
-
         inc-x-direction-get="self.getterFn('contourConfig.headers.xDirection')"
         inc-y-direction-get="self.getterFn('contourConfig.headers.yDirection')"
 
-        y-direction-get="self.getterFn('contourConfig.yDirection')"
-        color-scale-get="self.getterFn('contourConfig.colorScale')"
-        step-get="self.getterFn('contourConfig.step')"
-        major-every-get="self.getterFn('contourConfig.majorEvery')"
         show-grid-get="self.getterFn('contourConfig.showGrid')"
-        show-color-scale-legend-get="self.getterFn('contourConfig.showColorScaleLegend')"
-        negative-data-get="self.getterFn('contourConfig.negativeData')"
         grid-major-get="self.getterFn('contourConfig.gridMajor')"
         grid-minor-get="self.getterFn('contourConfig.gridMinor')"
         grid-nice-get="self.getterFn('contourConfig.gridNice')"
+
+        step-get="self.getterFn('contourConfig.step')"
+        major-every-get="self.getterFn('contourConfig.majorEvery')"
+
+        color-scale-get="self.getterFn('contourConfig.colorScale')"
+        show-color-scale-legend-get="self.getterFn('contourConfig.showColorScaleLegend')"
+
         show-label-get="self.getterFn('contourConfig.showLabel')"
-        show-scale-get="self.getterFn('contourConfig.showScale')"
         label-font-size-get="self.getterFn('contourConfig.labelFontSize')"
         label-interval-get="self.getterFn('contourConfig.labelInterval')"
-        wells-get="self.getterFn('contourConfig.wells')"
+
         show-well-get="self.getterFn('contourConfig.showWell')"
-        trajectories-get="self.getterFn('contourConfig.trajectories')"
+        wells-get="self.getterFn('contourConfig.wells')"
         show-trajectory-get="self.getterFn('contourConfig.showTrajectory')"
+        trajectories-get="self.getterFn('contourConfig.trajectories')"
+        negative-data-get="self.getterFn('contourConfig.negativeData')"
+
+        enable-ruler-mode-get="self.getterFn('contourConfig.enableRulerMode')"
+        on-ruler-end-get="self.getterFn('contourConfig.onRulerEnd')"
+
+        disable-mouse-coordinate-get="self.getterFn('contourConfig.disableMouseCoordinate')"
+        on-mouse-move-get="self.getterFn('contourConfig.onMouseMove')"
+
+        disable-zoom-get="self.getterFn('contourConfig.disableZoom')"
+        show-scale-get="self.getterFn('contourConfig.showScale')"
+
+        y-direction-get="self.getterFn('contourConfig.yDirection')"
         on-component-mounted-get="self.getterFn('contourConfig.onContourViewMounted')"
         on-scale-changed-get="self.getterFn('contourConfig.onScaleChanged')">
     </contour-view>
+    <div style="font-size: 12px; line-height: 20px; display: flex; background-color: white;">
+        <span style="flex: 1; padding: 5px 10px;">
+            <b>X:</b> {{self.contourConfig.mousePoint.x}}
+        </span>
+        <span style="flex: 1; padding: 5px 10px;">
+            <b>Y:</b> {{self.contourConfig.mousePoint.y}}
+        </span>
+        <span style="flex: 1; padding: 5px 10px;">
+            <b>Z:</b> {{self.contourConfig.mousePoint.z}}
+        </span>
+        <span style="flex: 1; padding: 5px 10px;" ng-if="self.contourConfig.enableRulerMode">
+            <b>Distance:</b> {{self.contourConfig.rulerDistance}}
+        </span>
+    </div>
 </div>

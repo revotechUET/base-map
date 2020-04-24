@@ -2821,6 +2821,9 @@ function baseMapController(
     showLabel : false,
     showScale : true,
     showGrid : true,
+    enableRulerMode: false,
+    disableMouseCoordinate: false,
+    disableZoom: false,
     gridMajor : 5,
     gridMinor : 4,
     gridNice : true,
@@ -3063,6 +3066,23 @@ function baseMapController(
           this.onChangePopupPosition();
         }, 1000)
       }
+    },
+    mousePoint: {x: null, y: null, z: null},
+    onMouseMove: function(xy) {
+      if (!xy) return;
+      self.contourConfig.mousePoint.x = _.round(xy.x, 2);
+      self.contourConfig.mousePoint.y = _.round(xy.y, 2);
+      const nodeX = Math.round(xy.nodeX);
+      const nodeY = Math.floor(xy.nodeY);
+      const gridWidth = self.contourConfig.headers.numOfCols;
+      const factor = self.contourConfig.negativeData ? -1 : 1;
+      self.contourConfig.mousePoint.z = factor * _.round(self.contourConfig.values[gridWidth * nodeY + nodeX], 2);
+      $timeout(() => $scope.$digest())
+    },
+    rulerDistance: null,
+    onRulerEnd: function(distance) {
+      self.contourConfig.rulerDistance = _.round(distance, 2);
+      $timeout(() => $scope.$digest())
     }
   };
 
@@ -3156,12 +3176,6 @@ function baseMapController(
 
   const getters = {};
   this.getterFn = function(key) {
-    if (typeof(getters[key]) != 'function')
-      getters[key] = () => _.get(self, key);
-    return getters[key];
-  }
-  this.logGetterFn = function(key) {
-    console.log(`getting getter function for ${key}`);
     if (typeof(getters[key]) != 'function')
       getters[key] = () => _.get(self, key);
     return getters[key];
