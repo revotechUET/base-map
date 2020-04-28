@@ -1,4 +1,4 @@
-<div ng-class="{'show-dashboard': self.showContourPanel}" class="dialog">
+<div ng-class="{'show-dashboard': self.showContourPanel}" class="dialog" style="background-color:rgba(255, 255, 255, 0.2)">
   ${require('./dialog-contour.html')}
 </div>
 <div ng-class="{'show-dashboard': self.showDashboard}" class="dialog">
@@ -213,7 +213,7 @@ ${require('./dashboard-template-modal.html')}
           <div class="setting-content">
             <span class="setting-sub-title">Choose which position of well to display</span>
               <div class="setting-content">
-                <select style="width: 100%;border: none; background: none;" ng-model="self.wellPosition">
+                <select style="width: 100%;border: none; background: none;" ng-model="self.wellPosition" ng-change="self.contourConfig.onChangeWellPosition()">
                   <option ng-repeat="opt in self.wellPositionOptions" ng-value="opt.value">{{opt.label}}</option>
                 </select>
               </div>
@@ -226,7 +226,7 @@ ${require('./dashboard-template-modal.html')}
           <div class="setting-content">
             <span class="setting-sub-title">Choose which position of popup to display</span>
               <div class="setting-content">
-                <select style="width: 100%;border: none; background: none;" ng-model="self.popupPosition">
+                <select style="width: 100%;border: none; background: none;" ng-model="self.popupPosition" ng-change="self.contourConfig.onChangePopupPosition()">
                   <option ng-repeat="opt in self.wellPositionOptions" ng-value="opt.value">{{opt.label}}</option>
                 </select>
               </div>
@@ -239,7 +239,7 @@ ${require('./dashboard-template-modal.html')}
           <div class="setting-content">
             <span class="setting-sub-title">Choose which icon of well to display</span>
               <div class="setting-content">
-                <select style="width: 100%;border: none; background: none;" ng-model="self.wellDisplayMode">
+                <select style="width: 100%;border: none; background: none;" ng-model="self.wellDisplayMode" ng-change="self.contourConfig.onChangeWellDisplayMode()">
                   <option ng-repeat="opt in self.wellDisplayModeOptions" ng-value="opt.value">{{opt.label}}</option>
                 </select>
               </div>
@@ -251,11 +251,11 @@ ${require('./dashboard-template-modal.html')}
         <div class="complex-setting">
           <div class="setting-content">
             <span class="setting-sub-title">Change size for icon well in map</span>
-              <div class="setting-content">
-                <select style="width: 100%;border: none; background: none;" ng-model="self.wellSize">
-                  <option ng-repeat="opt in self.wellSizeOptions" ng-value="opt.value">{{opt.label}}</option>
-                </select>
-              </div>
+            <div class="setting-content">
+              <select style="width: 100%;border: none; background: none;" ng-model="self.wellSize">
+                <option ng-repeat="opt in self.wellSizeOptions" ng-value="opt.value">{{opt.label}}</option>
+              </select>
+            </div>
           </div>
         </div>
       </div>
@@ -468,6 +468,8 @@ ${require('./dashboard-template-modal.html')}
                         (self.getterFn('contourConfig.headers.numOfCols')() - 1) *
                         (self.getterFn('contourConfig.headers.numOfRows')() - 1)
                     }}<br/>
+                  <b>Increment in X-direction:</b> {{self.getterFn('contourConfig.headers.xDirection')()}}<br/>
+                  <b>Increment in Y-direction:</b> {{self.getterFn('contourConfig.headers.yDirection')()}}<br/>
               </div>
           </div>
           <div class="setting">
@@ -500,17 +502,49 @@ ${require('./dashboard-template-modal.html')}
                       </div>
                   </div>
               </div>
+              <div class="" ng-show="self.contourConfig.showLabel">
+                  <div class="setting-content">
+                      <span class="setting-sub-title">Label interval</span>
+                      <div class="setting-content">
+                          <input type="number"
+                                 ng-keyup="$event.keyCode == 13 ? $event.currentTarget.blur():false;"
+                                 ng-init="__tmpLabelInterval = self.contourConfig.labelInterval"
+                                 ng-model="__tmpLabelInterval"
+                                 ng-blur="self.contourConfig.labelInterval = __tmpLabelInterval" />
+                      </div>
+                  </div>
+              </div>
           </div>
           <div class="setting">
               <div class="setting-title" style="margin-bottom: 10px;">Scale</div>
               <div class="setting-content">
-                  <span class="setting-sub-title">Current scale: {{ self.getRound(self.contourConfig.scale, 2) }}x</span>
+                  <span class="setting-sub-title">Current scale: 1:{{ self.contourConfig.getRealRatio(self.contourConfig.scale) }}</span>
                   <label class="switch">
                       <input type="checkbox"
                              ng-checked="self.contourConfig.showScale"
                              ng-click="self.contourConfig.showScale = !self.contourConfig.showScale" />
                       <span class="slider round"></span>
                   </label>
+              </div>
+              <div class="setting-content">
+                  <span class="setting-sub-title">Disable Pan and Zoom</span>
+                  <label class="switch">
+                      <input type="checkbox"
+                             ng-checked="self.contourConfig.disableZoom"
+                             ng-click="self.contourConfig.disableZoom = !self.contourConfig.disableZoom" />
+                      <span class="slider round"></span>
+                  </label>
+              </div>
+              <div class="setting-content">
+                  <span class="setting-sub-title">Scale</span>
+                  <div class="setting-content">
+                      1 :&nbsp;
+                      <input type="number"
+                             ng-keyup="$event.keyCode == 13 ? $event.currentTarget.blur():false;"
+                             ng-init="__tmpRealRatio = self.contourConfig.getRealRatio(self.contourConfig.scale)"
+                             ng-model="__tmpRealRatio"
+                             ng-blur="self.contourConfig.updateContourScaleFromRealRatio(__tmpRealRatio)" />
+                  </div>
               </div>
           </div>
           <div class="setting">
@@ -521,7 +555,25 @@ ${require('./dashboard-template-modal.html')}
                       <label class="switch">
                           <input type="checkbox"
                                  ng-checked="self.contourConfig.negativeData"
-                                 ng-click="self.contourConfig.negativeData = !self.contourConfig.negativeData" />
+                                 ng-click="self.contourConfig.negativeData = !self.contourConfig.negativeData; self.contourConfig.onNegativeDataChanged()" />
+                          <span class="slider round"></span>
+                      </label>
+                  </div>
+                  <div class="setting-content">
+                      <span class="setting-sub-title">Ruler Mode</span>
+                      <label class="switch">
+                          <input type="checkbox"
+                                 ng-checked="self.contourConfig.enableRulerMode"
+                                 ng-click="self.contourConfig.enableRulerMode = !self.contourConfig.enableRulerMode; self.contourConfig.rulerDistance = null;" />
+                          <span class="slider round"></span>
+                      </label>
+                  </div>
+                  <div class="setting-content">
+                      <span class="setting-sub-title">View Well By Depth</span>
+                      <label class="switch">
+                          <input type="checkbox"
+                                 ng-checked="self.contourConfig.viewWellDepth"
+                                 ng-click="self.contourConfig.toggleViewWellDepth()" />
                           <span class="slider round"></span>
                       </label>
                   </div>
@@ -561,13 +613,11 @@ ${require('./dashboard-template-modal.html')}
                   <div class="setting-content">
                       <span class="setting-sub-title">Step</span>
                       <div class="setting-content">
-                          <input type="number" ng-init="__tmpStep = self.contourConfig.step" ng-model="__tmpStep" ng-blur="self.contourConfig.step = __tmpStep" />
-                      </div>
-                  </div>
-                  <div class="setting-content">
-                      <span class="setting-sub-title">Scale</span>
-                      <div class="setting-content">
-                          <input type="number" ng-model="self.contourConfig.scale" ng-blur="self.contourConfig.updateContourScale()" />
+                          <input type="number"
+                                 ng-keyup="$event.keyCode == 13 ? $event.currentTarget.blur():false;"
+                                 ng-init="__tmpStep = self.contourConfig.step"
+                                 ng-model="__tmpStep"
+                                 ng-blur="self.contourConfig.step = __tmpStep" />
                       </div>
                   </div>
                   <div class="setting-content">
