@@ -14,6 +14,7 @@ app.component(componentName, {
     wells: "<",
     zoneMap: "<",
     displayMode: "<",
+    wellSize: "<",
     controlPanel: "<",
     point: "<",
     theme: "<",
@@ -275,6 +276,12 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken, wiApi) {
     )
     $scope.$watch(
       () => self.displayMode,
+      () => {
+        drawMarkersDebounced();
+      }
+    )
+    $scope.$watch(
+      () => self.wellSize,
       () => {
         drawMarkersDebounced();
       }
@@ -1625,7 +1632,6 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken, wiApi) {
   function drawMarkers() {
     let firstProjection = self.zoneMap;
     let secondProjection = "+proj=longlat +ellps=WGS84 +datum=WGS84 +units=degrees";
-
     // remove all previous markers
     for (let marker of Object.values(markers)) {
       marker.setMap(null);
@@ -1666,7 +1672,7 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken, wiApi) {
                 anchor: new google.maps.Point(55, 50),
                 strokeWeight: 1,
                 strokeColor: getColorIconMarker(self.wells[index].well_headers),
-                scale: 0.19,
+                scale: 0.19 * self.wellSize,
               });
               // map.setCenter(new google.maps.LatLng(lat, long));
   
@@ -1679,7 +1685,7 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken, wiApi) {
                 anchor: new google.maps.Point(270, 530),
                 strokeWeight: 1,
                 strokeColor: getColorIconMarker(self.wells[index].well_headers),
-                scale: 0.05,
+                scale: 0.05 * self.wellSize,
               });
               // map.setCenter(new google.maps.LatLng(lat, long));
   
@@ -1692,7 +1698,7 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken, wiApi) {
                 anchor: new google.maps.Point(270, 530),
                 strokeWeight: 1,
                 strokeColor: getColorIconMarker(self.wells[index].well_headers),
-                scale: 0.05,
+                scale: 0.05 * self.wellSize,
               });
               // map.setCenter(new google.maps.LatLng(lat, long));
   
@@ -1789,7 +1795,7 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken, wiApi) {
               anchor: new google.maps.Point(270, 530),
               strokeWeight: 1,
               strokeColor: "#585858",
-              scale: 0.05,
+              scale: 0.05 * self.wellSize,
             });
           }
           else if (checkCoordinate(lat, long, x, y) === false) {
@@ -1814,7 +1820,7 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken, wiApi) {
               anchor: new google.maps.Point(270, 530),
               strokeWeight: 1,
               strokeColor: "#585858",
-              scale: 0.05,
+              scale: 0.05 * self.wellSize,
             });
   
           } else {
