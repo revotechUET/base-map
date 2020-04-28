@@ -234,6 +234,14 @@ const WellDisplayModeOptions = [
   {label: "Derrick", value: "derrick"},
   {label: "Status", value: "status"},
 ]
+const WellSizeOptions = [
+  {label: "0 (Hide)", value: "0"},
+  {label: "1 (Default)", value: "1"},
+  {label: "2", value: "1.1"},
+  {label: "3", value: "1.4"},
+  {label: "4", value: "1.6"},
+  {label: "5", value: "1.9"},
+]
 
 function baseMapController(
   $scope,
@@ -270,9 +278,11 @@ function baseMapController(
   self.axesUnitOptions = AxesUnitOptions;
   self.wellPositionOptions = WellPositionOptions;
   self.wellDisplayModeOptions = WellDisplayModeOptions;
+  self.wellSizeOptions = WellSizeOptions;
   self.wellPosition = self.wellPositionOptions[0].value;
   self.popupPosition = self.wellPositionOptions[0].value;
   self.wellDisplayMode = self.wellDisplayModeOptions[0].value;
+  self.wellSize = self.wellSizeOptions[1].value;
   self.axesUnit = self.axesUnitOptions[0];
   self.selectedIdsHash = {};
   self.selectedNode = null;
