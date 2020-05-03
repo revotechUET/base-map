@@ -3,56 +3,56 @@
 
 <head>
   <meta charset="UTF-8" />
-  <title>Base Map</title>
+  <title>Base Map v2</title>
   <link rel="icon" href="https://www.i2g.cloud/wp-content/uploads/2018/11/favi.png" type="image/png">
-
-  <link rel="stylesheet" href="./vendors/mapbox/mapbox-gl.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+  <!-- <link rel="stylesheet" href="./vendors/mapbox/mapbox-gl.css" />
   <link rel="stylesheet" href="./vendors/mapbox/mapbox-gl-directions.css" />
-  <link rel="stylesheet" href="./bower_components/mapbox-box-draw.js/mapbox-gl-draw.css" />
+  <link rel="stylesheet" href="./bower_components/mapbox-box-draw.js/mapbox-gl-draw.css" /> -->
   <link rel="stylesheet" href="./bower_components/jquery-ui/themes/base/jquery-ui.min.css" />
-  <link rel="stylesheet" href="./bower_components/font-awesome/css/font-awesome.min.css" />
-  <link rel="stylesheet" href="./bower_components/themify-icons/css/themify-icons.css" />
+  <!-- <link rel="stylesheet" href="./bower_components/font-awesome/css/font-awesome.min.css" />
+  <link rel="stylesheet" href="./bower_components/themify-icons/css/themify-icons.css" /> -->
   <link rel="stylesheet" href="./bower_components/angular-ui-select/dist/select.min.css" />
   <link rel="stylesheet" href="./bower_components/ng-dialog/css/ngDialog.min.css" />
   <link rel="stylesheet" href="./bower_components/ng-dialog/css/ngDialog-theme-default.min.css" />
   <link rel="stylesheet" href="./bower_components/bootstrap-css/css/bootstrap.min.css" />
-  <link rel="stylesheet" href="./bower_components/katex/dist/katex.min.css" />
+  <!-- <link rel="stylesheet" href="./bower_components/katex/dist/katex.min.css" />
   <link rel="stylesheet" href="./bower_components/angular-resizable/angular-resizable.min.css" />
   <link rel="stylesheet" href="./vendors/css/bootstrap-colorpicker.min.css" />
-  <link rel="stylesheet" href="./vendors/css/color-picker.css" />
+  <link rel="stylesheet" href="./vendors/css/color-picker.css" /> -->
 
   <!-- <script src="https://d3js.org/d3.v4.min.js"></script>
     <script src="https://d3js.org/d3-contour.v1.min.js"></script>
     <script src="https://d3js.org/d3-hsv.v0.1.min.js"></script>
     <script src="https://unpkg.com/shpjs@latest/dist/shp.js"></script> -->
-
+<!-- 
   <script src="./bower_components/d3/d3.min.js"></script>
   <script src="./bower_components/d3-contour.v1.min/index.js"></script>
   <script src="./bower_components/d3-hsv.v0.1.min/index.js"></script>
-  <script src="./bower_components/shp/dist/shp.min.js"></script>
-
+  <script src="./bower_components/shp/dist/shp.min.js"></script> -->
+<!-- 
   <script src="./bower_components/katex/dist/katex.min.js"></script>
   <script src="./bower_components/jquery/dist/jquery.min.js"></script>
   <script src="./bower_components/jquery-ui/jquery-ui.min.js"></script>
   <script src="./bower_components/bootstrap-css/js/bootstrap.min.js"></script>
-  <script src="./bower_components/async/dist/async.min.js"></script>
+  <script src="./bower_components/async/dist/async.min.js"></script> -->
 
-  <script src="./bower_components/contour-module/dist/index.bundle.js"></script>
+  <!-- <script src="./bower_components/contour-module/dist/index.bundle.js"></script> -->
   <script src="./bower_components/angular/angular.min.js"></script>
-
+<!-- 
   <script src="./vendors/mapbox/mapbox-gl.js"></script>
   <script src="./vendors/mapbox/mapbox-gl-geocoder.min.js"></script>
   <script src="./vendors/mapbox/mapbox-gl-directions.js"></script>
-  <script src="./vendors/mapbox/turf.min.js"></script>
+  <script src="./vendors/mapbox/turf.min.js"></script> -->
 
-  <script src="./bower_components/mapbox-box-draw.js/mapbox-gl-draw.js"></script>
+  <!-- <script src="./bower_components/mapbox-box-draw.js/mapbox-gl-draw.js"></script>
   <script src="./bower_components/proj4/dist/proj4.js"></script>
   <script src="./bower_components/macy/dist/macy.js"></script>
   <script src="./bower_components/resize-sensor/ResizeSensor.min.js"></script>
   <script src="./bower_components/chart.js/dist/Chart.min.js"></script>
   <script src="./bower_components/angular-chart.js/dist/angular-chart.min.js"></script>
   <script src="./bower_components/angular-drag-and-drop-lists/angular-drag-and-drop-lists.min.js"></script>
-  <script src="./bower_components/angular-resizable/angular-resizable.min.js"></script>
+  <script src="./bower_components/angular-resizable/angular-resizable.min.js"></script> -->
   <script src="./bower_components/angular-sanitize/angular-sanitize.min.js"></script>
   <script src="./bower_components/angular-bootstrap/ui-bootstrap-tpls.min.js"></script>
   <script src="./bower_components/angular-ui-select/dist/select.min.js"></script>
@@ -71,15 +71,22 @@
     <script src="bower_components/async/dist/async.min.js"></script>
 
   <script src="./dist/map-view.bundle.js"></script>
-  <script src="./vendors/js/bootstrap-colorpicker.min.js"></script>
+  
+  <!-- <script src="./vendors/js/bootstrap-colorpicker.min.js"></script> -->
 </head>
 
-<body ng-app="myApp" ng-controller="myController" style="font-size: 12px;">
-  <div style="width: 100vw; height: 100vh; min-width: 100vw; min-height: 100vh; position: relative;">
-    <base-map zone-default="WGS_1984_UTM_Zone_49N" has-wi-login="true" project-id="" has-project-list="true">
-    </base-map>
+<body ng-app="myApp" ng-controller="myController">
+  <div style="width: 100vw; height: 100vh; min-width: 100vw; min-height: 100vh; position: relative; display: flex; flex-direction: column;">
+   <main-view></main-view>
   </div>
   <script>
+    angular
+      .module("myApp", ["mainView"])
+      .controller('myController', function () {});
+  </script>
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD8SOu4UwtJG5147M7YzF2aHr_ijQyQuhw"></script>
+
+  <!-- <script>
     angular
       .module("myApp", ["baseMap", "wiMapLoading", "wiToken"])
       .run(function (wiApi) {
@@ -121,7 +128,7 @@
 
 
       });
-  </script>
+  </script> -->
 </body>
 
 </html>

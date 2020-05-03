@@ -1,0 +1,195 @@
+${require('./templale-dialog.html')}
+<div class="i2g-toolbar">
+    <div class="i2g-tab">
+        <div class="tab-item always-on">
+            <div class="tab-name" ng-click="self.showFiles = !self.showFiles">Files
+                <div class="caret-drop">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="12.828" height="7.828" viewBox="0 0 12.828 7.828">
+                        <path id="Path_15" data-name="Path 15" d="M1014.566,219.5l5,5,5-5"
+                            transform="translate(-1013.152 -218.086)" fill="none" stroke-linecap="round"
+                            stroke-width="2" />
+                    </svg>
+                </div>
+            </div>
+            <div class="i2g-drop-menu-tab" ng-show="self.showFiles">
+                <div class="item-drop" ng-click="self.showDialog()">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none"
+                        role="img">
+                        <path fill-rule="evenodd" clip-rule="evenodd"
+                            d="M10.6002 12.0498C9.49758 12.8568 8.13777 13.3333 6.66667 13.3333C2.98477 13.3333 0 10.3486 0 6.66667C0 2.98477 2.98477 0 6.66667 0C10.3486 0 13.3333 2.98477 13.3333 6.66667C13.3333 8.15637 12.8447 9.53194 12.019 10.6419C12.0265 10.6489 12.0338 10.656 12.0411 10.6633L15.2935 13.9157C15.6841 14.3063 15.6841 14.9394 15.2935 15.33C14.903 15.7205 14.2699 15.7205 13.8793 15.33L10.6269 12.0775C10.6178 12.0684 10.6089 12.0592 10.6002 12.0498ZM11.3333 6.66667C11.3333 9.244 9.244 11.3333 6.66667 11.3333C4.08934 11.3333 2 9.244 2 6.66667C2 4.08934 4.08934 2 6.66667 2C9.244 2 11.3333 4.08934 11.3333 6.66667Z">
+                        </path>
+                    </svg>
+                    <div>Open Project</div>
+                </div>
+                <div class="item-drop">
+                    <div>New Project</div>
+                </div>
+                <div class="item-drop">
+                    <div>Save Project</div>
+                </div>
+            </div>
+        </div>
+        <div class="tab-item ">
+            <div class="tab-name">Dataset Selection</div>
+            <div class="active-tab-status"></div>
+        </div>
+        <div class="tab-item active">
+            <div class="tab-name">Model Selection</div>
+            <div class="active-tab-status"></div>
+        </div>
+        <div class="tab-item">
+            <div class="tab-name">Zonset Config</div>
+            <div class="active-tab-status"></div>
+        </div>
+        <div class="tab-item ">
+            <div class="tab-name">Training and Prediction</div>
+            <div class="active-tab-status"></div>
+        </div>
+        <div class="tab-item ">
+            <div class="tab-name">Converage Analyzic</div>
+            <div class="active-tab-status"></div>
+        </div>
+    </div>
+    <div style="display: flex; align-items: center;">
+        <!-- <label class="i2g-checkbox">
+            <input type="checkbox">
+            <span>Show wellname</span>
+        </label>
+        <div class="space-20px"></div>
+        <label class="i2g-checkbox">
+            <input type="radio">
+            <span>Show wellname</span>
+        </label> -->
+        <div class="space-20px"></div>
+        <select>
+            <option value="">Select...</option>
+            <option value="50k">
+                &lt;50k
+            </option>
+            <option value="50-60k">
+                50-60k
+            </option>
+            <option value="60-70k">
+                60-70k
+            </option>
+            <option value="70-80k">
+                70-80k
+            </option>
+            <option value="80-90k">
+                80-90k
+            </option>
+            <option value="90-100k">
+                90-100k
+            </option>
+            <option value="100-110k">
+                100-110k
+            </option>
+            <option value="110-120k">
+                110-120k
+            </option>
+            <option value="120-130k">
+                120-130k
+            </option>
+            <option value="130-140k">
+                130-140k
+            </option>
+            <option value="140-150k">
+                140-150k
+            </option>
+            <option value="150-170k">
+                150-170k
+            </option>
+            <option value="170-190k">
+                170-190k
+            </option>
+            <option value="190-220k">
+                190-220k
+            </option>
+            <option value="220-250k">
+                220-250k
+            </option>
+            <option value=">250k">
+                &gt;250k
+            </option>
+        </select>
+        <div class="space-20px"></div>
+        <div class="i2g-search-box-with-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none" role="img">
+                <path fill-rule="evenodd" clip-rule="evenodd"
+                    d="M10.6002 12.0498C9.49758 12.8568 8.13777 13.3333 6.66667 13.3333C2.98477 13.3333 0 10.3486 0 6.66667C0 2.98477 2.98477 0 6.66667 0C10.3486 0 13.3333 2.98477 13.3333 6.66667C13.3333 8.15637 12.8447 9.53194 12.019 10.6419C12.0265 10.6489 12.0338 10.656 12.0411 10.6633L15.2935 13.9157C15.6841 14.3063 15.6841 14.9394 15.2935 15.33C14.903 15.7205 14.2699 15.7205 13.8793 15.33L10.6269 12.0775C10.6178 12.0684 10.6089 12.0592 10.6002 12.0498ZM11.3333 6.66667C11.3333 9.244 9.244 11.3333 6.66667 11.3333C4.08934 11.3333 2 9.244 2 6.66667C2 4.08934 4.08934 2 6.66667 2C9.244 2 11.3333 4.08934 11.3333 6.66667Z">
+                </path>
+            </svg>
+            <input type="search" placeholder="Search" autocomplete="off" value="">
+        </div>
+        <div class="space-20px"></div>
+        <div class="i2g-button-with-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none" role="img">
+                <path fill-rule="evenodd" clip-rule="evenodd"
+                    d="M10.6002 12.0498C9.49758 12.8568 8.13777 13.3333 6.66667 13.3333C2.98477 13.3333 0 10.3486 0 6.66667C0 2.98477 2.98477 0 6.66667 0C10.3486 0 13.3333 2.98477 13.3333 6.66667C13.3333 8.15637 12.8447 9.53194 12.019 10.6419C12.0265 10.6489 12.0338 10.656 12.0411 10.6633L15.2935 13.9157C15.6841 14.3063 15.6841 14.9394 15.2935 15.33C14.903 15.7205 14.2699 15.7205 13.8793 15.33L10.6269 12.0775C10.6178 12.0684 10.6089 12.0592 10.6002 12.0498ZM11.3333 6.66667C11.3333 9.244 9.244 11.3333 6.66667 11.3333C4.08934 11.3333 2 9.244 2 6.66667C2 4.08934 4.08934 2 6.66667 2C9.244 2 11.3333 4.08934 11.3333 6.66667Z">
+                </path>
+            </svg>
+        </div>
+    </div>
+</div>
+<div class="i2g-main-layout">
+    <div class="block">
+        <div class="i2g-title-with-btn">
+            <span>Project</span>
+            <div>
+                <div class="i2g-button-with-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none"
+                        role="img">
+                        <path fill-rule="evenodd" clip-rule="evenodd"
+                            d="M10.6002 12.0498C9.49758 12.8568 8.13777 13.3333 6.66667 13.3333C2.98477 13.3333 0 10.3486 0 6.66667C0 2.98477 2.98477 0 6.66667 0C10.3486 0 13.3333 2.98477 13.3333 6.66667C13.3333 8.15637 12.8447 9.53194 12.019 10.6419C12.0265 10.6489 12.0338 10.656 12.0411 10.6633L15.2935 13.9157C15.6841 14.3063 15.6841 14.9394 15.2935 15.33C14.903 15.7205 14.2699 15.7205 13.8793 15.33L10.6269 12.0775C10.6178 12.0684 10.6089 12.0592 10.6002 12.0498ZM11.3333 6.66667C11.3333 9.244 9.244 11.3333 6.66667 11.3333C4.08934 11.3333 2 9.244 2 6.66667C2 4.08934 4.08934 2 6.66667 2C9.244 2 11.3333 4.08934 11.3333 6.66667Z">
+                        </path>
+                    </svg>
+                </div>
+                <div class="space-20px"></div>
+
+                <div class="i2g-button-with-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none"
+                        role="img">
+                        <path fill-rule="evenodd" clip-rule="evenodd"
+                            d="M10.6002 12.0498C9.49758 12.8568 8.13777 13.3333 6.66667 13.3333C2.98477 13.3333 0 10.3486 0 6.66667C0 2.98477 2.98477 0 6.66667 0C10.3486 0 13.3333 2.98477 13.3333 6.66667C13.3333 8.15637 12.8447 9.53194 12.019 10.6419C12.0265 10.6489 12.0338 10.656 12.0411 10.6633L15.2935 13.9157C15.6841 14.3063 15.6841 14.9394 15.2935 15.33C14.903 15.7205 14.2699 15.7205 13.8793 15.33L10.6269 12.0775C10.6178 12.0684 10.6089 12.0592 10.6002 12.0498ZM11.3333 6.66667C11.3333 9.244 9.244 11.3333 6.66667 11.3333C4.08934 11.3333 2 9.244 2 6.66667C2 4.08934 4.08934 2 6.66667 2C9.244 2 11.3333 4.08934 11.3333 6.66667Z">
+                        </path>
+                    </svg>
+                </div>
+                <div class="space-20px"></div>
+
+                <div class="i2g-button-with-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none"
+                        role="img">
+                        <path fill-rule="evenodd" clip-rule="evenodd"
+                            d="M10.6002 12.0498C9.49758 12.8568 8.13777 13.3333 6.66667 13.3333C2.98477 13.3333 0 10.3486 0 6.66667C0 2.98477 2.98477 0 6.66667 0C10.3486 0 13.3333 2.98477 13.3333 6.66667C13.3333 8.15637 12.8447 9.53194 12.019 10.6419C12.0265 10.6489 12.0338 10.656 12.0411 10.6633L15.2935 13.9157C15.6841 14.3063 15.6841 14.9394 15.2935 15.33C14.903 15.7205 14.2699 15.7205 13.8793 15.33L10.6269 12.0775C10.6178 12.0684 10.6089 12.0592 10.6002 12.0498ZM11.3333 6.66667C11.3333 9.244 9.244 11.3333 6.66667 11.3333C4.08934 11.3333 2 9.244 2 6.66667C2 4.08934 4.08934 2 6.66667 2C9.244 2 11.3333 4.08934 11.3333 6.66667Z">
+                        </path>
+                    </svg>
+                </div>
+            </div>
+        </div>
+        <div class="space-height-20px"></div>
+        <div class="i2g-search-box-with-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none" role="img">
+                <path fill-rule="evenodd" clip-rule="evenodd" d="M10.6002 12.0498C9.49758 12.8568 8.13777 13.3333 6.66667 13.3333C2.98477 13.3333 0 10.3486 0 6.66667C0 2.98477 2.98477 0 6.66667 0C10.3486 0 13.3333 2.98477 13.3333 6.66667C13.3333 8.15637 12.8447 9.53194 12.019 10.6419C12.0265 10.6489 12.0338 10.656 12.0411 10.6633L15.2935 13.9157C15.6841 14.3063 15.6841 14.9394 15.2935 15.33C14.903 15.7205 14.2699 15.7205 13.8793 15.33L10.6269 12.0775C10.6178 12.0684 10.6089 12.0592 10.6002 12.0498ZM11.3333 6.66667C11.3333 9.244 9.244 11.3333 6.66667 11.3333C4.08934 11.3333 2 9.244 2 6.66667C2 4.08934 4.08934 2 6.66667 2C9.244 2 11.3333 4.08934 11.3333 6.66667Z">
+                </path>
+            </svg>
+            <input type="search" placeholder="Search" autocomplete="off" value="">
+        </div>
+    </div>
+    <div class="space-20px"></div>
+    <div class="block-scroll">
+        <div class="block">
+            ${require('./machinelearning.html')}
+        </div>
+        <div class="space-height-20px"></div>
+        <div class="block">
+            ${require('./basemap.html')}
+        </div>
+        <div class="space-height-20px"></div>
+        <div class="block">
+        </div>
+    </div>
+    <div class="space-20px"></div>
+    <div class="block">
+
+    </div>
+</div>

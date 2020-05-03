@@ -1,0 +1,97 @@
+
+input:hover[type='checkbox'],input:hover[type='radio'] {
+    cursor: pointer;
+}
+input:focus[type='checkbox'],input:focus[type='radio'] {
+    outline: none;
+}
+input:hover[type='text'],input:hover[type='checkbox'],input:hover[type='radio'], input:hover[type='search'], input:hover[type='password'], input:hover[type='email'], input:hover[type='url'], input:hover[type='tel'], .selectize-input:hover, textarea:hover, .ql-container .ql-editor:hover, select:hover, .input-with-prefix:hover {
+    background-color: var(--input-bg-hover);
+    border-color: var(--input-border-hover);
+    -webkit-box-shadow: 0 0 0 4px var(--input-shadow-hover);
+    box-shadow: 0 0 0 4px var(--input-shadow-hover);
+}
+input[type='text'], input[type='search'], input[type='password'], input[type='email'], input[type='url'], input[type='tel'], .selectize-input {
+    border: 1px solid transparent;
+}
+input:active[type='text'],input:hover[type='checkbox'],input:hover[type='radio'], input:active[type='search'], input:active[type='password'], input:active[type='email'], input:active[type='url'], input:active[type='tel'], .selectize-input:active, textarea:active, .ql-container .ql-editor:active, select:active, .input-with-prefix:active {
+    background-color: var(--input-bg-hover);
+    border-color: var(--input-border-active);
+    -webkit-box-shadow: none;
+    box-shadow: none;
+}
+input:focus[type='text'], input:hover[type='checkbox'],input:hover[type='radio'],input:focus[type='search'], input:focus[type='password'], input:focus[type='email'], input:focus[type='url'], input:focus[type='tel'], .selectize-input:focus, textarea:focus, .ql-container .ql-editor:focus, select:focus, .input-with-prefix:focus {
+    background-color: var(--input-bg-hover);
+    border-color: var(--input-border-focus);
+    -webkit-box-shadow: 0 0 0 4px var(--input-shadow-hover);
+    box-shadow: 0 0 0 4px var(--input-shadow-hover);
+}
+input[type='text'], input[type='search'], input[type='password'], input[type='email'], input[type='url'], input[type='tel'], .selectize-input, textarea, .ql-container .ql-editor, select, .input-with-prefix {
+    font-weight: 400;
+    // line-height: 24px;
+    width: 100%;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    height: 40px;
+    padding: 10px 16px;
+    outline: none;
+    border-radius: 8px;
+    -webkit-transition: background-color 200ms ease, outline 200ms ease, color 200ms ease, -webkit-box-shadow 200ms ease;
+    transition: background-color 200ms ease, outline 200ms ease, color 200ms ease, -webkit-box-shadow 200ms ease;
+    transition: background-color 200ms ease, outline 200ms ease, color 200ms ease, box-shadow 200ms ease;
+    transition: background-color 200ms ease, outline 200ms ease, color 200ms ease, box-shadow 200ms ease, -webkit-box-shadow 200ms ease;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    color: var(--text-primary-color);
+    background-color: var(--input-bg);
+}
+
+input:checked[type='checkbox'], input:checked[type='radio'] {
+    background-color: var(--input-border-focus);
+    border-color: var(--input-border-focus);
+}
+
+input[type='checkbox'], input[type='radio'] {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    padding: 0;
+    position: relative;
+    margin: 0 12px 0 0;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-pack: center;
+    justify-content: center;
+    -ms-flex-align: center;
+    align-items: center;
+    background: var(--input-check-bg);
+    border: 1px solid var(--input-border);
+    outline: none;
+    -webkit-transition: background 200ms ease, border 200ms ease, -webkit-box-shadow 200ms ease;
+    transition: background 200ms ease, border 200ms ease, -webkit-box-shadow 200ms ease;
+    transition: box-shadow 200ms ease, background 200ms ease, border 200ms ease;
+    transition: box-shadow 200ms ease, background 200ms ease, border 200ms ease, -webkit-box-shadow 200ms ease;
+}
+input[type='radio'] {
+    border-radius: 50%;
+}
+input[type='checkbox']:checked:after {
+    content: '';
+    position: absolute;
+    width: 12px;
+    height: 8px;
+    background-size: contain;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12.665' height='8.84' viewBox='0 0 12.665 8.84'%3E%3Cpath id='Path_14' data-name='Path 14' d='M424.834,219.6l3.41,3.41,6.426-6.426' transform='translate(-423.42 -215.174)' fill='none' stroke='%23fff' stroke-linecap='round' stroke-linejoin='round' stroke-width='2'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+}
+input[type='radio']:checked:after {
+    content: '';
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--input-check-bg);
+}
