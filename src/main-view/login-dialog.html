@@ -1,0 +1,236 @@
+<!-- <script>
+    window.tdwGlobal = {
+        "adminUrl": "http:\/\/www.i2g.cloud\/wp-admin\/",
+        "wpRestNonce": "43d4a1c925",
+        "wpRestUrl": "http:\/\/www.i2g.cloud\/index.php?rest_route=\/",
+        "permalinkStructure": ""
+    };
+</script>
+
+<script>
+    window.$ = window.jQuery;
+    const host = 'https://register.i2g.cloud/api';
+    $('#form').submit((e) => {
+        e.preventDefault();
+        const data = {};
+        for (const input of e.target) {
+            if (input.id === 'submit') continue;
+            data[input.id] = input.value;
+        }
+        const $phone = $("#phone");
+        if (!$phone.intlTelInput('isValidNumber')) return toastr.error('Phone number is not valid')
+        data.phone = $phone.intlTelInput("getNumber");
+        fetch(host + '/submit', {
+                method: 'POST',
+                body: JSON.stringify(data),
+                headers: {
+                    'content-type': 'application/json'
+                },
+            })
+            .then((res) => res.json())
+            .then((data) => {
+                console.log(data);
+                if (data.code === 200) {
+                    toastr.success('Successful submit user ' + data.content.firstName);
+                    e.target.reset();
+                } else {
+                    toastr.error(data.content);
+                }
+            })
+            .catch((e) => console.error(e));
+    });
+</script>
+<script>
+    $("#phone").intlTelInput({
+        initialCountry: "auto",
+        geoIpLookup: function (callback) {
+            $.get('//extreme-ip-lookup.com/json/').always(function (res) {
+                callback(res && res.countryCode || '');
+            });
+        },
+        utilsScript: 'https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/13.0.4/js/utils.js'
+    });
+</script>
+
+</div> -->
+<div ng-show="!self.showLogin" class="dialog-overlay">
+    <div class="i2g-dialog">
+        <div class="i2g-title-with-btn">
+            <span>Login to i2G</span>
+        </div>
+        <div class="space-height-20px"></div>
+        <form>
+            <div class="i2g-search-box-with-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="16px" height="16px" viewBox="0 0 16 16" version="1.1">
+                    <!-- Generator: Sketch 54.1 (76490) - https://sketchapp.com -->
+                    <title>01</title>
+                    <desc>Created with Sketch.</desc>
+                    <g id="01" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                        <circle id="Oval-Copy" stroke="#9E9EA7" stroke-width="2" cx="8" cy="6" r="4"/>
+                        <circle id="Oval-Copy-2" stroke="#9E9EA7" stroke-width="2" cx="8" cy="17" r="7"/>
+                    </g>
+                </svg>
+                <input type="search" placeholder="Username" autocomplete="off" value="">
+            </div>
+            <div class="space-height-20px"></div>
+            <div class="i2g-search-box-with-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="16px" height="16px" viewBox="0 0 16 16" version="1.1">
+                    <!-- Generator: Sketch 54.1 (76490) - https://sketchapp.com -->
+                    <title>01 copy</title>
+                    <desc>Created with Sketch.</desc>
+                    <g id="01-copy" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                        <circle id="Oval" stroke="#9E9EA7" stroke-width="2" cx="4.5" cy="8" r="3.5"/>
+                        <rect id="Rectangle" stroke="#9E9EA7" fill="#D8D8D8" x="7.5" y="7.5" width="8" height="1" rx="0.5"/>
+                        <rect id="Rectangle" stroke="#9E9EA7" fill="#D8D8D8" x="14.5" y="7.5" width="1" height="3" rx="0.5"/>
+                        <rect id="Rectangle" stroke="#9E9EA7" fill="#D8D8D8" x="11" y="7.5" width="1" height="3" rx="0.5"/>
+                    </g>
+                </svg>
+                <input type="password" placeholder="Password" autocomplete="off" value="">
+            </div>
+            <div class="space-height-20px"></div>
+            <select style="width: 100%">
+                <option>
+                    Product Server
+                </option>
+                <option>
+                    Product Server
+                </option>
+                <option>
+                    Product Server
+                </option>
+            </select>
+            <div class="space-height-20px"></div>
+            <div class="i2g-button-submit">
+                <input type="submit" value="Login">
+            </div>
+        </form>
+        <div class="space-height-20px"></div>
+        <div style="display: flex; align-items: center;">
+            <div style="flex: 1;" class="border-bottom-2px"></div>
+            <div style="color: var(--text-inactive-color); margin: 0 10px;">OR</div>
+            <div style="flex: 1;" class="border-bottom-2px"></div>
+        </div>
+        <div class="space-height-20px"></div>
+        <div style="display: flex;">
+            <div style="flex: 1;">
+                <div class="i2g-button-text-with-icon-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="16px" height="16px" viewBox="0 0 16 16" version="1.1">
+                        <!-- Generator: Sketch 54.1 (76490) - https://sketchapp.com -->
+                        <title>01 copy 2</title>
+                        <desc>Created with Sketch.</desc>
+                        <g id="01-copy-2" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                            <circle id="Oval" stroke="#9E9EA7" stroke-width="2" cx="8" cy="8" r="6"/>
+                            <rect id="Rectangle" stroke="#9E9EA7" fill="#D8D8D8" transform="translate(8.742641, 7.949747) rotate(-225.000000) translate(-8.742641, -7.949747) " x="6.24264069" y="7.44974747" width="5" height="1" rx="0.5"/>
+                            <rect id="Rectangle" stroke="#9E9EA7" fill="#D8D8D8" transform="translate(6.621320, 8.656854) rotate(-225.000000) translate(-6.621320, -8.656854) " x="6.12132034" y="7.15685425" width="1" height="3" rx="0.5"/>
+                        </g>
+                    </svg>
+                    <span>Register</span>
+                </div>
+            </div>
+            <div class="space-20px"></div>
+            <div style="flex: 1;">
+                <div class="i2g-button-text-with-icon-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="16px" height="16px" viewBox="0 0 16 16" version="1.1">
+                        <!-- Generator: Sketch 54.1 (76490) - https://sketchapp.com -->
+                        <title>01 copy 3</title>
+                        <desc>Created with Sketch.</desc>
+                        <g id="01-copy-3" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                            <rect id="Rectangle" stroke="#9E9EA7" stroke-width="2" x="1" y="3" width="14" height="10" rx="1"/>
+                            <polyline id="Path" stroke="#9E9EA7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" transform="translate(7.978721, 6.999629) rotate(1.000000) translate(-7.978721, -6.999629) " points="0.957438359 4.62217618 8.00000324 9.49962857 15.0000032 4.49962857"/>
+                        </g>
+                    </svg>
+                    <span>Contact</span>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+</div>
+<!-- 
+<div id="i2g-register">
+    <div class="i2g-title-with-btn">
+        <span>Register Information</span>
+    </div>
+    <div class="space-height-20px"></div>
+    <form>
+        <div class="i2g-search-box-with-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="16px" height="16px" viewBox="0 0 16 16" version="1.1">
+                <g id="01-copy-4" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                    <g id="Group" transform="translate(0.277659, 1.000000)" fill="#D8D8D8">
+                        <rect id="Rectangle-Copy" stroke="#9E9EA7" transform="translate(5.000000, 7.020300) rotate(-255.000000) translate(-5.000000, -7.020300) " x="-1.5" y="6.52029983" width="13" height="1" rx="0.5"/>
+                        <rect id="Rectangle-Copy" stroke="#D6D6D6" transform="translate(10.500000, 7.020300) scale(-1, 1) rotate(-255.000000) translate(-10.500000, -7.020300) " x="4" y="6.52029983" width="13" height="1" rx="0.5"/>
+                        <rect id="Rectangle-Copy-2" stroke="#9E9EA7" transform="translate(6.222341, 8.000000) rotate(-270.000000) translate(-6.222341, -8.000000) " x="5.72234086" y="7" width="1" height="2"/>
+                        <rect id="Rectangle-Copy-6" stroke="#9E9EA7" transform="translate(3.222341, 13.000000) rotate(-270.000000) translate(-3.222341, -13.000000) " x="2.72234086" y="11" width="1" height="4" rx="0.5"/>
+                        <rect id="Rectangle-Copy-7" stroke="#D6D6D6" transform="translate(12.222341, 13.000000) rotate(-270.000000) translate(-12.222341, -13.000000) " x="11.7223409" y="11" width="1" height="4" rx="0.5"/>
+                        <rect id="Rectangle-Copy-5" stroke="#D6D6D6" transform="translate(8.722341, 1.000000) rotate(-270.000000) translate(-8.722341, -1.000000) " x="8.22234086" y="-0.5" width="1" height="3" rx="0.5"/>
+                        <rect id="Rectangle-Copy-3" stroke="#D6D6D6" transform="translate(9.222341, 8.000000) rotate(-270.000000) translate(-9.222341, -8.000000) " x="8.72234086" y="7" width="1" height="2"/>
+                        <rect id="Rectangle-Copy-4" stroke="#9E9EA7" transform="translate(6.222341, 1.000000) rotate(-270.000000) translate(-6.222341, -1.000000) " x="5.72234086" y="0" width="1" height="2" rx="0.5"/>
+                    </g>
+                </g>
+            </svg>
+            <input type="text" placeholder="First name" autocomplete="off" value="">
+        </div>
+        <div class="space-height-20px"></div>
+        <div class="i2g-search-box-with-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="16px" height="16px" viewBox="0 0 16 16" version="1.1">
+                <g id="01-copy-5" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                    <g id="Group" transform="translate(7.777659, 8.500000) scale(-1, 1) translate(-7.777659, -8.500000) translate(0.277659, 1.000000)" fill="#D8D8D8">
+                        <rect id="Rectangle-Copy" stroke="#9E9EA7" transform="translate(5.000000, 7.020300) rotate(-255.000000) translate(-5.000000, -7.020300) " x="-1.5" y="6.52029983" width="13" height="1" rx="0.5"/>
+                        <rect id="Rectangle-Copy" stroke="#D7D7D7" transform="translate(10.500000, 7.020300) scale(-1, 1) rotate(-255.000000) translate(-10.500000, -7.020300) " x="4" y="6.52029983" width="13" height="1" rx="0.5"/>
+                        <rect id="Rectangle-Copy-2" stroke="#9E9EA7" transform="translate(6.222341, 8.000000) rotate(-270.000000) translate(-6.222341, -8.000000) " x="5.72234086" y="7" width="1" height="2"/>
+                        <rect id="Rectangle-Copy-6" stroke="#9E9EA7" transform="translate(3.222341, 13.000000) rotate(-270.000000) translate(-3.222341, -13.000000) " x="2.72234086" y="11" width="1" height="4" rx="0.5"/>
+                        <rect id="Rectangle-Copy-7" stroke="#D7D7D7" transform="translate(12.222341, 13.000000) rotate(-270.000000) translate(-12.222341, -13.000000) " x="11.7223409" y="11" width="1" height="4" rx="0.5"/>
+                        <rect id="Rectangle-Copy-5" stroke="#D7D7D7" transform="translate(8.722341, 1.000000) rotate(-270.000000) translate(-8.722341, -1.000000) " x="8.22234086" y="-0.5" width="1" height="3" rx="0.5"/>
+                        <rect id="Rectangle-Copy-3" stroke="#D7D7D7" transform="translate(9.222341, 8.000000) rotate(-270.000000) translate(-9.222341, -8.000000) " x="8.72234086" y="7" width="1" height="2"/>
+                        <rect id="Rectangle-Copy-4" stroke="#9E9EA7" transform="translate(6.222341, 1.000000) rotate(-270.000000) translate(-6.222341, -1.000000) " x="5.72234086" y="0" width="1" height="2" rx="0.5"/>
+                    </g>
+                </g>
+            </svg>
+            <input type="text" placeholder="Last name" autocomplete="off" value="">
+        </div>
+        <div class="space-height-20px"></div>
+        <div class="i2g-search-box-with-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="16px" height="16px" viewBox="0 0 16 16" version="1.1">
+                <g id="01-copy-3" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                    <rect id="Rectangle" stroke="#9E9EA7" stroke-width="2" x="1" y="3" width="14" height="10" rx="1"/>
+                    <polyline id="Path" stroke="#9E9EA7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" transform="translate(7.978721, 6.999629) rotate(1.000000) translate(-7.978721, -6.999629) " points="0.957438359 4.62217618 8.00000324 9.49962857 15.0000032 4.49962857"/>
+                </g>
+            </svg>
+            <input type="Email" placeholder="Email address" autocomplete="off" value="">
+        </div>
+        <div class="space-height-20px"></div>
+        <div class="i2g-search-box-with-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="16px" height="16px" viewBox="0 0 16 16" version="1.1">
+                <g id="01-copy-6" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                    <rect id="Rectangle" stroke="#9E9EA7" stroke-width="2" x="2" y="6" width="12" height="7" rx="1"/>
+                    <rect id="Rectangle" stroke="#9E9EA7" stroke-width="2" x="5" y="3" width="6" height="3" rx="1"/>
+                </g>
+            </svg>
+            <input type="text" placeholder="Job title" autocomplete="off" value="">
+        </div>
+        <div class="space-height-20px"></div>
+        <div class="i2g-search-box-with-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="17px" height="16px" viewBox="0 0 17 16" version="1.1">
+                <g id="01-copy-7" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" transform="translate(1.000000, 0.000000)" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M5,9 L5,7 L2,7 L2.5,9.5 C4.94037485,9.83333333 6.77370819,10 8,10 C9.22629181,10 11.0596251,9.83333333 13.5,9.5 L14,7 L11,7 L11,9" id="Line" stroke="#9E9EA7" stroke-width="2" transform="translate(8.000000, 8.500000) rotate(-315.000000) translate(-8.000000, -8.500000) "/>
+                </g>
+            </svg>
+            <input  type="tel" placeholder="Phone" autocomplete="off" value="">
+        </div>
+        <div class="space-height-20px"></div>
+        <div class="i2g-button-submit">
+            <input type="submit" value="Register Now">
+        </div>
+    </form>
+    <div class="space-height-20px"></div>
+    <div style="display: flex; align-items: center; color: var(--second-color);">
+        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="16px" height="16px" viewBox="0 0 16 16" version="1.1">
+            <g id="01-copy-8" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                <rect id="Rectangle" stroke="#9E9EA7" fill="#D8D8D8" x="3.5" y="7.5" width="11" height="1" rx="0.5"/>
+                <polyline id="Line-2" stroke="#9E9EA7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" points="6 4 2 8 6 12"/>
+            </g>
+        </svg>
+        <div class="space-10px"></div>
+        <div>Back to login</div>
+    </div>
+</div> -->

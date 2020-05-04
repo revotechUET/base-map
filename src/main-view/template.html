@@ -1,4 +1,5 @@
 ${require('./templale-dialog.html')}
+${require('./login-dialog.html')}
 <div class="i2g-toolbar">
     <div class="i2g-tab">
         <div class="tab-item always-on">
@@ -21,7 +22,7 @@ ${require('./templale-dialog.html')}
                     </svg>
                     <div>Open Project</div>
                 </div>
-                <div class="item-drop">
+                <div class="item-drop" ng-click="self.showLogin = !self.showLogin">
                     <div>New Project</div>
                 </div>
                 <div class="item-drop">

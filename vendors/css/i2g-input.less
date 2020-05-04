@@ -46,6 +46,12 @@ input[type='text'], input[type='search'], input[type='password'], input[type='em
     color: var(--text-primary-color);
     background-color: var(--input-bg);
 }
+input:hover[type='submit'] {
+    background-color: var(--primary-dark-color);
+    border-color: var(--input-border-focus);
+    -webkit-box-shadow: 0 0 0 4px var(--input-shadow-hover);
+    box-shadow: 0 0 0 4px var(--input-shadow-hover);
+}
 
 input:checked[type='checkbox'], input:checked[type='radio'] {
     background-color: var(--input-border-focus);
@@ -94,4 +100,19 @@ input[type='radio']:checked:after {
     height: 8px;
     border-radius: 50%;
     background: var(--input-check-bg);
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover, 
+input:-webkit-autofill:focus,
+textarea:-webkit-autofill,
+textarea:-webkit-autofill:hover,
+textarea:-webkit-autofill:focus,
+select:-webkit-autofill,
+select:-webkit-autofill:hover,
+select:-webkit-autofill:focus {
+    border: 1px solid var(--input-border-focus);
+    -webkit-text-fill-color: var(--text-primary-color);
+    -webkit-box-shadow: 0 0 0px 1000px var(--input-bg) inset;
+    transition: background-color 5000s ease-in-out 0.2s;
 }

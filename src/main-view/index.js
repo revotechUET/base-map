@@ -8,6 +8,7 @@ require("../../vendors/css/i2g-input.less");
 require("../../vendors/css/i2g-select.less");
 require("../../vendors/css/i2g-reset-ui-select.less");
 require("../../vendors/css/i2g-ngdialog.less");
+require("../../vendors/css/i2g-keyframe.less");
 
 var app = angular.module(componentName, ['wiDropdownList','ngDialog']);
 
@@ -36,5 +37,15 @@ function mainViewController($scope, ngDialog) {
       className: 'i2g-ngdialog',
       scope: $scope,
   });
+  }
+  this.showLogin = function() {
+    ngDialog.open({
+      template: 'templateOpenProject',
+      className: 'i2g-ngdialog',
+      scope: $scope,
+  });
+  }
+  function hunghihi() {
+    console.log("hihihi")
   }
 }
