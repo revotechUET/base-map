@@ -550,7 +550,18 @@ function baseMapController(
                 data = JSON.parse(data);
                 let wells = [];
                 async.each(data.selectWell, (w, next) => {
-                  if(w.shared) {
+        //          if(w.shared) {
+                    wiApi.getFullInfoPromise(w.idProject, w.owner, w.nameOwner).then((project) => {
+                      console.log(project)
+                      // project = res.data.content;
+                      proWells = project.wells;
+                      wll = proWells.find(wl => wl.idWell == w.idWell)
+                      wll ? wells.push(wll) : null
+                      next()
+                    }).catch((err) => {
+                      next(err);
+                    });
+                    /*
                     $http({
                       method: "POST",
                       url: BASE_URL + "/project/fullinfo",
@@ -572,7 +583,9 @@ function baseMapController(
                       wll ? wells.push(wll) : null
                       next()
                     })
-                  }else {
+                    */
+        /*          }
+                  else {
                     $http({
                           method: "POST",
                           url: BASE_URL + "/project/fullinfo",
@@ -593,6 +606,7 @@ function baseMapController(
                       next()
                     })
                   }
+          */
                 }, (err) => {
                   console.log(wells)
                   data.selectWell = wells;
@@ -1489,25 +1503,35 @@ function baseMapController(
       })
     }
 
-    if (self.username && self.password) {
-      $http({
-        method: "POST",
-        url: `${WI_AUTH_HOST}/login`,
-        data: {
-          username: self.username,
-          password: self.password
-        },
-        headers: {}
-      }).then(
-        function (response) {
-          wiToken.setToken(response.data.content.token);
-          wiToken.saveToken(response.data.content);
-        },
-        function (errorResponse) {
-          console.error(errorResponse);
-        }
-      );
-    }
+    // if (self.username && self.password) {
+    //   let data =  {
+    //     username: self.username,
+    //     password: self.password
+    //   };
+    //   wiApi.client("WI_BASE_MAP_CLIENT").login(data).then((res) => {
+    //       wiToken.setToken(res.token);
+    //       wiToken.saveToken(res.token);
+    //   }).catch((err) => {
+    //     cb(err);
+    //   });
+    //   // $http({
+    //   //   method: "POST",
+    //   //   url: `${WI_AUTH_HOST}/login`,
+    //   //   data: {
+    //   //     username: self.username,
+    //   //     password: self.password
+    //   //   },
+    //   //   headers: {}
+    //   // }).then(
+    //   //   function (response) {
+    //   //     wiToken.setToken(response.data.content.token);
+    //   //     wiToken.saveToken(response.data.content);
+    //   //   },
+    //   //   function (errorResponse) {
+    //   //     console.error(errorResponse);
+    //   //   }
+    //   // );
+    // }
     $scope.$watch(
       function () {
         return localStorage.getItem("token");
@@ -2049,25 +2073,25 @@ function baseMapController(
     }
   };
 
-  function getWells(projectId, projectNodeChildren, cb) {
-    $http({
-      method: "POST",
-      url: BASE_URL + "/project/well/list",
-      data: {
-        idProject: projectId
-      },
-      headers: {
-        Authorization: wiToken.getToken()
-      }
-    }).then(
-      function (response) {
-        cb(null, response.data.content, projectNodeChildren);
-      },
-      function (err) {
-        cb(err);
-      }
-    );
-  }
+  // function getWells(projectId, projectNodeChildren, cb) {
+  //   $http({
+  //     method: "POST",
+  //     url: BASE_URL + "/project/well/list",
+  //     data: {
+  //       idProject: projectId
+  //     },
+  //     headers: {
+  //       Authorization: wiToken.getToken()
+  //     }
+  //   }).then(
+  //     function (response) {
+  //       cb(null, response.data.content, projectNodeChildren);
+  //     },
+  //     function (err) {
+  //       cb(err);
+  //     }
+  //   );
+  // }
 
   this.getLabel = function (node) {
     if (node && node.idWell) {
@@ -2242,27 +2266,46 @@ function baseMapController(
   }
 
   function getProjects(treeConfig, cb) {
-    $http({
-      method: "POST",
-      url: BASE_URL + "/project/list",
-      data: {},
-      headers: {
-        Authorization: wiToken.getToken()
-      }
-    }).then(
-      function (response) {
-        let projects = response.data.content;
-        cb(null, projects, treeConfig);
-      },
-      function (err) {
-        cb(err);
-      }
-    );
+    wiApi.client("WI_BASE_MAP_CLIENT").getProjectsPromise().then((projects) => {
+      cb(null, projects, treeConfig);
+    }).catch((err) => {
+      cb(err);
+    });
+    // $http({
+    //   method: "POST",
+    //   url: BASE_URL + "/project/list",
+    //   data: {},
+    //   headers: {
+    //     Authorization: wiToken.getToken()
+    //   }
+    // }).then(
+    //   function (response) {
+    //     let projects = response.data.content;
+    //     cb(null, projects, treeConfig);
+    //   },
+    //   function (err) {
+    //     cb(err);
+    //   }
+    // );
   }
 
   async function getWells(projectId, projectNodeChildren, cb) {
+    wiApi.client("WI_BASE_MAP_CLIENT").getFullInfoPromise(projectId, projectNodeChildren.owner, projectNodeChildren.name).then((project) => {      
+      return wiApi.client("WI_BASE_MAP_CLIENT").getWellsPromise(project.idProject);
+    }).then(_wells => {
+      wells = _wells.map( e => {
+        e.shared = projectNodeChildren.shared;
+        e.owner = projectNodeChildren.owner;
+        e.nameOwner = projectNodeChildren.name;
+        return e;
+      });
+      cb(null, wells, projectNodeChildren);
+    }).catch(e => {
+      console.error(e);
+      cb(e);
+    });
     // console.log(projectId)
-    if(projectNodeChildren.shared){
+    /*if(projectNodeChildren.shared){
       await $http({
         method: "POST",
         url: BASE_URL + "/project/fullinfo",
@@ -2311,7 +2354,7 @@ function baseMapController(
       function (err) {
         cb(err);
       }
-    );
+    );*/
   }
 
 
@@ -2324,27 +2367,36 @@ function baseMapController(
       cachedCurvesInfo[curveId].timestamp - Date.now() < CURVE_CACHING_TIMEOUT
     )
       return cb(null, cachedCurvesInfo[curveId].content);
-    $http({
-      method: "POST",
-      url: BASE_URL + "/project/well/dataset/curve/info",
-      data: {
-        idCurve: curveId
-      },
-      headers: {
-        Authorization: wiToken.getToken()
-      }
-    }).then(
-      function (response) {
+      wiApi.client("WI_BASE_MAP_CLIENT").getCurveInfoPromise(curveId).then((curveinfo) => {
         cachedCurvesInfo[curveId] = {
-          content: response.data.content,
+          content: curveinfo,
           timestamp: Date.now()
         };
-        cb(null, response.data.content);
-      },
-      function (err) {
+        cb(null, curveinfo);
+      }).catch((err) => {
         cb(err);
-      }
-    );
+      });
+    // $http({
+    //   method: "POST",
+    //   url: BASE_URL + "/project/well/dataset/curve/info",
+    //   data: {
+    //     idCurve: curveId
+    //   },
+    //   headers: {
+    //     Authorization: wiToken.getToken()
+    //   }
+    // }).then(
+    //   function (response) {
+    //     cachedCurvesInfo[curveId] = {
+    //       content: response.data.content,
+    //       timestamp: Date.now()
+    //     };
+    //     cb(null, response.data.content);
+    //   },
+    //   function (err) {
+    //     cb(err);
+    //   }
+    // );
   }
 
   this.getCurveRawDataFn = getCurveRawData;
@@ -2356,87 +2408,67 @@ function baseMapController(
       cachedCurvesData[curveId].timestamp - Date.now() < CURVE_DATA_CACHING_TIMEOUT
     )
       return cb(null, cachedCurvesData[curveId].content);
-    $http({
-      method: "POST",
-      url: BASE_URL + "/project/well/dataset/curve/getRawData",
-      data: {
-        idCurve: curveId
-      },
-      headers: {
-        Authorization: wiToken.getToken()
-      }
-    }).then(
-      function (response) {
-        cachedCurvesData[curveId] = {
-          content: response.data.content,
-          timestamp: Date.now()
-        };
-        cb(null, response.data.content);
-      },
-      function (err) {
-        cb(err);
-      }
-    );
+    wiApi.client("WI_BASE_MAP_CLIENT").getCurveRawDataPromise(curveId).then((curveinfo) => {
+      cachedCurvesInfo[curveId] = {
+        content: curveinfo,
+        timestamp: Date.now()
+      };
+      cb(null, curveinfo);
+    }).catch((err) => {
+      cb(err);
+    });
+    // $http({
+    //   method: "POST",
+    //   url: BASE_URL + "/project/well/dataset/curve/getRawData",
+    //   data: {
+    //     idCurve: curveId
+    //   },
+    //   headers: {
+    //     Authorization: wiToken.getToken()
+    //   }
+    // }).then(
+    //   function (response) {
+    //     cachedCurvesData[curveId] = {
+    //       content: response.data.content,
+    //       timestamp: Date.now()
+    //     };
+    //     cb(null, response.data.content);
+    //   },
+    //   function (err) {
+    //     cb(err);
+    //   }
+    // );
   }
 
   function getWellInfo(wellId, cb) {
-    $http({
-      method: "POST",
-      url: BASE_URL + "/project/well/info",
-      data: {
-        idWell: wellId
-      },
-      headers: {
-        Authorization: wiToken.getToken()
-      }
-    }).then(
-      function (response) {
-        cb(null, response.data.content);
-      },
-      function (err) {
-        cb(err);
-      }
-    );
+    wiApi.client("WI_BASE_MAP_CLIENT").getWellPromise(wellId).then((wellinfo) => {
+      cb(null, wellinfo);
+    }).catch((err) => {
+      cb(err);
+    });
+
+    // $http({
+    //   method: "POST",
+    //   url: BASE_URL + "/project/well/info",
+    //   data: {
+    //     idWell: wellId
+    //   },
+    //   headers: {
+    //     Authorization: wiToken.getToken()
+    //   }
+    // }).then(
+    //   function (response) {
+    //     cb(null, response.data.content);
+    //   },
+    //   function (err) {
+    //     cb(err);
+    //   }
+    // );
   }
 
   $scope.storageDatabase = {};
   //===============================SYNC data well selected===========================
-  this.refeshWellSelect = async function () {
-    self.projectList = [];
-    self.idWellArray = [];
-    await $http({
-      method: "POST",
-      url: BASE_URL + "/project/list",
-      data: {},
-      headers: {
-        Authorization: wiToken.getToken()
-      }
-    }).then(
-      function (response) {
-        self.projectList = response.data.content;
-        console.log(self.projectList)
-        for (let index = 0; index < self.projectList.length; index++) {
-          let element = self.projectList[index];
-          if(element.owner){
-            wiApi.getFullInfoPromise(element.idProject, element.owner, element.owner ? element.name : null).then((data) => {
-              console.log(data);
-              console.log('---------------------------------------')
-            }).catch((e) => {
-              console.error(e);
-            })
-          } else if (!element.owner){
-            wiApi.getListWells(element.idProject).then((data) => {
-              console.log(data);
-              console.log('---------------------------------------')
-            }).catch((e) => {
-              console.error(e);
-            })
-          }
-  
-        }
-      }
-    )
-  }
+ 
   this.setContainerFileBrowser = function(container) {
     self.fileBrowserController = container;
     console.log(container);
@@ -2590,47 +2622,68 @@ function baseMapController(
                         let wells = [];
                         async.each(data.selectWell, (w, next) => {
                           if(w.shared) {
-                            $http({
-                              method: "POST",
-                              url: BASE_URL + "/project/fullinfo",
-                              data: {
-                                idProject: w.idProject,
-                                name: w.nameOwner,
-                                shared: true,
-                                owner: w.owner
-                              },
-                              headers: {
-                                Authorization: wiToken.getToken()
-                              }
-                            })
-                            .then((res) => {
-                              console.log(res)
-                              project = res.data.content;
+                            wiApi.getFullInfoPromise(w.idProject, w.owner, w.nameOwner).then((project) => {
+                              // console.log(project)
+                              // project = res.data.content;
                               proWells = project.wells;
                               wll = proWells.find(wl => wl.idWell == w.idWell)
                               wll ? wells.push(wll) : null
                               next()
-                            })
+                            }).catch((err) => {
+                              next(err);
+                            });
+                            // $http({
+                            //   method: "POST",
+                            //   url: BASE_URL + "/project/fullinfo",
+                            //   data: {
+                            //     idProject: w.idProject,
+                            //     name: w.nameOwner,
+                            //     shared: true,
+                            //     owner: w.owner
+                            //   },
+                            //   headers: {
+                            //     Authorization: wiToken.getToken()
+                            //   }
+                            // })
+                            // .then((res) => {
+                            //   console.log(res)
+                            //   project = res.data.content;
+                            //   proWells = project.wells;
+                            //   wll = proWells.find(wl => wl.idWell == w.idWell)
+                            //   wll ? wells.push(wll) : null
+                            //   next()
+                            // })
                           }else {
-                            $http({
-                                  method: "POST",
-                                  url: BASE_URL + "/project/fullinfo",
-                                  data: {
-                                    idProject: w.idProject,
-                                    name: w.nameOwner,
-                                  },
-                                  headers: {
-                                    Authorization: wiToken.getToken()
-                                  }
-                                })  
-                            .then((res) => {
-                              console.log(res)
-                              project = res.data.content;
+                            wiApi.getFullInfoPromise(w.idProject, null, w.nameOwner).then((project) => {
+                              // console.log(project)
+                              // project = res.data.content;
                               proWells = project.wells;
                               wll = proWells.find(wl => wl.idWell == w.idWell)
                               wll ? wells.push(wll) : null
                               next()
-                            })
+                            }).catch((err) => {
+                              next(err);
+                            });
+
+                            // $http({
+                            //       method: "POST",
+                            //       url: BASE_URL + "/project/fullinfo",
+                            //       data: {
+                            //         idProject: w.idProject,
+                            //         name: w.nameOwner,
+                            //       },
+                            //       headers: {
+                            //         Authorization: wiToken.getToken()
+                            //       }
+                            //     })  
+                            // .then((res) => {
+                            //   console.log(res)
+                            //   project = res.data.content;
+                            //   proWells = project.wells;
+                            //   wll = proWells.find(wl => wl.idWell == w.idWell)
+                            //   wll ? wells.push(wll) : null
+                            //   next()
+                            // })
                           }
                         }, (err) => {
                           console.log(wells)
