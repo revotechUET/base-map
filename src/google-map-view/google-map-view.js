@@ -337,6 +337,7 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken, wiApi) {
     });
     $timeout(()=>{
       map.setZoom(6);
+      updateScaleMap();
     },1000)
     map.addListener('zoom_changed', function (event) {
       updateTrajectoryDebounced();
