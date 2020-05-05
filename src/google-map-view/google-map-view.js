@@ -341,8 +341,8 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken, wiApi) {
     },1000)
     map.addListener('zoom_changed', function (event) {
       updateTrajectoryDebounced();
+      updateScaleMap();
       $timeout(()=>{
-        updateScaleMap();
       })
     });
 
@@ -2582,4 +2582,5 @@ function ConvertDMSToDD(input) {
     dd = dd * -1;
   }
   return dd;
+
 }
