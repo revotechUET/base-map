@@ -296,8 +296,9 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken, wiApi) {
   };
 
   function updateScaleMap () {
-    if(!document.getElementsByClassName("gm-style-cc")[document.getElementsByClassName("gm-style-cc").length - 1]) return;
-    self.scale = document.getElementsByClassName("gm-style-cc")[3].innerText;
+    let index  = document.getElementsByClassName("gm-style-cc").length - 1
+    if(!document.getElementsByClassName("gm-style-cc")[index]) return;
+    self.scale = document.getElementsByClassName("gm-style-cc")[index].innerText;
     document.getElementById("scale").innerText = self.scale;
     if(self.scale.length === 8) {
       self.addWidth = 611;
@@ -310,7 +311,7 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken, wiApi) {
     }else if(self.scale.length === 4) {
       self.addWidth = 608;
     }
-    self.scaleWidth = (document.getElementsByClassName("gm-style-cc")[document.getElementsByClassName("gm-style-cc").length - 1].innerHTML).substring((document.getElementsByClassName("gm-style-cc")[3].innerHTML).search("-1px; width:") + 12, self.addWidth);
+    self.scaleWidth = (document.getElementsByClassName("gm-style-cc")[index].innerHTML).substring((document.getElementsByClassName("gm-style-cc")[index].innerHTML).search("-1px; width:") + 12, self.addWidth);
     document.getElementById("scaleWidth").style.width = self.scaleWidth;
     self.ratioMap = (100000 * 156543.03392 * Math.cos(map.getCenter().lat() * Math.PI / 180) / Math.pow(2, map.getZoom()))/29;
     document.getElementById("ratio-map").innerText = "1:" + Math.ceil(self.ratioMap).toLocaleString();
