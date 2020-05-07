@@ -802,7 +802,7 @@ function getX(wellIndex, forceFromHeader=false) {
 
   if (!(wellIndex || []).length) return 0;
   for (let index = 0; index < wellIndex.length; index++) {
-    if (wellIndex[index].header === "E") {
+    if (wellIndex[index].header === "X") {
       return Number(wellIndex[index].value);
     }
   }
@@ -819,7 +819,7 @@ function getY(wellIndex, forceFromHeader=false) {
 
   if (!(wellIndex || []).length) return 0;
   for (let index = 0; index < wellIndex.length; index++) {
-    if (wellIndex[index].header === "N") {
+    if (wellIndex[index].header === "Y") {
       return Number(wellIndex[index].value);
     }
   }

@@ -139,12 +139,14 @@ function getLong(wellIndex) {
 
 function getX(wellIndex) {
     if (!(wellIndex || []).length) return 0;
+    /*
     for (let index = 0; index < wellIndex.length; index++) {
         if (wellIndex[index].header === "E" && _.isFinite(wellIndex[index].value)) {
             const value = Number(wellIndex[index].value);
             return isNaN(value) ? 0 : value;
         }
     }
+    */
     for (let index = 0; index < wellIndex.length; index++) {
         if (wellIndex[index].header === "X") {
             const value = Number(wellIndex[index].value);
@@ -156,12 +158,14 @@ function getX(wellIndex) {
 
 function getY(wellIndex) {
     if (!(wellIndex || []).length) return 0;
+    /*
     for (let index = 0; index < wellIndex.length; index++) {
         if (wellIndex[index].header === "N" && _.isFinite(wellIndex[index].value)) {
             const value = Number(wellIndex[index].value);
             return isNaN(value) ? 0 : value;
         }
     }
+    */
     for (let index = 0; index < wellIndex.length; index++) {
         if (wellIndex[index].header === "Y") {
             const value = Number(wellIndex[index].value);
