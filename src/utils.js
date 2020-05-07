@@ -140,7 +140,7 @@ function getLong(wellIndex) {
 function getX(wellIndex) {
     if (!(wellIndex || []).length) return 0;
     for (let index = 0; index < wellIndex.length; index++) {
-        if (wellIndex[index].header === "X") {
+        if (wellIndex[index].header === "E") {
             const value = Number(wellIndex[index].value);
             return isNaN(value) ? 0 : value;
         }
@@ -151,7 +151,7 @@ function getX(wellIndex) {
 function getY(wellIndex) {
     if (!(wellIndex || []).length) return 0;
     for (let index = 0; index < wellIndex.length; index++) {
-        if (wellIndex[index].header === "Y") {
+        if (wellIndex[index].header === "N") {
             const value = Number(wellIndex[index].value);
             return isNaN(value) ? 0 : value;
         }
