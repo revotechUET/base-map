@@ -1,17 +1,21 @@
 .space-20px {
   width: 20px;
+  min-width: 20px;
 }
 
 .space-10px {
   width: 10px;
+  min-width: 10px;
 }
 
 .space-height-20px {
   height: 20px;
+  min-height: 20px;
 }
 
 .space-height-10px {
   height: 10px;
+  min-height: 10px;
 }
 
 .border-bottom-2px {
@@ -643,6 +647,20 @@
 
     &>span {
       opacity: 0.6;
+    }
+  }
+}
+.i2g-box-hover-shadow {
+  padding: 20px;
+  border-radius: 10px;
+  background-color: var(--body-bg-color);
+  &:hover {
+    cursor: pointer;
+    background-color: var(--primary-color);
+    box-shadow: var(--box-shadow);
+    transition: all ease-in-out 0.2s;
+    .i2g-title-with-icon {
+      color: #fff;
     }
   }
 }
