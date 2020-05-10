@@ -2,21 +2,50 @@
     0% {
         transform: scale(0);
     }
+
     60% {
         transform: scale(0.9);
     }
+
     100% {
         transform: scale(1);
     }
 }
+
 @keyframes drop-notification {
     0% {
-        transform: translateX(-50%) translateY(-200%);
+        opacity: 0;
+        transform: translateY(-200%);
     }
+
     70% {
-        transform: translateX(-50%) translateY(10px);
+        opacity: 0.7;
+        transform: translateY(10px);
     }
+
     100% {
-        transform: translateX(-50%) translateY(0);
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+@keyframes close-notification {
+    0% {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+
+    100% {
+        opacity: 0;
+        transform: scale(0.5) translateY(-40px);
+    }
+}
+@keyframes drop-menu-tab {
+    0% {
+        transform: translateY(-20px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0);
     }
 }
