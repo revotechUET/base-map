@@ -236,6 +236,9 @@ const WellDisplayModeOptions = [
 ]
 const WellSizeOptions = [
   {label: "0 (Hide)", value: "0"},
+  {label: "0.1", value: "0.2"},
+  {label: "0.25", value: "0.4"},
+  {label: "0.5", value: "0.6"},
   {label: "1 (Default)", value: "1"},
   {label: "2", value: "1.1"},
   {label: "3", value: "1.4"},
@@ -282,7 +285,7 @@ function baseMapController(
   self.wellPosition = self.wellPositionOptions[0].value;
   self.popupPosition = self.wellPositionOptions[0].value;
   self.wellDisplayMode = self.wellDisplayModeOptions[0].value;
-  self.wellSize = self.wellSizeOptions[1].value;
+  self.wellSize = self.wellSizeOptions[4].value;
   self.axesUnit = self.axesUnitOptions[0];
   self.selectedIdsHash = {};
   self.selectedNode = null;
