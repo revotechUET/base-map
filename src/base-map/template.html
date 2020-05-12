@@ -442,12 +442,30 @@ ${require('./dashboard-template-modal.html')}
               <div class="upload-content" id="map-upfile-3">
                   <p ng-show="false">
                     <contour-file-import
+                        on-component-mounted-get="self.getterFn('contourConfig.onFileComponentMounted')"
                         negative-data-get="self.getterFn('contourConfig.negativeData')"
                         on-data-changed-get="self.getterFn('contourConfig.onDataChanged')">
                     </contour-file-import>
                   </p>
-                  <div id="fp" style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis; padding-top: 15px;"></div>
               </div>
+          </div>
+          <div class="upload">
+              <div class="upload-header">
+                  <div>
+                      <div style="font-weight: bold; margin-bottom: 10px;">Open Zmap From Storage</div>
+                      <span>File type Zmap+Grid </span>
+                  </div>
+                  <div ng-click="self.importZmapFromStorage()" class="btn-add">
+                      <span class="ti ti-plus"></span>
+                  </div>
+              </div>
+          </div>
+          <div id="contour-file-import" ng-show="self.getterFn('contourConfig.values')().length">
+            <div id="fp" style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis; padding-top: 15px;"></div>
+            <div sytle="display:flex;flex-direction:row; width: 100%;">
+              <button style="flex:1" ng-click="self.downloadZmapToLocal()">Local Download</button>
+              <button style="flex:1" ng-click="self.saveZmapToStorage()">Save to Storage</button>
+            </div>
           </div>
           <div class="setting" ng-show="self.getterFn('contourConfig.values')().length">
               <div class="setting-title" style="margin-bottom: 10px;">Imported Info</div>
