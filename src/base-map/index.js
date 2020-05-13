@@ -2890,6 +2890,7 @@ function baseMapController(
   //====================== DRAWING CONTOUR MODULE =====================//
   this.showContourPanel = false;
   let updateColorScaleBarWidth = () => {};
+  let updateColorScale = () => {};
   let setContourViewScale = () => {};
   let setContourViewCenter = () => {};
   let exportToZmapContent = () => {};
@@ -2963,6 +2964,10 @@ function baseMapController(
     },
     onColorScaleBarInit: function() {
       const [colorScaleBar] = arguments;
+      updateColorScale = (domain, range) => {
+        colorScaleBar.onColorStopsChanged(domain, range);
+        colorScaleBar.redraw();
+      }
       updateColorScaleBarWidth = () => {
         $timeout(() => {
           colorScaleBar.redraw.call(colorScaleBar, true);
@@ -3266,14 +3271,16 @@ function baseMapController(
       step, majorEvery, labelFontSize, labelInterval, showLabel, showScale,
       showGrid, enableRulerMode, disableMouseCoordinate, disableZoom,
       gridMajor, gridMinor, gridNice, scale, showWell, showTrajectory,
-      negativeData, showColorScaleLegend, viewWellDepth
+      negativeData, showColorScaleLegend, viewWellDepth, colorScale
     } = self.contourConfig;
 
     const configs = {
       step, majorEvery, labelFontSize, labelInterval, showLabel, showScale,
       showGrid, enableRulerMode, disableMouseCoordinate, disableZoom,
       gridMajor, gridMinor, gridNice, scale, showWell, showTrajectory,
-      negativeData, showColorScaleLegend, viewWellDepth
+      negativeData, showColorScaleLegend, viewWellDepth,
+      colorScaleDomain: colorScale.domain(),
+      colorScaleRange: colorScale.range()
     }
 
     const zmapContent = exportToZmapContent();
@@ -3314,6 +3321,13 @@ function baseMapController(
           .then(rawConfigs => {
             const configs = JSON.parse(rawConfigs);
             Object.assign(self.contourConfig, configs);
+            $timeout(() => {
+              // assign to temporary variables
+              $scope.__tmpLabelInterval = configs.labelInterval;
+              $scope.__tmpStep = configs.step;
+              setContourViewScale(configs.scale);
+              updateColorScale(configs.colorScaleDomain, configs.colorScaleRange);
+            }, 100);
           })
       })
   }
