@@ -3259,16 +3259,112 @@ function baseMapController(
     return {x: windowWidth / 2 - canvasMetric.x, y: windowHeight / 2 - canvasMetric.y};
   }
 
-  this.downloadZmapToLocal = function() {
-    const content = exportToZmapContent();
-    const blob = new Blob([content], {type: "text/plain"});
-    fileSaver.saveAs(blob, "Zmapfile.zmap");
+  const CONTOUR_ZMAP_FILE_NAME = "zmapfile";
+  const CONTOUR_CONFIG_FILE_NAME = "config.json";
+  async function getContourConfigFile() {
+    const {
+      step, majorEvery, labelFontSize, labelInterval, showLabel, showScale,
+      showGrid, enableRulerMode, disableMouseCoordinate, disableZoom,
+      gridMajor, gridMinor, gridNice, scale, showWell, showTrajectory,
+      negativeData, showColorScaleLegend, viewWellDepth
+    } = self.contourConfig;
+
+    const configs = {
+      step, majorEvery, labelFontSize, labelInterval, showLabel, showScale,
+      showGrid, enableRulerMode, disableMouseCoordinate, disableZoom,
+      gridMajor, gridMinor, gridNice, scale, showWell, showTrajectory,
+      negativeData, showColorScaleLegend, viewWellDepth
+    }
+
+    const zmapContent = exportToZmapContent();
+
+    const blobConfigs = new Blob([JSON.stringify(configs)], {type: "octet/stream"});
+    const blobZmap = new Blob([zmapContent], {type: "text/plain"});
+    const zipFile = new JSZip();
+    zipFile.file(CONTOUR_CONFIG_FILE_NAME, blobConfigs);
+    zipFile.file(CONTOUR_ZMAP_FILE_NAME, blobZmap);
+
+    return await zipFile.generateAsync({ type: "blob" });
   }
 
-  this.saveZmapToStorage = function() {
-    const content = exportToZmapContent();
-    const blob = new Blob([content], { type: "text/plain" });
+  function importContourConfig(zipFile) {
+    JSZip
+      .loadAsync(zipFile)
+      .then(function (unzippedContent) {
+        const zmapFile = unzippedContent.files[CONTOUR_ZMAP_FILE_NAME];
+        const metadata = {
+          name: zmapFile.name,
+          size: zmapFile._data.uncompressedSize,
+          type: zmapFile._data.type || "null"
+        }
+        self.contourConfig.updateFileInfo(metadata);
+        unzippedContent
+          .file(CONTOUR_ZMAP_FILE_NAME)
+          .async("blob")
+          .then(data => {
+            const reader = new FileReader();
+            reader.onload = e => {
+              parseZmapContent(e.target.result);
+            }
+            reader.readAsText(data)
+          })
+        unzippedContent
+          .file(CONTOUR_CONFIG_FILE_NAME)
+          .async("string")
+          .then(rawConfigs => {
+            const configs = JSON.parse(rawConfigs);
+            Object.assign(self.contourConfig, configs);
+          })
+      })
+  }
 
+  function selectFileFromStorage() {
+    return new Promise(resolve => {
+      wiApi.getListProjects()
+        .then((list) => {
+          list = list.filter(e => !e.shared).map(e => {
+            return {
+              data: { label: e.alias || e.name },
+              icon: "project-normal-16x16",
+              properties: e
+            }
+          });
+          console.log(list);
+          wiDialog.promptListDialog({
+            title: "Open Zmap File from Storage",
+            inputName: "Project",
+            iconBtn: "project-normal-16x16",
+            hideButtonDelete: true,
+            selectionList: list
+          }, function (item) {
+            console.log(item);
+            wiApi.getFullInfoPromise(item.idProject)
+              .then((res) => {
+                console.log(res);
+                var sd = res.storage_databases[0];
+                wiDialog.treeExplorer({
+                  title: "Select Zmap File",
+                  selectWhat: 'file',
+                  url: config.url,
+                  storage_database: JSON.stringify({
+                    company: sd.company,
+                    directory: sd.input_directory,
+                    whereami: "WI_STORAGE_ADMIN"
+                  })
+                }, Upload, (res) => {
+                  var file = res;
+                  file.name = "a.zip";
+                  if (file) {
+                    resolve(JSZip.loadAsync(file));
+                  }
+                });
+              });
+          });
+        });
+    })
+  }
+
+  async function saveToStorage(fileData, fileName) {
     wiApi.getListProjects()
       .then((list) => {
         list = list.filter(e => !e.shared).map(e => {
@@ -3295,7 +3391,7 @@ function baseMapController(
               wiDialog.treeExplorer({
                 title: "Select Folder To Save Zmap File",
                 selectWhat: 'folder',
-                file: blob,
+                file: fileData,
                 url: config.url,
                 storage_database: JSON.stringify({
                   company: sd.company,
@@ -3306,76 +3402,85 @@ function baseMapController(
                 console.log(res);
               }, {
                 rename: true,
-                fileName: "Zmapfile.zmap"
+                fileName: fileName || "Untitled"
               });
             });
         });
       });
   }
 
+  // ==================== zmap ==================== //
+  this.downloadZmapToLocal = function() {
+    const content = exportToZmapContent();
+    const blob = new Blob([content], { type: "text/plain" });
+    fileSaver.saveAs(blob, "contourConfig.zip");
+  }
+
+  this.saveZmapToStorage = function() {
+    const content = exportToZmapContent();
+    const blob = new Blob([content], { type: "text/plain" });
+    saveToStorage(blob, "Zmapfile.zmap");
+  }
+
   this.importZmapFromStorage = function() {
-    wiApi.getListProjects()
-      .then((list) => {
-        list = list.filter(e => !e.shared).map(e => {
-          return {
-            data: { label: e.alias || e.name },  
-            icon: "project-normal-16x16",
-            properties: e
-          }
-        });
-        console.log(list);
-        wiDialog.promptListDialog({
-          title: "Open Zmap File from Storage",
-          inputName: "Project",
-          iconBtn: "project-normal-16x16",
-          hideButtonDelete: true,
-          selectionList: list
-        }, function(item) {
-          console.log(item);
-          wiApi.getFullInfoPromise(item.idProject)
-          .then((res) => {
-            console.log(res);
-            var sd = res.storage_databases[0];
-            wiDialog.treeExplorer({
-              title: "Select Zmap File",
-              selectWhat: 'file',
-              url: config.url,
-              storage_database: JSON.stringify({
-                company: sd.company,
-                directory: sd.input_directory,
-                whereami: "WI_STORAGE_ADMIN"
-              })
-            }, Upload, (res) => {
-                var file = res;
-                file.name = "a.zip";
-                if (file) {
-                  JSZip
-                    .loadAsync(file)
-                    .then(function (unzippedContent) {
-                      unzippedContent
-                        .file(Object.keys(unzippedContent.files)[0])
-                        .async("blob")
-                        .then(data => {
-                          console.log(data);
-                          const fileObj = Object.values(unzippedContent.files)[0];
-                          const metadata = {
-                            name: fileObj.name,
-                            size: fileObj._data.uncompressedSize,
-                            type: fileObj._data.type || "null"
-                          }
-                          self.contourConfig.updateFileInfo(metadata);
-                          const reader = new FileReader();
-                          reader.onload = e => {
-                            parseZmapContent(e.target.result);
-                          }
-                          reader.readAsText(data);
-                        });
-                    });
-                }
-            });
+    selectFileFromStorage()
+      .then(selectedFile => {
+        selectedFile
+          .file(Object.keys(selectedFile.files)[0])
+          .async("blob")
+          .then(data => {
+            const fileObj = Object.values(selectedFile.files)[0];
+            const metadata = {
+              name: fileObj.name,
+              size: fileObj._data.uncompressedSize,
+              type: fileObj._data.type || "null"
+            }
+            self.contourConfig.updateFileInfo(metadata);
+            const reader = new FileReader();
+            reader.onload = e => {
+              parseZmapContent(e.target.result);
+            }
+            reader.readAsText(data);
           });
-        });
-      });
+      })
+  }
+
+
+  //=================== CONTOUR CONFIG =======================//
+  this.downloadContourConfigToLocal = async function() {
+    const contourConfigFile = await getContourConfigFile();
+    fileSaver.saveAs(contourConfigFile, "contourConfig.zip");
+  }
+
+  this.saveContourConfigToStorage = async function() {
+    const contourConfigFile = await getContourConfigFile();
+    saveToStorage(contourConfigFile, "ContourConfig.zip");
+  }
+
+  this.importContourConfigFile = function() {
+    const inputEle = document.createElement('input');
+    inputEle.type = "file";
+    inputEle.onchange = function(event) {
+      const files = inputEle.files;
+      const reader = new FileReader();
+      reader.onload = function(e) {
+       importContourConfig(e.target.result);
+      }
+      reader.readAsArrayBuffer(files[0])
+    }
+    $(inputEle).click();
+  }
+
+  this.importContourConfigFromStorage = function() {
+    selectFileFromStorage()
+      .then(selectedFile => {
+        selectedFile
+          .file(Object.keys(selectedFile.files)[0])
+          .async("blob")
+          .then(data => {
+            importContourConfig(data);
+          })
+      })
   }
 
   this.onContourTabClick = function() {
