@@ -484,24 +484,14 @@ ${require('./dashboard-template-modal.html')}
           </div>
           <div id="contour-file-import" ng-show="self.getterFn('contourConfig.values')().length">
             <div id="fp" style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis; padding-top: 15px;"></div>
-            <div sytle="display:flex;flex-direction:row; width: 100%;">
+            <div sytle="display:flex;flex-direction:row; padding-bottom: 1em;">
               <button style="flex:1" ng-click="self.downloadZmapToLocal()">Local Download Zmap</button>
               <button style="flex:1" ng-click="self.saveZmapToStorage()">Save Zmap to Storage</button>
+            </div>
+            <div sytle="display:flex;flex-direction:row; padding-bottom: 1em;">
               <button style="flex:1" ng-click="self.downloadContourConfigToLocal()">Local Download Config</button>
               <button style="flex:1" ng-click="self.saveContourConfigToStorage()">Save Config to Storage</button>
             </div>
-          </div>
-
-          <div class="upload">
-              <div class="upload-header">
-                  <div>
-                      <div style="font-weight: bold; margin-bottom: 10px;">Upload config zip file</div>
-                      <span>File type Zip </span>
-                  </div>
-                  <div ng-click="self.importContourConfigFile()" class="btn-add">
-                      <span class="ti ti-plus"></span>
-                  </div>
-              </div>
           </div>
 
           <div class="setting" ng-show="self.getterFn('contourConfig.values')().length">
