@@ -2965,6 +2965,7 @@ function baseMapController(
     onColorScaleBarInit: function() {
       const [colorScaleBar] = arguments;
       updateColorScale = (domain, range) => {
+        if (!domain || !range) return;
         colorScaleBar.onColorStopsChanged(domain, range);
         colorScaleBar.redraw();
       }
