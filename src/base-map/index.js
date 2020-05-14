@@ -544,7 +544,8 @@ function baseMapController(
             return {
               contour: zip.file("contour.json").async("string"),
               mapSetting: zip.file("mapsetting.json").async("string"),
-              blocks: zip.file("blocks.geojson").async("string")
+              blocks: zip.file("blocks.geojson").async("string"),
+              contourConfig: zip.file('contourConfig.zip').async("blob")
             };
           })
           .then(async function (result) {
@@ -553,10 +554,8 @@ function baseMapController(
                 data = JSON.parse(data);
                 let wells = [];
                 async.each(data.selectWell, (w, next) => {
-        //          if(w.shared) {
                     wiApi.getFullInfoPromise(w.idProject, w.owner, w.nameOwner).then((project) => {
                       console.log(project)
-                      // project = res.data.content;
                       proWells = project.wells;
                       wll = proWells.find(wl => wl.idWell == w.idWell)
                       wll ? wells.push(wll) : null
@@ -564,57 +563,10 @@ function baseMapController(
                     }).catch((err) => {
                       next(err);
                     });
-                    /*
-                    $http({
-                      method: "POST",
-                      url: BASE_URL + "/project/fullinfo",
-                      data: {
-                        idProject: w.idProject,
-                        name: w.nameOwner,
-                        shared: true,
-                        owner: w.owner
-                      },
-                      headers: {
-                        Authorization: wiToken.getToken()
-                      }
-                    })
-                    .then((res) => {
-                      console.log(res)
-                      project = res.data.content;
-                      proWells = project.wells;
-                      wll = proWells.find(wl => wl.idWell == w.idWell)
-                      wll ? wells.push(wll) : null
-                      next()
-                    })
-                    */
-        /*          }
-                  else {
-                    $http({
-                          method: "POST",
-                          url: BASE_URL + "/project/fullinfo",
-                          data: {
-                            idProject: w.idProject,
-                            name: w.nameOwner,
-                          },
-                          headers: {
-                            Authorization: wiToken.getToken()
-                          }
-                        })  
-                    .then((res) => {
-                      console.log(res)
-                      project = res.data.content;
-                      proWells = project.wells;
-                      wll = proWells.find(wl => wl.idWell == w.idWell)
-                      wll ? wells.push(wll) : null
-                      next()
-                    })
-                  }
-          */
                 }, (err) => {
                   console.log(wells)
                   data.selectWell = wells;
                   $scope.wellSelect = data.selectWell || [];
-                  // update contour modules
                   $scope.wellSelect.forEach(w => {
                     self.contourConfig.addWell(w);
                   })
@@ -629,10 +581,6 @@ function baseMapController(
                   $scope.focusMZ = selectedZoneset
                       ? selectedZoneset.zones.find(z => z._selected)
                       : selectedMarkerset ? selectedMarkerset.markers.find(m => m._selected) : null
-                  // if (!$scope.$$phase) {
-                  //   $scope.$apply();
-                  //   $timeout(response, 500);
-                  // }
                   $timeout(async () => {
                     await updateCurveList();
                     await updateZoneList();
@@ -650,6 +598,7 @@ function baseMapController(
               self.controlPanel = data.controlPanel;
               self.point = data.point;
               self.showContour = data.showContour;
+              self.showContourPanel = data.showContourPanel;
               self.showTrajectory = data.showTrajectory;
               self.showAxes = data.showAxes;
               self.wellPosition = data.wellPosition; 
@@ -674,6 +623,8 @@ function baseMapController(
               self.geoJson = data;
               $scope.$digest();
             });
+
+            importContourConfig(result.contourConfig);
           });
       } else {
         const reader = new FileReader();
@@ -1655,7 +1606,7 @@ function baseMapController(
       .then(updateMarkerList);
   };
 
-  this.downloadZipFile = function () {
+  this.downloadZipFile = async function () {
     var zip = new JSZip();
     console.log("file zip can download!");
     //file contour.json
@@ -1679,6 +1630,7 @@ function baseMapController(
       point: self.point,
       allPopup: $scope.allPopup,
       showContour: self.showContour,
+      showContourPanel: self.showContourPanel,
       showTrajectory: self.showTrajectory,
       showAxes: self.showAxes,
       wellPosition: self.wellPosition,
@@ -1697,6 +1649,9 @@ function baseMapController(
     var json3 = JSON.stringify(dataBlocks),
       blob3 = new Blob([json3], { type: "octet/stream" });
     zip.file("blocks.geojson", blob3);
+
+    const contourConfig = await getContourConfigFile();
+    zip.file("contourConfig.zip", contourConfig);
 
     //Compress file
     zip.generateAsync({ type: "blob" }).then(content => {
@@ -2487,7 +2442,7 @@ function baseMapController(
     self.fileBrowserController = container;
     console.log(container);
   }
-  this.uploadZipFileDatabase = function() {
+  this.uploadZipFileDatabase = async function() {
     var zip = new JSZip();
     console.log("file zip can download!");
     //file contour.json
@@ -2527,6 +2482,10 @@ function baseMapController(
     var json3 = JSON.stringify(dataBlocks),
       blob3 = new Blob([json3], { type: "octet/stream" });
     zip.file("blocks.geojson", blob3);
+
+    // contourConfig
+    const contourConfigFile = await getContourConfigFile();
+    zip.file("contourConfig.zip", contourConfigFile);
 
     //Compress file
     zip.generateAsync({ type: "blob" }).then(content => {
@@ -2626,7 +2585,8 @@ function baseMapController(
                     return {
                             contour: zip1.file("contour.json").async("string"),
                             mapSetting: zip1.file("mapsetting.json").async("string"),
-                            blocks: zip1.file("blocks.geojson").async("string")
+                            blocks: zip1.file("blocks.geojson").async("string"),
+                            contourConfig: zip1.file("contourConfig.zip").async("blob")
                           };
                   })
                   .then(async function (result) {
@@ -2751,6 +2711,8 @@ function baseMapController(
                       self.geoJson = data;
                       $scope.$digest();
                     });
+
+                    importContourConfig(result.contourConfig);
                   });
                 }
             });
