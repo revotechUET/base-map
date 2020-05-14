@@ -614,6 +614,11 @@ function baseMapController(
                   console.log(wells)
                   data.selectWell = wells;
                   $scope.wellSelect = data.selectWell || [];
+                  // update contour modules
+                  $scope.wellSelect.forEach(w => {
+                    self.contourConfig.addWell(w);
+                  })
+
                   $scope.curveList = data.selectCurve || [];
                   $scope.zoneList = data.selectedZone || [];
                   $scope.markerList = data.selectedMarker || [];
@@ -657,9 +662,13 @@ function baseMapController(
               $timeout(() => {
                 if (!$scope.$$phase) {
                   $scope.$apply();
+                  self.contourConfig.onChangePopupPosition();
+                  self.contourConfig.onChangeWellPosition();
+                  self.contourConfig.onChangeWellDisplayMode();
                 };
               })
             });
+
             result.blocks.then(function (data) {
               data = JSON.parse(data);
               self.geoJson = data;

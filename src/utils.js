@@ -188,8 +188,8 @@ function checkCoordinate(lat, long, x, y, preferXY = false) {
 
 function getDepthSpecsFromWell(well, wiApi) {
     const headerSpec = {
-        topDepth: wiApi.convertUnit(Number((well.well_headers.find(h => h.header == "STRT") || {}).value), well.unit, "m"),
-        bottomDepth: wiApi.convertUnit(Number((well.well_headers.find(h => h.header == "STOP") || {}).value), well.unit, "m")
+        topDepth: wiApi.convertUnit(Number(((well.well_headers || well.wellheaders).find(h => h.header == "STRT") || {}).value), well.unit, "m"),
+        bottomDepth: wiApi.convertUnit(Number(((well.well_headers || well.wellheaders).find(h => h.header == "STOP") || {}).value), well.unit, "m")
     };
     if (headerSpec.topDepth != headerSpec.bottomDepth) return headerSpec;
     if (!well.datasets || !well.datasets.length) return headerSpec;
