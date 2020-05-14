@@ -2354,8 +2354,15 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken, wiApi) {
   // const wellPointHash = {};
   const updateTrajectoryDebounced = _.debounce(updateTrajectory, 1000);
   function updateTrajectory() {
-    clearTrajectoryMap();
-    if (!self.showTrajectory) return;
+    if (!self.showTrajectory) {
+      clearTrajectoryMap();
+      return;
+    }
+    Object.keys(wellPathHash).forEach(idWell => {
+      if (!self.wells.some(w => w.idWell == idWell)) {
+        wellPathHash[idWell].setMap(null);
+      }
+    })
     self.wells.forEach(async (well) => {
       if (!wellPathHash[well.idWell])
         wellPathHash[well.idWell] = new google.maps.Polyline({
