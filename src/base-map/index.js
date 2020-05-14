@@ -2597,8 +2597,6 @@ function baseMapController(
                         async.each(data.selectWell, (w, next) => {
                           if(w.shared) {
                             wiApi.getFullInfoPromise(w.idProject, w.owner, w.nameOwner).then((project) => {
-                              // console.log(project)
-                              // project = res.data.content;
                               proWells = project.wells;
                               wll = proWells.find(wl => wl.idWell == w.idWell)
                               wll ? wells.push(wll) : null
@@ -2606,31 +2604,8 @@ function baseMapController(
                             }).catch((err) => {
                               next(err);
                             });
-                            // $http({
-                            //   method: "POST",
-                            //   url: BASE_URL + "/project/fullinfo",
-                            //   data: {
-                            //     idProject: w.idProject,
-                            //     name: w.nameOwner,
-                            //     shared: true,
-                            //     owner: w.owner
-                            //   },
-                            //   headers: {
-                            //     Authorization: wiToken.getToken()
-                            //   }
-                            // })
-                            // .then((res) => {
-                            //   console.log(res)
-                            //   project = res.data.content;
-                            //   proWells = project.wells;
-                            //   wll = proWells.find(wl => wl.idWell == w.idWell)
-                            //   wll ? wells.push(wll) : null
-                            //   next()
-                            // })
                           }else {
                             wiApi.getFullInfoPromise(w.idProject, null, w.nameOwner).then((project) => {
-                              // console.log(project)
-                              // project = res.data.content;
                               proWells = project.wells;
                               wll = proWells.find(wl => wl.idWell == w.idWell)
                               wll ? wells.push(wll) : null
@@ -2638,31 +2613,15 @@ function baseMapController(
                             }).catch((err) => {
                               next(err);
                             });
-
-                            // $http({
-                            //       method: "POST",
-                            //       url: BASE_URL + "/project/fullinfo",
-                            //       data: {
-                            //         idProject: w.idProject,
-                            //         name: w.nameOwner,
-                            //       },
-                            //       headers: {
-                            //         Authorization: wiToken.getToken()
-                            //       }
-                            //     })  
-                            // .then((res) => {
-                            //   console.log(res)
-                            //   project = res.data.content;
-                            //   proWells = project.wells;
-                            //   wll = proWells.find(wl => wl.idWell == w.idWell)
-                            //   wll ? wells.push(wll) : null
-                            //   next()
-                            // })
                           }
                         }, (err) => {
                           console.log(wells)
                           data.selectWell = wells;
                           $scope.wellSelect = data.selectWell || [];
+                            $scope.wellSelect.forEach(w => {
+                              self.contourConfig.addWell(w);
+                            })
+
                           $scope.curveList = data.selectCurve || [];
                           $scope.zoneList = data.selectedZone || [];
                           $scope.markerList = data.selectedMarker || [];
@@ -2673,10 +2632,6 @@ function baseMapController(
                           $scope.focusMZ = selectedZoneset
                               ? selectedZoneset.zones.find(z => z._selected)
                               : selectedMarkerset ? selectedMarkerset.markers.find(m => m._selected) : null
-                          // if (!$scope.$$phase) {
-                          //   $scope.$apply();
-                          //   $timeout(res, 500);
-                          // }
                           $timeout(async () => {
                             await updateCurveList();
                             await updateZoneList();
@@ -2703,6 +2658,9 @@ function baseMapController(
                       $timeout(() => {
                         if (!$scope.$$phase) {
                           $scope.$apply();
+                          self.contourConfig.onChangePopupPosition();
+                          self.contourConfig.onChangeWellPosition();
+                          self.contourConfig.onChangeWellDisplayMode();
                         };
                       })
                     });
