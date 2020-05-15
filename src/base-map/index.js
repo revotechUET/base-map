@@ -550,7 +550,7 @@ function baseMapController(
           })
           .then(async function (result) {
             await result.contour.then(function (data) {
-              return new Promise(response => {
+              return new Promise(resolve => {
                 data = JSON.parse(data);
                 let wells = [];
                 async.each(data.selectWell, (w, next) => {
@@ -564,12 +564,9 @@ function baseMapController(
                       next(err);
                     });
                 }, (err) => {
-                  console.log(wells)
+                  // console.log(wells)
                   data.selectWell = wells;
                   $scope.wellSelect = data.selectWell || [];
-                  $scope.wellSelect.forEach(w => {
-                    self.contourConfig.addWell(w);
-                  })
 
                   $scope.curveList = data.selectCurve || [];
                   $scope.zoneList = data.selectedZone || [];
@@ -585,46 +582,58 @@ function baseMapController(
                     await updateCurveList();
                     await updateZoneList();
                     await updateMarkerList();
-                    response();
+                    resolve();
                   });
                 })
               })
             });
-            result.mapSetting.then(function (data) {
-              data = JSON.parse(data);
-              $scope.themeMap = data.themeMap;
-              $scope.allPopup = data.allPopup;
-              self.activeTheme = data.activeTheme;
-              self.controlPanel = data.controlPanel;
-              self.point = data.point;
-              self.showContour = data.showContour;
-              self.showContourPanel = data.showContourPanel;
-              self.showTrajectory = data.showTrajectory;
-              self.showAxes = data.showAxes;
-              self.wellPosition = data.wellPosition; 
-              self.popupPosition = data.popupPosition; 
-              self.darkMode = data.darkMode;
-              setDarkMode(self.darkMode);
-              self.showZonesets = data.showZonesets;
-              self.showMarkersets = data.showMarkersets;
-              $scope.zoneMap = data.zoneMap;
-              $timeout(() => {
-                if (!$scope.$$phase) {
-                  $scope.$apply();
-                  self.contourConfig.onChangePopupPosition();
-                  self.contourConfig.onChangeWellPosition();
-                  self.contourConfig.onChangeWellDisplayMode();
-                };
+
+            await result.mapSetting.then(function (data) {
+              return new Promise(resolve => {
+                data = JSON.parse(data);
+                $scope.themeMap = data.themeMap;
+                $scope.allPopup = data.allPopup;
+                self.activeTheme = data.activeTheme;
+                self.controlPanel = data.controlPanel;
+                self.point = data.point;
+                self.showContour = data.showContour;
+                self.showContourPanel = data.showContourPanel;
+                self.showTrajectory = data.showTrajectory;
+                self.showAxes = data.showAxes;
+                self.wellPosition = data.wellPosition;
+                self.popupPosition = data.popupPosition;
+                self.darkMode = data.darkMode;
+                setDarkMode(self.darkMode);
+                self.showZonesets = data.showZonesets;
+                self.showMarkersets = data.showMarkersets;
+                $scope.zoneMap = data.zoneMap;
+                $timeout(() => {
+                  if (!$scope.$$phase) {
+                    $scope.$apply();
+                    resolve();
+                  };
+                })
               })
             });
+
+            // update contour configs
+            importContourConfig(result.contourConfig)
+              .then(() => {
+                $scope.wellSelect.forEach(w => {
+                  self.contourConfig.addWell(w);
+                  $timeout(() => {
+                    self.contourConfig.onChangePopupPosition();
+                    self.contourConfig.onChangeWellPosition();
+                    self.contourConfig.onChangeWellDisplayMode();
+                  })
+                })
+              })
 
             result.blocks.then(function (data) {
               data = JSON.parse(data);
               self.geoJson = data;
               $scope.$digest();
             });
-
-            importContourConfig(result.contourConfig);
           });
       } else {
         const reader = new FileReader();
@@ -2591,7 +2600,7 @@ function baseMapController(
                   })
                   .then(async function (result) {
                     await result.contour.then(function (data) {
-                      return new Promise(response => {
+                      return new Promise(resolve => {
                         data = JSON.parse(data);
                         let wells = [];
                         async.each(data.selectWell, (w, next) => {
@@ -2618,9 +2627,6 @@ function baseMapController(
                           console.log(wells)
                           data.selectWell = wells;
                           $scope.wellSelect = data.selectWell || [];
-                            $scope.wellSelect.forEach(w => {
-                              self.contourConfig.addWell(w);
-                            })
 
                           $scope.curveList = data.selectCurve || [];
                           $scope.zoneList = data.selectedZone || [];
@@ -2636,41 +2642,54 @@ function baseMapController(
                             await updateCurveList();
                             await updateZoneList();
                             await updateMarkerList();
-                            response();
+                            resolve();
                           });
                         })
                       })
                     });
-                    result.mapSetting.then(function (data) {
-                      data = JSON.parse(data);
-                      $scope.themeMap = data.themeMap;
-                      $scope.allPopup = data.allPopup;
-                      self.activeTheme = data.activeTheme;
-                      self.controlPanel = data.controlPanel;
-                      self.point = data.point;
-                      self.showContour = data.showContour;
-                      self.showTrajectory = data.showTrajectory;
-                      self.darkMode = data.darkMode;
-                      setDarkMode(self.darkMode);
-                      self.showZonesets = data.showZonesets;
-                      self.showMarkersets = data.showMarkersets;
-                      $scope.zoneMap = data.zoneMap;
-                      $timeout(() => {
-                        if (!$scope.$$phase) {
-                          $scope.$apply();
-                          self.contourConfig.onChangePopupPosition();
-                          self.contourConfig.onChangeWellPosition();
-                          self.contourConfig.onChangeWellDisplayMode();
-                        };
+
+                    await result.mapSetting.then(function (data) {
+                      return new Promise(resolve => {
+                        data = JSON.parse(data);
+                        $scope.themeMap = data.themeMap;
+                        $scope.allPopup = data.allPopup;
+                        self.activeTheme = data.activeTheme;
+                        self.controlPanel = data.controlPanel;
+                        self.point = data.point;
+                        self.showContour = data.showContour;
+                        self.showTrajectory = data.showTrajectory;
+                        self.darkMode = data.darkMode;
+                        setDarkMode(self.darkMode);
+                        self.showZonesets = data.showZonesets;
+                        self.showMarkersets = data.showMarkersets;
+                        $scope.zoneMap = data.zoneMap;
+                        $timeout(() => {
+                          if (!$scope.$$phase) {
+                            $scope.$apply();
+                            resolve();
+                          };
+                        })
                       })
                     });
+
+                    // update contour config
+                    importContourConfig(result.contourConfig)
+                      .then(() => {
+                        $scope.wellSelect.forEach(w => {
+                          self.contourConfig.addWell(w);
+                          $timeout(() => {
+                            self.contourConfig.onChangePopupPosition();
+                            self.contourConfig.onChangeWellPosition();
+                            self.contourConfig.onChangeWellDisplayMode();
+                          })
+                        })
+                      })
                     result.blocks.then(function (data) {
                       data = JSON.parse(data);
                       self.geoJson = data;
                       $scope.$digest();
                     });
 
-                    importContourConfig(result.contourConfig);
                   });
                 }
             });
@@ -3225,41 +3244,44 @@ function baseMapController(
   }
 
   function importContourConfig(zipFile) {
-    JSZip
-      .loadAsync(zipFile)
-      .then(function (unzippedContent) {
-        const zmapFile = unzippedContent.files[CONTOUR_ZMAP_FILE_NAME];
-        const metadata = {
-          name: zmapFile.name,
-          size: zmapFile._data.uncompressedSize,
-          type: zmapFile._data.type || "null"
-        }
-        self.contourConfig.updateFileInfo(metadata);
-        unzippedContent
-          .file(CONTOUR_ZMAP_FILE_NAME)
-          .async("blob")
-          .then(data => {
-            const reader = new FileReader();
-            reader.onload = e => {
-              parseZmapContent(e.target.result);
-            }
-            reader.readAsText(data)
-          })
-        unzippedContent
-          .file(CONTOUR_CONFIG_FILE_NAME)
-          .async("string")
-          .then(rawConfigs => {
-            const configs = JSON.parse(rawConfigs);
-            Object.assign(self.contourConfig, configs);
-            $timeout(() => {
-              // assign to temporary variables
-              $scope.__tmpLabelInterval = configs.labelInterval;
-              $scope.__tmpStep = configs.step;
-              setContourViewScale(configs.scale);
-              updateColorScale(configs.colorScaleDomain, configs.colorScaleRange);
-            }, 100);
-          })
-      })
+    return new Promise(resolve => {
+      JSZip
+        .loadAsync(zipFile)
+        .then(function (unzippedContent) {
+          const zmapFile = unzippedContent.files[CONTOUR_ZMAP_FILE_NAME];
+          const metadata = {
+            name: zmapFile.name,
+            size: zmapFile._data.uncompressedSize,
+            type: zmapFile._data.type || "null"
+          }
+          self.contourConfig.updateFileInfo(metadata);
+          unzippedContent
+            .file(CONTOUR_ZMAP_FILE_NAME)
+            .async("blob")
+            .then(data => {
+              const reader = new FileReader();
+              reader.onload = e => {
+                parseZmapContent(e.target.result);
+              }
+              reader.readAsText(data)
+            })
+          unzippedContent
+            .file(CONTOUR_CONFIG_FILE_NAME)
+            .async("string")
+            .then(rawConfigs => {
+              const configs = JSON.parse(rawConfigs);
+              Object.assign(self.contourConfig, configs);
+              $timeout(() => {
+                // assign to temporary variables
+                $scope.__tmpLabelInterval = configs.labelInterval;
+                $scope.__tmpStep = configs.step;
+                setContourViewScale(configs.scale);
+                updateColorScale(configs.colorScaleDomain, configs.colorScaleRange);
+                resolve();
+              }, 100);
+            })
+        })
+    })
   }
 
   function selectFileFromStorage() {
