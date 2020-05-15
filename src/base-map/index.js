@@ -627,6 +627,7 @@ function baseMapController(
                     self.contourConfig.onChangePopupPosition();
                     self.contourConfig.onChangeWellPosition();
                     self.contourConfig.onChangeWellDisplayMode();
+                    self.contourConfig.onWellSizeChanged();
                   })
                 })
               })
@@ -2691,6 +2692,7 @@ function baseMapController(
                             self.contourConfig.onChangePopupPosition();
                             self.contourConfig.onChangeWellPosition();
                             self.contourConfig.onChangeWellDisplayMode();
+                            self.contourConfig.onWellSizeChanged();
                           })
                         })
                       })
@@ -2882,6 +2884,7 @@ function baseMapController(
     colorBarHeight: 40,
     wells: [],
     trajectories: [],
+    wellIconSize: self.wellSize || 1,
     onFileComponentMounted: function() {
       const [fileImportComponent] = arguments;
       exportToZmapContent = fileImportComponent.toZmapFile;
@@ -2979,6 +2982,11 @@ function baseMapController(
         const foundIdx = this.wells.findIndex(_w => _w.idWell == w.idWell);
         if (foundIdx >= 0)
           this.wells.splice(foundIdx, 1);
+      })
+    },
+    onWellSizeChanged: function() {
+      $timeout(() => {
+        self.contourConfig.wellIconSize = self.wellSize;
       })
     },
     centerByWell: async function(well) {
