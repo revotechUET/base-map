@@ -1663,9 +1663,10 @@ function baseMapController(
     zip.file("contourConfig.zip", contourConfig);
 
     //Compress file
-    zip.generateAsync({ type: "blob" }).then(content => {
-      fileSaver.saveAs(content, "i2G_basemap_configuration.zip");
-    });
+    zip.generateAsync({ type: "blob", compression: "DEFLATE", compressionOptions: {level: 6}})
+      .then(content => {
+        fileSaver.saveAs(content, "i2G_basemap_configuration.zip");
+      });
   };
 
   this.prepareWellInfoFn = prepareWellInfos;
@@ -2497,54 +2498,55 @@ function baseMapController(
     zip.file("contourConfig.zip", contourConfigFile);
 
     //Compress file
-    zip.generateAsync({ type: "blob" }).then(content => {
-      // content.name = "i2G_basemap_configuration.zip";
-      wiApi.getListProjects()
-      .then((list) => {
-        list = list.filter(e => !e.shared).map(e => {
-          return {
-            data: {
-              label: e.alias || e.name
-            },  
-            icon: "project-normal-16x16",
-            properties: e
-          }
-        });
-        console.log(list);
-        wiDialog.promptListDialog({
-          title: "Save Configuration File to Project Database",
-          inputName: "Project",
-          iconBtn: "project-normal-16x16",
-          hideButtonDelete: true,
-          selectionList: list
-  
-        }, function(item) {
-          console.log(item);
-          wiApi.getFullInfoPromise(item.idProject)
-          .then(async (res) => {
-            console.log(res);
-            var sd = res.storage_databases[0];
-            // var file = new File([content], "i2G_basemap_configuration.zip");
-            wiDialog.treeExplorer({
-                title: "Select Folder To Save Configuration",
-                selectWhat: 'folder',
-                file: content,
-                url: config.url,
-                storage_database: JSON.stringify({
-                  company: sd.company,
-                  directory: sd.input_directory,
-                  whereami: "WI_BASE_MAP"
-                })
-              }, Upload, (res) => {
-                console.log(res);
-            }, {
-              rename: true,
-              fileName: "i2G_basemap_configuration.zip"
+    zip.generateAsync({ type: "blob", compression: "DEFLATE", compressionOptions: {level: 6}})
+      .then(content => {
+        // content.name = "i2G_basemap_configuration.zip";
+        wiApi.getListProjects()
+          .then((list) => {
+            list = list.filter(e => !e.shared).map(e => {
+              return {
+                data: {
+                  label: e.alias || e.name
+                },
+                icon: "project-normal-16x16",
+                properties: e
+              }
+            });
+            console.log(list);
+            wiDialog.promptListDialog({
+              title: "Save Configuration File to Project Database",
+              inputName: "Project",
+              iconBtn: "project-normal-16x16",
+              hideButtonDelete: true,
+              selectionList: list
+
+            }, function (item) {
+              console.log(item);
+              wiApi.getFullInfoPromise(item.idProject)
+                .then(async (res) => {
+                  console.log(res);
+                  var sd = res.storage_databases[0];
+                  // var file = new File([content], "i2G_basemap_configuration.zip");
+                  wiDialog.treeExplorer({
+                    title: "Select Folder To Save Configuration",
+                    selectWhat: 'folder',
+                    file: content,
+                    url: config.url,
+                    storage_database: JSON.stringify({
+                      company: sd.company,
+                      directory: sd.input_directory,
+                      whereami: "WI_BASE_MAP"
+                    })
+                  }, Upload, (res) => {
+                    console.log(res);
+                  }, {
+                    rename: true,
+                    fileName: "i2G_basemap_configuration.zip"
+                  });
+                });
+            });
           });
-          });
-        });
       });
-    });
   }
   this.downloadConfig = function() {
     wiApi.getListProjects()
