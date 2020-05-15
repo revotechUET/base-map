@@ -603,6 +603,8 @@ function baseMapController(
                 self.wellPosition = data.wellPosition;
                 self.popupPosition = data.popupPosition;
                 self.darkMode = data.darkMode;
+                self.wellDisplayMode = (self.wellDisplayModeOptions.find(o => o.value == data.wellDisplayMode) || self.wellDisplayModeOptions[0]).value;
+                self.wellSize = data.wellSize;
                 setDarkMode(self.darkMode);
                 self.showZonesets = data.showZonesets;
                 self.showMarkersets = data.showMarkersets;
@@ -1647,7 +1649,9 @@ function baseMapController(
       zoneMap: $scope.zoneMap,
       darkMode: self.darkMode,
       showZonesets: self.showZonesets,
-      showMarkersets: self.showMarkersets
+      showMarkersets: self.showMarkersets,
+      wellDisplayMode: self.wellDisplayMode,
+      wellSize: self.wellSize,
     };
     var json2 = JSON.stringify(dataMapSetting),
       blob2 = new Blob([json2], { type: "octet/stream" });
@@ -2481,7 +2485,9 @@ function baseMapController(
       zoneMap: $scope.zoneMap,
       darkMode: self.darkMode,
       showZonesets: self.showZonesets,
-      showMarkersets: self.showMarkersets
+      showMarkersets: self.showMarkersets,
+      wellDisplayMode: self.wellDisplayMode,
+      wellSize: self.wellSize,
     };
     var json2 = JSON.stringify(dataMapSetting),
       blob2 = new Blob([json2], { type: "octet/stream" });
@@ -2660,6 +2666,8 @@ function baseMapController(
                         self.point = data.point;
                         self.showContour = data.showContour;
                         self.showTrajectory = data.showTrajectory;
+                        self.wellDisplayMode = (self.wellDisplayModeOptions.find(o => o.value == data.wellDisplayMode) || self.wellDisplayModeOptions[0]).value;
+                        self.wellSize = data.wellSize;
                         self.darkMode = data.darkMode;
                         setDarkMode(self.darkMode);
                         self.showZonesets = data.showZonesets;
