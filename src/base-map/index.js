@@ -3149,6 +3149,9 @@ function baseMapController(
         '<b>File Name: </b>' + file.name + '</br>'
         + '<b>File Size: </b>' + Math.round((file.size / 1024)) + 'KB </br>'
         + '<b>File Type: </b>' + file.type + "</br>";
+    },
+    onMapCenterChanged: function(deltaX, deltaY) {
+      console.log("map center changed", deltaX, deltaY);
     }
   };
 
