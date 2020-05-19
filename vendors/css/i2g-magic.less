@@ -575,11 +575,13 @@
 
 .item-icon-title-discription {
   display            : flex;
-  width              : 300px;
+  // width              : 300px;
   margin-bottom      : 20px;
+  padding-bottom: 10px;
   animation          : drop-notification 0.5s;
   animation-fill-mode: both;
   transition         : all cubic-bezier(0.68, -0.55, 0.27, 1.55) 0.2s;
+  border-bottom: 2px solid var(--button-bg-color);
 
   &.noti>*:nth-child(1) {
     background-color: var(--toast-noti);
@@ -647,7 +649,9 @@
     }
 
     &>span {
-      opacity: 0.6;
+      opacity: 0.5;
+      font-size: 12px;
+      margin-bottom: 10px;
     }
   }
 }
