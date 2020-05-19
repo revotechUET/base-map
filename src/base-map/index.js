@@ -3151,7 +3151,16 @@ function baseMapController(
         + '<b>File Type: </b>' + file.type + "</br>";
     },
     onMapCenterChanged: function(deltaX, deltaY) {
-      console.log("map center changed", deltaX, deltaY);
+      // console.log("map center changed", deltaX, deltaY);
+      const mapCenter = mapView.getCenter();
+      const firstProjection = "+proj=longlat +ellps=WGS84 +datum=WGS84 +units=degrees";
+      const secondProjection = $scope.zoneMap;
+      const projected = proj4(firstProjection, secondProjection, [mapCenter.lng(), mapCenter.lat()]);
+      // console.log("map center: ", projected);
+      const newX = projected[0] - deltaX;
+      const newY = projected[1] - deltaY;
+      const newCenter = proj4(secondProjection, firstProjection, [newX, newY]);
+      mapView.setCenter(new google.maps.LatLng(newCenter[1], newCenter[0]));
     }
   };
 

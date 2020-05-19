@@ -47,7 +47,9 @@ app.component(componentName, {
     axesXRight: "<",
     axesYTop: "<",
     axesYBottom: "<",
-    fitToBound: "<"
+    fitToBound: "<",
+    //set center from outside
+    center: "<",
   },
   transclude: true
 });
@@ -247,6 +249,11 @@ function googleMapViewController($scope, $timeout, ngDialog, wiToken, wiApi) {
       () => {
         updateMapBoundsDebounced(true);
       }
+    )
+    // SET CENTER FROM OUTSIDE
+    $scope.$watch(
+      () => self.center,
+      () => { }
     )
     // VIEW BY ZONESET & MARKERSET
     $scope.$watch(

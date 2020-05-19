@@ -31,7 +31,7 @@
     "d3-hsv.v0.1.min": "https://d3js.org/d3-hsv.v0.1.min.js",
     "shp": "^3.4.3",
     "file-explorer": "https://github.com/hoangbdUET/file-browser-angular.git",
-    "contour-module": "https://github.com/revotechUET/contour-module.git#master"
+    "contour-module": "https://github.com/revotechUET/contour-module.git#sync-contour-google-map"
   },
   "resolutions": {
     "angular": "1.7.9",
