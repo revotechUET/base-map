@@ -1563,6 +1563,7 @@ function baseMapController(
         // Change value
         $scope.hasChanged = function (item) {
           $scope.zoneMap = item.output;
+          self.contourConfig.utmZones = getUtmZoneLinesForContour();
         };
       },
       function (errorResponse) {
@@ -2885,6 +2886,8 @@ function baseMapController(
     wells: [],
     trajectories: [],
     wellIconSize: self.wellSize || 1,
+    showUtmZones: true,
+    utmZones: getUtmZoneLinesForContour(),
     onFileComponentMounted: function() {
       const [fileImportComponent] = arguments;
       exportToZmapContent = fileImportComponent.toZmapFile;
@@ -2907,6 +2910,7 @@ function baseMapController(
       self.contourConfig.minValue = domain[0];
       self.contourConfig.maxValue = domain[1];
       self.contourConfig.updateFileInfo();
+      self.contourConfig.utmZones = getUtmZoneLinesForContour($scope.zoneMap);
       $timeout(() => {
         $scope.$digest();
         $timeout(() => {
@@ -3300,6 +3304,43 @@ function baseMapController(
             })
         })
     })
+  }
+
+  function getUtmZoneLinesForContour(zoneMap) {
+    const firstProjection = "+proj=longlat +ellps=WGS84 +datum=WGS84 +units=degrees";
+    const secondProjection = zoneMap || $scope.zoneMap;
+    if (!secondProjection) return;
+    const lines = [];
+    const equatorStart = proj4(firstProjection, secondProjection, [-180, 0]);
+    const equatorEnd = proj4(firstProjection, secondProjection, [180, 0]);
+    lines.equator = {
+      start: {x: equatorStart[0], y: equatorStart[1]},
+      end: {x: equatorEnd[0], y: equatorEnd[1]},
+      label: 'equator'
+    }
+
+    for(let c = 0; c <= 180 ; c+= 6) {
+      const posStart = proj4(firstProjection, secondProjection, [c, -85]);
+      const posEnd = proj4(firstProjection, secondProjection, [c, 85]);
+      if (_.isFinite(posStart[0]) && _.isFinite(posStart[1])
+        && _.isFinite(posEnd[0]) && _.isFinite(posEnd[1]))
+        lines.push({
+          start: { x: posStart[0], y: posStart[1] },
+          end: { x: posEnd[0], y: posEnd[1] },
+          label: c
+        })
+      const negStart = proj4(firstProjection, secondProjection, [-c, -85]);
+      const negEnd = proj4(firstProjection, secondProjection, [-c, 85]);
+      if (_.isFinite(negStart[0]) && _.isFinite(negStart[1])
+        && _.isFinite(negEnd[0]) && _.isFinite(negEnd[1]))
+        lines.push({
+          start: { x: negStart[0], y: negStart[1] },
+          end: { x: negEnd[0], y: negEnd[1] },
+          label: -c
+        })
+    }
+    console.log(lines);
+    return lines;
   }
 
   function selectFileFromStorage() {
