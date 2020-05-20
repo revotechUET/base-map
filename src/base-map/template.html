@@ -1,4 +1,4 @@
-<div ng-class="{'show-dashboard': self.showContourPanel}" class="dialog" style="background-color:rgba(255, 255, 255, 0.2)">
+<div ng-class="{'show-dashboard': self.showContourPanel}" class="dialog" style="background-color:rgba(255, 255, 255, 0.2); z-index: 1;">
   ${require('./dialog-contour.html')}
 </div>
 <div ng-class="{'show-dashboard': self.showDashboard}" class="dialog">
@@ -597,6 +597,15 @@ ${require('./dashboard-template-modal.html')}
           <div class="setting">
               <div class="setting-title" style="margin-bottom: 10px;">Contour</div>
               <div class="complex-setting">
+                  <div class="setting-content">
+                      <span class="setting-sub-title">Show UTM Zones</span>
+                      <label class="switch">
+                          <input type="checkbox"
+                                 ng-checked="self.contourConfig.showUtmZones"
+                                 ng-click="self.contourConfig.showUtmZones = !self.contourConfig.showUtmZones" />
+                          <span class="slider round"></span>
+                      </label>
+                  </div>
                   <div class="setting-content">
                       <span class="setting-sub-title">Negative Data</span>
                       <label class="switch">

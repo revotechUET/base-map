@@ -3311,33 +3311,41 @@ function baseMapController(
     const secondProjection = zoneMap || $scope.zoneMap;
     if (!secondProjection) return;
     const lines = [];
-    const equatorStart = proj4(firstProjection, secondProjection, [-180, 0]);
-    const equatorEnd = proj4(firstProjection, secondProjection, [180, 0]);
-    lines.equator = {
-      start: {x: equatorStart[0], y: equatorStart[1]},
-      end: {x: equatorEnd[0], y: equatorEnd[1]},
-      label: 'equator'
+    function getUtmZone(long, lat) {
+      const number = (long + 180) / 6;
+      const isSouth = lat >= 0 ? false:true;
+      return `${number} ${isSouth ? 'S':'N'}`;
     }
 
-    for(let c = 0; c <= 180 ; c+= 6) {
-      const posStart = proj4(firstProjection, secondProjection, [c, -85]);
-      const posEnd = proj4(firstProjection, secondProjection, [c, 85]);
-      if (_.isFinite(posStart[0]) && _.isFinite(posStart[1])
-        && _.isFinite(posEnd[0]) && _.isFinite(posEnd[1]))
-        lines.push({
-          start: { x: posStart[0], y: posStart[1] },
-          end: { x: posEnd[0], y: posEnd[1] },
-          label: c
-        })
-      const negStart = proj4(firstProjection, secondProjection, [-c, -85]);
-      const negEnd = proj4(firstProjection, secondProjection, [-c, 85]);
-      if (_.isFinite(negStart[0]) && _.isFinite(negStart[1])
-        && _.isFinite(negEnd[0]) && _.isFinite(negEnd[1]))
-        lines.push({
-          start: { x: negStart[0], y: negStart[1] },
-          end: { x: negEnd[0], y: negEnd[1] },
-          label: -c
-        })
+    for(let c = -180; c <= 180 ; c+= 6) {
+      for(let lat = -85; lat < 85; lat+=5) {
+        if (lat == -5) continue;
+        const posStart = proj4(firstProjection, secondProjection, [c, lat]);
+        const posEnd = proj4(firstProjection, secondProjection, [c, lat+5]);
+        if (_.isFinite(posStart[0]) && _.isFinite(posStart[1])
+          && _.isFinite(posEnd[0]) && _.isFinite(posEnd[1])) {
+          const label = (lat != -85 || lat != 85) ? getUtmZone(c, lat):"";
+          lines.push({
+            start: { x: posStart[0], y: posStart[1] },
+            end: { x: posEnd[0], y: posEnd[1] },
+            label
+          })
+        }
+        /*
+        if (c == 0 || c == 180) continue;
+        const negStart = proj4(firstProjection, secondProjection, [-c, lat]);
+        const negEnd = proj4(firstProjection, secondProjection, [-c, lat+5]);
+        if (_.isFinite(negStart[0]) && _.isFinite(negStart[1])
+          && _.isFinite(negEnd[0]) && _.isFinite(negEnd[1])) {
+          const label = (lat != -85 || lat != 85) ? getUtmZone(-c, lat):"";
+          lines.push({
+            start: { x: negStart[0], y: negStart[1] },
+            end: { x: negEnd[0], y: negEnd[1] },
+            label
+          })
+        }
+        */
+      }
     }
     console.log(lines);
     return lines;
