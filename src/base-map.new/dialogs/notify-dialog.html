@@ -1,0 +1,20 @@
+<div class="dialog-list" ng-show="__notifications && __notifications.length">
+    <div class="dialog" ng-repeat="notice in __notifications">
+        <div class="dialog-header">
+            <div style="display: flex; align-items: center;">
+                <div class="ti-alert" style="color: #ff8503; font-size: 20px;"></div>
+                <span>{{ notice.title || "Warning" }}</span>
+            </div>
+            <div class="ti ti-close" ng-click="" style="cursor: pointer;"></div>
+        </div>
+        <div class="loading">
+            <div class="loading-bar">
+                <span class="bar-animation" ng-style="{'animation-duration':  notice.duration + 's'}"></span>
+            </div>
+        </div>
+        <div class="dialog-main">
+            <span ng-bind-html="notice.message" ng-if="notice.isHtml"></span>
+            <span ng-if="!notice.isHtml"> {{ notice.message }} </span>
+        </div>
+    </div>
+</div>

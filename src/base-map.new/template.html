@@ -1,0 +1,89 @@
+<div>
+${require('./dialogs/notify-dialog.html')}
+</div> 
+<div id="main" class="main slim-scroller" ng-class="{'change-height': __hideMain}">
+  <div class="tab">
+    <div style="display: flex; align-items: center;">
+      <div class="tab-name" ng-class="{'active' : __tab == 'project'}" ng-click="__tab = 'project'">
+        Projects
+      </div>
+      <div class="tab-name" ng-class="{'active' : __tab == 'well'}" ng-click="__tab = 'well'">
+        Wells
+        <span ng-if="self.selectedWellConfig.length" class="tab-badge">{{self.selectedWellConfig.length?self.selectedWellConfig.length:''}}</span>
+      </div>
+      <div class="tab-name" ng-class="{'active' : __tab == 'general'}" ng-click="__tab = 'general'">
+        General
+      </div>
+      <div class="tab-name" ng-class="{'active' : __tab == 'well-configs'}" ng-click="__tab = 'well-configs'">
+        Well Configs
+      </div>
+      <div class="tab-name" ng-class="{'active' : __tab == 'z-map'}" ng-click="__tab = 'z-map'">
+        Z-Map
+      </div>
+    </div>
+    <div style="display: flex;">
+      <div class="tab-name fa fa-user-circle-o" style="color: #4085ff; font-size: 13px; position: relative; z-index: 1;"
+        ng-click="__showUser = !__showUser">
+        <div ng-show="__showUser" class="user">
+          <wi-login ng-if="self.hasWiLogin" whoami="main-service" app-name="Base Map" login-url="{{ self.loginUrl }}"
+            query-string="self.queryString" register-url="https://www.i2g.cloud/register-information/">
+          </wi-login>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div ng-show="__showLoading" class="loading">
+    <div class="loading-bar">
+      <span class="bar-animation"></span>
+    </div>
+  </div>
+  <div class="tab" style="justify-content: flex-start; padding-left: 5px; border-bottom: none;">
+    <div title="Show well on map" class="tab-fn" ng-click="self.selectWells()"
+      ng-class="{'inactive' : !(__tab == 'project') || !self.selectedNodes.length}">
+      <i class="ti ti-arrow-right"></i>
+    </div>
+    <div title="Delete wells" class="tab-fn" ng-click="self.clearWell()" ng-class="{'inactive' : !(__tab == 'well')}">
+      <i class="ti ti-trash"></i>
+    </div>
+    <div title="Clear all the wells on the map" class="tab-fn" ng-click="self.clearAllWells()"
+      ng-class="{'inactive' : !(__tab == 'well')}">
+      <i class="ti ti-paint-roller"></i>
+    </div>
+    <div title="Refesh Projects List" class="tab-fn" ng-click="self.updateProjectTree()" ng-class="{'inactive' : !(__tab == 'project')}" ng-hide="!(__tab == 'project')">
+      <i class="ti ti-reload"></i>
+    </div>
+    <div title="Toggle menu" ng-show="!__hideMain" class="tab-fn"
+      ng-click="__hideMain = !__hideMain">
+      <i class="ti ti-angle-up"></i>
+    </div>
+    <div title="Toggle menu" ng-show="__hideMain" class="tab-fn"
+      ng-click="__hideMain = !__hideMain">
+      <i class="ti ti-angle-down"></i>
+    </div>
+  </div>
+  <div ng-show="__tab == 'project' && !__hideMain" class="content">
+    <div class="content-top">
+      <div style="height: 100%; overflow: hidden; display: flex; flex-direction: column; flex: 1;">
+        <wi-tree-view-virtual tree-root="self.projectConfig" get-label="self.getLabel" get-icon="self.getIcon"
+          get-children="self.getChildren" run-match="self.runMatch" hide-unmatched="true" click-fn="self.clickProjectTreeNodeFn"
+          no-drag="true" node-comparator="self.nodeComparator">
+        </wi-tree-view-virtual>
+      </div>
+    </div>
+  </div>
+  <div ng-show="__tab == 'well' && !__hideMain" class="content">
+    <wi-tree-view-virtual tree-root="self.selectedWellConfig" get-label="self.getLabel" get-icon="self.getIcon"
+      get-children="self.getChildren" run-match="self.runMatch" hide-unmatched="true"
+      click-fn="self.clickWellTreeNodeFn" no-drag="true">
+    </wi-tree-view-virtual>
+  </div>
+  <div ng-show="__tab == 'general' && !__hideMain" class="content">
+    General Settings
+  </div>
+  <div ng-show="__tab == 'well-configs' && !__hideMain" class="content">
+    Well Configs
+  </div>
+  <div ng-show="__tab == 'z-map' && !__hideMain" class="content">
+    Z-map
+  </div>
+</div>

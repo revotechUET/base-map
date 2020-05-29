@@ -7,6 +7,7 @@ module.exports.getX = getX;
 module.exports.getY = getY;
 module.exports.getLat = getLat;
 module.exports.getLong = getLong;
+module.exports.checkCoordinate = checkCoordinate;
 module.exports.getDpi = getDpi;
 
 async function getCoordFromDepth(depth, well, curveRawDataFn, zoneMap, wiApi, alertFn, options = {}) {
@@ -264,4 +265,13 @@ function getDpi() {
     __cachedDpi.lastUpdate = Date.now();
 
     return dpi;
+}
+
+function checkCoordinate(lat, long, x, y) {
+    if ((!lat || !long) && (x && y)) {
+        return false;
+    } else if ((!lat || !long) && (!x || !y)) {
+        return undefined;
+    }
+    return true;
 }
