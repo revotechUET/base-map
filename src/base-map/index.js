@@ -15,13 +15,18 @@ if (process.env.NODE_ENV === "development") {
 }
 config = require("../../config/default").production;
 
+window.localStorage.setItem("AUTHENTICATION_HOME", config["AUTHENTICATION_HOME"]);
+
+const {wiLogin} = require("@revotechuet/misc-component-vue");
+wiLogin.doLogin({redirectUrl: window.location.origin});
 
 // console.log("config", config);
 // console.log("NODE_ENV", process.env.NODE_ENV);
 const WI_AUTH_HOST = config.wi_auth;
-const WI_BACKEND_HOST = config.wi_backend;
+const BASE_URL = config.wi_backend;
 
-localStorage.setItem('__BASE_URL', WI_AUTH_HOST);
+// localStorage.setItem('__BASE_URL', WI_AUTH_HOST);
+localStorage.setItem('BASE_URL', BASE_URL);
 
 var app = angular.module(componentName, [
   "mapView",
@@ -214,8 +219,6 @@ app.component(componentName, {
     hasWiLogin: "<",
     projectId: "<",
     hasProjectList: "<",
-    username: "@",
-    password: "@",
     getLoginUrl: "<"
   },
   transclude: true
@@ -296,6 +299,11 @@ function baseMapController(
   self.darkMode = false;
   self.showZonesets = false;
   self.showMarkersets = false;
+
+  self.userInfo = {
+    username: undefined,
+    company: undefined
+  }
 
   $scope.zoneDepthSpecs = [
     { label: 'Zone Top', value: 'zone-top' },
@@ -730,7 +738,7 @@ function baseMapController(
       this.mode = "load-dashboard";
       this.selectedNode = null;
       this.options = [];
-      
+
       httpPost("/managementdashboard/list", {})
         .then(res => {
           if (!res || !res.data.content.length) {
@@ -1447,75 +1455,38 @@ function baseMapController(
     self.contourConfig.onChangePopupPosition();
   }
 
+  this.logout = () => {
+    wiLogin.logout({redirectUrl: window.location.origin});
+  }
+
   this.$onInit = function () {
     self.showDialog = false;
     self.baseUrl = $location.search().baseUrl || self.baseUrl;
-    // self.getLoginUrl = `${WI_AUTH_HOST}/login`;
     self.loginUrl =
       `${WI_AUTH_HOST}/login` || $location.search().loginUrl || self.loginUrl;
     self.queryString = queryString.parse(location.search);
     self.setDashboardMode = self.queryString.dashboardonly;
     self.queryString.token ? (() => { wiToken.setToken(self.queryString.token);  wiToken.saveToken(self.queryString)})() : null
-    if(self.setDashboardMode === "true"){
-      self.showMap = false;
-      self.showDashboard = true;
-
-    } else {
-      self.showDashboard = false;
-      self.showMap = true;
-    }
+    self.showDashboard = false;
+    self.showMap = true;
     if (localStorage.getItem("token") !== null) {
       getZoneList();
       getCurveTree();
     }
-    if(localStorage.getItem('all-done') === "true") {
-      $timeout(()=>{
-        self.showGuide = false;
-      })
-    } else {
-      $timeout(()=>{
-        self.showGuide = true;
-      })
-    }
-
-    // if (self.username && self.password) {
-    //   let data =  {
-    //     username: self.username,
-    //     password: self.password
-    //   };
-    //   wiApi.client("WI_BASE_MAP_CLIENT").login(data).then((res) => {
-    //       wiToken.setToken(res.token);
-    //       wiToken.saveToken(res.token);
-    //   }).catch((err) => {
-    //     cb(err);
-    //   });
-    //   // $http({
-    //   //   method: "POST",
-    //   //   url: `${WI_AUTH_HOST}/login`,
-    //   //   data: {
-    //   //     username: self.username,
-    //   //     password: self.password
-    //   //   },
-    //   //   headers: {}
-    //   // }).then(
-    //   //   function (response) {
-    //   //     wiToken.setToken(response.data.content.token);
-    //   //     wiToken.saveToken(response.data.content);
-    //   //   },
-    //   //   function (errorResponse) {
-    //   //     console.error(errorResponse);
-    //   //   }
-    //   // );
-    // }
+    wiApi.setBaseUrl(config["url"]);
     $scope.$watch(
       function () {
         return localStorage.getItem("token");
       },
       function (newValue, oldValue) {
-        // console.log(newValue, oldValue);
         if (localStorage.getItem("token") !== null) {
           getZoneList();
           getCurveTree();
+
+          setTimeout(() => {
+            self.userInfo.username = window.localStorage.getItem('username');
+            self.userInfo.company = JSON.parse(window.localStorage.getItem('company'));
+          });
         }
       }
     );
@@ -1535,16 +1506,12 @@ function baseMapController(
   $scope.isSet = function (tabNum) {
     return $scope.tab === tabNum;
   };
-  // $timeout(() => {
-  //     var elem = document.getElementById('loading');
-  //     elem.parentNode.removeChild(elem);
-  // }, 5000)
   function getZoneList() {
     $http({
       method: "POST",
-      url: `${WI_BACKEND_HOST}/utm-zones`,
+      url: `${BASE_URL}/utm-zones?service=WI_BACKEND`,
       data: {},
-      headers: {}
+      headers: { }
     }).then(
       function (response) {
         $scope.zoneFieldTable = response.data.sort((a, b) => {
@@ -2234,7 +2201,7 @@ function baseMapController(
   }
 
   this.getCurveTree = getCurveTree;
-  const BASE_URL = WI_BACKEND_HOST;
+  // const BASE_URL = WI_BACKEND_HOST;
 
   function getCurveTree() {
     $scope.treeConfig = [];
@@ -2287,57 +2254,6 @@ function baseMapController(
       console.error(e);
       cb(e);
     });
-    // console.log(projectId)
-    /*if(projectNodeChildren.shared){
-      await $http({
-        method: "POST",
-        url: BASE_URL + "/project/fullinfo",
-        data: {
-          idProject: projectId,
-          name: projectNodeChildren.name,
-          shared: true,
-          owner: projectNodeChildren.owner
-        },
-        headers: {
-          Authorization: wiToken.getToken()
-        }
-      })
-    } else {
-      await $http({
-        method: "POST",
-        url: BASE_URL + "/project/fullinfo",
-        data: {
-          idProject: projectId,
-          name: projectNodeChildren.name,
-        },
-        headers: {
-          Authorization: wiToken.getToken()
-        }
-      })
-    }
-    $http({
-      method: "POST",
-      url: BASE_URL + "/project/well/list",
-      data: {
-        idProject: projectId
-      },
-      headers: {
-        Authorization: wiToken.getToken()
-      }
-    }).then(
-      function (response) {
-        wells = response.data.content.map( e => {
-          e.shared = projectNodeChildren.shared;
-          e.owner = projectNodeChildren.owner;
-          e.nameOwner = projectNodeChildren.name;
-          return e;
-        })
-        cb(null, wells, projectNodeChildren);
-      },
-      function (err) {
-        cb(err);
-      }
-    );*/
   }
 
 
@@ -2359,27 +2275,6 @@ function baseMapController(
       }).catch((err) => {
         cb(err);
       });
-    // $http({
-    //   method: "POST",
-    //   url: BASE_URL + "/project/well/dataset/curve/info",
-    //   data: {
-    //     idCurve: curveId
-    //   },
-    //   headers: {
-    //     Authorization: wiToken.getToken()
-    //   }
-    // }).then(
-    //   function (response) {
-    //     cachedCurvesInfo[curveId] = {
-    //       content: response.data.content,
-    //       timestamp: Date.now()
-    //     };
-    //     cb(null, response.data.content);
-    //   },
-    //   function (err) {
-    //     cb(err);
-    //   }
-    // );
   }
 
   this.getCurveRawDataFn = getCurveRawData;
@@ -2402,27 +2297,6 @@ function baseMapController(
     }).catch((err) => {
       cb(err);
     });
-    // $http({
-    //   method: "POST",
-    //   url: BASE_URL + "/project/well/dataset/curve/getRawData",
-    //   data: {
-    //     idCurve: curveId
-    //   },
-    //   headers: {
-    //     Authorization: wiToken.getToken()
-    //   }
-    // }).then(
-    //   function (response) {
-    //     cachedCurvesData[curveId] = {
-    //       content: response.data.content,
-    //       timestamp: Date.now()
-    //     };
-    //     cb(null, response.data.content);
-    //   },
-    //   function (err) {
-    //     cb(err);
-    //   }
-    // );
   }
 
   function getWellInfo(wellId, cb) {
@@ -2432,23 +2306,6 @@ function baseMapController(
       cb(err);
     });
 
-    // $http({
-    //   method: "POST",
-    //   url: BASE_URL + "/project/well/info",
-    //   data: {
-    //     idWell: wellId
-    //   },
-    //   headers: {
-    //     Authorization: wiToken.getToken()
-    //   }
-    // }).then(
-    //   function (response) {
-    //     cb(null, response.data.content);
-    //   },
-    //   function (err) {
-    //     cb(err);
-    //   }
-    // );
   }
 
   $scope.storageDatabase = {};

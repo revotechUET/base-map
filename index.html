@@ -83,7 +83,7 @@
     angular
       .module("myApp", ["baseMap", "wiMapLoading", "wiToken"])
       .run(function (wiApi) {
-        wiApi.setBaseUrl('https://api-1.i2g.cloud');
+        wiApi.setBaseUrl('https://mc-admin.i2g.cloud');
       })
       .controller('myController', function ($scope, $http, wiToken) {
         // $("<script>").attr({src: $scope.apikey}).appendTo("body");

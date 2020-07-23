@@ -109,9 +109,17 @@ ${require('./dashboard-template-modal.html')}
       <div class="tab-name fa fa-user-circle-o" style="color: #4085ff; font-size: 13px; position: relative; z-index: 1;"
         ng-click="self.showUser = !self.showUser">
         <div ng-show="self.showUser" class="user">
+          <div style="color: white">
+            {{ self.userInfo.company.name }}/{{ self.userInfo.username }}
+          </div>
+          <div>
+            <button ng-click="self.logout()">Logout</button>
+          </div>
+          <!--
           <wi-login ng-if="self.hasWiLogin" whoami="main-service" app-name="Base Map" login-url="{{ self.loginUrl }}"
             query-string="self.queryString" register-url="https://www.i2g.cloud/register-information/">
           </wi-login>
+          -->
         </div>
       </div>
     </div>
