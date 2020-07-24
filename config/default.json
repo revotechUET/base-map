@@ -3,18 +3,18 @@
     "wi_auth": "http://localhost:2999",
     "wi_backend": "http://localhost:3000",
     "url": "https://users.i2g.cloud",
-    "AUTHENTICATION_HOME": "https://mc-login.i2g.cloud"
+    "AUTHENTICATION_HOME": "https://login.i2g.cloud"
   },
   "dev": {
     "wi_auth": "http://admin.dev.i2g.cloud",
     "wi_backend": "http://dev.i2g.cloud",
     "url": "https://users.i2g.cloud",
-    "AUTHENTICATION_HOME": "https://mc-login.i2g.cloud"
+    "AUTHENTICATION_HOME": "https://login.i2g.cloud"
   },
   "production": {
-    "wi_auth": "https://mc-admin.i2g.cloud",
-    "wi_backend": "https://mc-admin.i2g.cloud",
-    "url": "https://mc-admin.i2g.cloud",
-    "AUTHENTICATION_HOME": "https://mc-login.i2g.cloud"
+    "wi_auth": "https://users.i2g.cloud",
+    "wi_backend": "https://users.i2g.cloud",
+    "url": "https://users.i2g.cloud",
+    "AUTHENTICATION_HOME": "https://login.i2g.cloud"
   }
 }

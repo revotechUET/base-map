@@ -110,7 +110,7 @@ ${require('./dashboard-template-modal.html')}
         ng-click="self.showUser = !self.showUser">
         <div ng-show="self.showUser" class="user">
           <div style="color: white">
-            {{ self.userInfo.company.name }}/{{ self.userInfo.username }}
+            {{ self.getUserCompanyName() }}/{{ self.getUserName() }}
           </div>
           <div>
             <button ng-click="self.logout()">Logout</button>
@@ -902,7 +902,7 @@ ${require('./dashboard-template-modal.html')}
   show-contour="self.showContour" control-panel="self.controlPanel" deep-ocean="self.deepOcean" point="self.point">
 </map-view>
 -->
-<google-map-view theme="themeMap" ng-if="checkGoogleApi() && self.showMap" all-popup="allPopup" class="mapView"
+<google-map-view theme="themeMap" ng-if="checkGoogleApi()" all-popup="allPopup" class="mapView"
   wells="wellSelect" geo-json="self.geoJson" control-panel="self.controlPanel" point="self.point" focus-well='focusWell'
   focus-curve="focusCurve" show-contour="self.showContour" show-contour-text="self.showContourText"
   contour-transparency="self.contourTransparency" contour-step="self.contourStep" show-contour-stroke="self.showContourStroke"

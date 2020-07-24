@@ -82,11 +82,13 @@
   <script>
     angular
       .module("myApp", ["baseMap", "wiMapLoading", "wiToken"])
+      /*
       .run(function (wiApi) {
         wiApi.setBaseUrl('https://mc-admin.i2g.cloud');
       })
+      */
       .controller('myController', function ($scope, $http, wiToken) {
-        // $("<script>").attr({src: $scope.apikey}).appendTo("body");
+        /*
         $scope.$watch(
           function () {
             return wiToken.getToken();
@@ -118,8 +120,7 @@
             );
           }
         );
-
-
+        */
       });
   </script>
 </body>

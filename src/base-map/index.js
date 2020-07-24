@@ -17,15 +17,12 @@ config = require("../../config/default").production;
 
 window.localStorage.setItem("AUTHENTICATION_HOME", config["AUTHENTICATION_HOME"]);
 
-const {wiLogin} = require("@revotechuet/misc-component-vue");
-wiLogin.doLogin({redirectUrl: window.location.origin});
+const {wiLogin, WiApi} = require("@revotechuet/misc-component-vue");
+const wiApi = WiApi;
 
-// console.log("config", config);
-// console.log("NODE_ENV", process.env.NODE_ENV);
 const WI_AUTH_HOST = config.wi_auth;
 const BASE_URL = config.wi_backend;
 
-// localStorage.setItem('__BASE_URL', WI_AUTH_HOST);
 localStorage.setItem('BASE_URL', BASE_URL);
 
 var app = angular.module(componentName, [
@@ -41,7 +38,7 @@ var app = angular.module(componentName, [
   "wiToken",
   "angularResizable",
   'managerDashboard',
-  'wiApi',
+  // 'wiApi',
   'file-explorer',
   'wiDialog',
 
@@ -257,7 +254,7 @@ function baseMapController(
   $timeout,
   $location,
   ngDialog,
-  wiApi,
+  // wiApi,
   wiDialog,
   chartDataSource,
   Upload
@@ -295,15 +292,10 @@ function baseMapController(
   self.selectedNodes = [];
   self.showLoading = false;
   self.showLoadingDashboard = false;
-  self.showMap = undefined;
+  self.showMap = true;
   self.darkMode = false;
   self.showZonesets = false;
   self.showMarkersets = false;
-
-  self.userInfo = {
-    username: undefined,
-    company: undefined
-  }
 
   $scope.zoneDepthSpecs = [
     { label: 'Zone Top', value: 'zone-top' },
@@ -321,7 +313,7 @@ function baseMapController(
     features: []
   };
   $scope.checkGoogleApi = function () {
-    return window.google;
+    return !!window.google;
   }
 
   $('#map-upfile-1-btn').bind("click", function () {
@@ -660,7 +652,7 @@ function baseMapController(
   };
   this.changeLayout = function (showmap) {
     if(!self.showDashboard && !self.showMap) {
-      self.showDashboard = true;
+      self.showDashboard = false;
     }
     if(!showmap){
       $(".main").addClass("change-layout");
@@ -1459,7 +1451,11 @@ function baseMapController(
     wiLogin.logout({redirectUrl: window.location.origin});
   }
 
-  this.$onInit = function () {
+  this.getUserName = () => window.localStorage.getItem("username");
+  this.getUserCompanyName = () => JSON.parse(window.localStorage.getItem("company") || "{}").name;
+
+  this.$onInit = async function () {
+    await wiLogin.doLogin({redirectUrl: window.location.origin});
     self.showDialog = false;
     self.baseUrl = $location.search().baseUrl || self.baseUrl;
     self.loginUrl =
@@ -1468,10 +1464,34 @@ function baseMapController(
     self.setDashboardMode = self.queryString.dashboardonly;
     self.queryString.token ? (() => { wiToken.setToken(self.queryString.token);  wiToken.saveToken(self.queryString)})() : null
     self.showDashboard = false;
-    self.showMap = true;
     if (localStorage.getItem("token") !== null) {
       getZoneList();
       getCurveTree();
+
+      (() => {
+        $http({
+          method: "POST",
+          url: `${BASE_URL}/keys/gcp-key`,
+          data: {},
+          headers: {
+            Authorization: wiToken.getToken()
+          }
+        }).then((response) => {
+          $scope.apikey = String('https://maps.googleapis.com/maps/api/js?key=' + response.data.content.key);
+          const script = document.createElement('script');
+          script.src = $scope.apikey;
+          script.defer = true;
+          script.async = true;
+          script.onload = () => {
+            $timeout(() => {
+              $scope.$digest();
+            })
+          }
+          document.head.appendChild(script);
+        }, (err) => {
+          console.error(err);
+        })
+      })();
     }
     wiApi.setBaseUrl(config["url"]);
     $scope.$watch(
@@ -1482,11 +1502,6 @@ function baseMapController(
         if (localStorage.getItem("token") !== null) {
           getZoneList();
           getCurveTree();
-
-          setTimeout(() => {
-            self.userInfo.username = window.localStorage.getItem('username');
-            self.userInfo.company = JSON.parse(window.localStorage.getItem('company'));
-          });
         }
       }
     );
