@@ -2233,6 +2233,7 @@ function baseMapController(
 
   this.getCurveTree = getCurveTree;
   const BASE_URL = WI_BACKEND_HOST;
+  wiApi.setBaseUrl(BASE_URL)
 
   function getCurveTree() {
     $scope.treeConfig = [];
