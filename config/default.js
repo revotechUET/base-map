@@ -1,4 +1,4 @@
-{
+module.exports = {
   "default": {
     "wi_auth": "http://localhost:2999",
     "wi_backend": "http://localhost:3000",

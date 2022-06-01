@@ -13,8 +13,6 @@ if (process.env.NODE_ENV === "development") {
 } else if (process.env.NODE_ENV === "production") {
   config = require("../../config/default").production;
 }
-config = require("../../config/default").production;
-
 
 // console.log("config", config);
 // console.log("NODE_ENV", process.env.NODE_ENV);
@@ -68,8 +66,8 @@ const chartTypes = [
   { data: { label: "Horizontal Bar" }, properties: { value: "horizontal-bar" } },
   { data: { label: "Pie" }, properties: { value: "pie" } },
   { data: { label: "Doughnut" }, properties: { value: "doughnut" } }
-] 
-const CHART_DATA_SOURCE = {} 
+]
+const CHART_DATA_SOURCE = {}
 app.value('chartSettings', {
   chartTypeOpt: {
     type: 'select',
@@ -532,7 +530,7 @@ function baseMapController(
   $scope.onZipFileChange = function () {
     // const files = $element.find("input.file-upload")[1].files;
     const files = $element.find("input#map-upfile-2")[0].files;
-  
+
     console.log(files);
     const file = files[0];
     if (file) {
@@ -730,7 +728,7 @@ function baseMapController(
       this.mode = "load-dashboard";
       this.selectedNode = null;
       this.options = [];
-      
+
       httpPost("/managementdashboard/list", {})
         .then(res => {
           if (!res || !res.data.content.length) {
@@ -775,7 +773,7 @@ function baseMapController(
           wiDialog.promptListDialog(config, function(selectItem) {
             console.log(selectItem);
             resolve(angular.copy(selectItem.content));
-            
+
           });
         });
     })
@@ -1091,7 +1089,7 @@ function baseMapController(
       errorDialog("Please select a project to show Dashboard");
       return;
     }
-    // self.showDashboard = !self.showDashboard; 
+    // self.showDashboard = !self.showDashboard;
     self.showLoadingDashboard = true;
     wiApi.getFullInfoPromise(self.selectedNode.idProject, self.selectedNode.owner, self.selectedNode.owner ? self.selectedNode.name : null).then((prjTree) => {
       projectTree = prjTree;
@@ -1307,7 +1305,7 @@ function baseMapController(
             }]
           }
         },
-      }, 
+      },
       id: getUniqChartID()
     }
     $timeout(() => {
@@ -1419,7 +1417,7 @@ function baseMapController(
   this.toggleZonesets = function () {
     self.showZonesets = !self.showZonesets;
     if (self.showZonesets && self.showMarkersets) {
-      // clear previous marker set state 
+      // clear previous marker set state
       delete $scope.focusMZ;
       clearTreeState('markerList');
 
@@ -1440,7 +1438,7 @@ function baseMapController(
 
       self.showZonesets = false;
     } else if (!self.showMarkersets) {
-      // clear previous marker set state 
+      // clear previous marker set state
       delete $scope.focusMZ;
       clearTreeState('markerList');
     }
@@ -1613,7 +1611,7 @@ function baseMapController(
       self.selectedIdsHash = {};
       $scope.focusWell.length = 0;
     })
-		
+
     updateCurveList()
       .then(updateZoneList)
       .then(updateMarkerList);
@@ -1860,7 +1858,7 @@ function baseMapController(
           .sort((a, b) => a - b)
           .reverse()
           .forEach(msi => _markersets.splice(msi, 1));
-        
+
         _markersets.sort((msa, msb) => msa.name.localeCompare(msb.name))
       }
     })
@@ -2178,11 +2176,11 @@ function baseMapController(
     if(!self.showMap){
       self.showGuide = false;
       self.openDashboard();
-      
+
     }
-			
+
     if (!$event.shiftKey && !$event.ctrlKey && !$event.metaKey) {
-			
+
 			for (const project of $scope.treeConfig) {
 
 				const wells = project.wells || []
@@ -2273,7 +2271,7 @@ function baseMapController(
   }
 
   async function getWells(projectId, projectNodeChildren, cb) {
-    wiApi.client("WI_BASE_MAP_CLIENT").getFullInfoPromise(projectId, projectNodeChildren.owner, projectNodeChildren.name).then((project) => {      
+    wiApi.client("WI_BASE_MAP_CLIENT").getFullInfoPromise(projectId, projectNodeChildren.owner, projectNodeChildren.name).then((project) => {
       return wiApi.client("WI_BASE_MAP_CLIENT").getWellsPromise(project.idProject);
     }).then(_wells => {
       wells = _wells.map( e => {
@@ -2453,7 +2451,7 @@ function baseMapController(
 
   $scope.storageDatabase = {};
   //===============================SYNC data well selected===========================
- 
+
   this.setContainerFileBrowser = function(container) {
     self.fileBrowserController = container;
     console.log(container);
@@ -2563,7 +2561,7 @@ function baseMapController(
           return {
             data: {
               label: e.alias || e.name
-            },  
+            },
             icon: "project-normal-16x16",
             properties: e
           }
