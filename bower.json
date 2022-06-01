@@ -21,7 +21,6 @@
     "jquery-ui": "^1.12.1",
     "katex": "^0.10.1",
     "lodash": "^4.17.11",
-    "misc-component": "https://github.com/tunghoang/misc-component.git",
     "async": "^2.6.2",
     "mapbox-box-draw.js": "mapbox-gl-draw#^0.19.0",
     "themify-icons": "^0.1.2",
@@ -31,10 +30,12 @@
     "d3-hsv.v0.1.min": "https://d3js.org/d3-hsv.v0.1.min.js",
     "shp": "^3.4.3",
     "file-explorer": "https://github.com/hoangbdUET/file-browser-angular.git",
-    "contour-module": "https://github.com/revotechUET/contour-module.git#master"
+    "contour-module": "https://github.com/revotechUET/contour-module.git#master",
+    "resize-sensor": "^0.0.7",
+    "ng-dialog": "^1.4.0"
   },
   "resolutions": {
-    "angular": "1.7.9",
+    "angular": "^1.7.8",
     "jquery": "3.4.1"
   }
 }
