@@ -5,8 +5,8 @@ module.exports = {
     "url": "https://users.i2g.cloud"
   },
   "dev": {
-    "wi_auth": "http://admin.dev.i2g.cloud",
-    "wi_backend": "http://dev.i2g.cloud",
+    "wi_auth": "https://users.i2g.cloud",
+    "wi_backend": "https://api-1.i2g.cloud",
     "url": "https://users.i2g.cloud"
   },
   "production": {

@@ -15,7 +15,7 @@
 </div>
 <script type="text/ng-template" id="dashboard-template-modal">
 ${require('./dashboard-template-modal.html')}
-</script> 
+</script>
 <div ng-show="self.showGuide && !self.showMap"
   style="width: calc(100vw - 340px); height: 100vh; right: 0; position: absolute; overflow: hidden; background: #3e84ff; z-index: 3;"
   class="slim-scroller">
@@ -54,7 +54,7 @@ ${require('./dashboard-template-modal.html')}
             {{ message || "Something error" }}
         </span>
     </div>
-    
+
 </div>
 <div class="dialog-error" ng-show="self.wellError">
   <div class="dialog-header">
@@ -122,7 +122,7 @@ ${require('./dashboard-template-modal.html')}
     </div>
   </div>
   <div class="tab" style="justify-content: flex-start; padding-left: 5px; border-bottom: none;" ng-show="self.showMap">
-    <div title="Show/Hide dashboard" class="tab-fn" ng-class="{'on': self.showDashboard}" 
+    <div title="Show/Hide dashboard" class="tab-fn" ng-class="{'on': self.showDashboard}"
       ng-show="!self.showMap"
       ng-click="self.openDashboard()">
       <i class="ti ti-pie-chart"></i>
@@ -883,7 +883,7 @@ ${require('./dashboard-template-modal.html')}
   </div>
 </div>
 
-<!-- <map-view 
+<!-- <map-view
   ng-show="self.showMap"
   class="mapView"
   mapbox-token="pk.eyJ1IjoicmV2b3RlY2giLCJhIjoiY2swZGJobWg3MDY2NzNtbnVwaDEyYmttMCJ9.39KL2GsNCiew9XmiLVsTDQ"

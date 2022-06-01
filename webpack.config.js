@@ -1,5 +1,15 @@
 const HtmlWebpackDeployPlugin = require('html-webpack-deploy-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+
+const fs = require('fs');
+const path = require('path');
+
+const INCLUDE_PATTERN = /\${ *require\(['"](.+)['"]\) *}/gi;
+const processNestedHtml = (content, loaderContext) => {
+	return !INCLUDE_PATTERN.test(content) ?
+		content : content.replace(INCLUDE_PATTERN, (m, src) => processNestedHtml(fs.readFileSync(path.resolve(loaderContext.context, src), 'utf8'), loaderContext))
+}
+
 module.exports = {
 	// context: __dirname + '/src',
 	mode: "development",
@@ -17,13 +27,15 @@ module.exports = {
 	module: {
 		rules: [{
 			test: /\.html$/,
-			use: 'html-loader',
-			// use: [{
-			// loader: 'html-loader',
-			// options: {
-			// 	interpolate: true
-			// }
-			// }]
+			// use: 'html-loader',
+			use: [{
+				loader: 'html-loader',
+				options: {
+          esModule: false,
+					sources: false,
+					preprocessor: processNestedHtml,
+				}
+			}]
 		}, {
 			test: /\.css$/,
 			use: ['style-loader', 'css-loader'],
