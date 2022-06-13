@@ -34,6 +34,7 @@ module.exports = {
           esModule: false,
 					sources: false,
 					preprocessor: processNestedHtml,
+					minimize: false,
 				}
 			}]
 		}, {
